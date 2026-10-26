@@ -1,6 +1,7 @@
 import type { Ats, Source } from "../core/job.js";
 import { Prisma, type Company, type PrismaClient } from "../lib/db.js";
 import { normalizeCompany } from "../lib/normalize.js";
+import { clearEmbedding } from "../scoring/store.js";
 import { canonicalize, mergeCanonical, type CanonicalJob, type JobGroup } from "./dedupe.js";
 
 type Tx = Prisma.TransactionClient;
@@ -149,6 +150,11 @@ export async function persistGroup(
             lastSeenAt: now,
           },
         });
+
+    // A better description (e.g. ATS replacing an Adzuna snippet) makes the embedding stale.
+    if (existing && existing.description !== canonical.description) {
+      await clearEmbedding(tx, job.id);
+    }
 
     for (const p of group.postings) {
       const fields = {
