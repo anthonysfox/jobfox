@@ -3,18 +3,33 @@ import type { Job } from "../../core/job.js";
 import type { JobSource } from "../../core/source.js";
 import { htmlToText } from "../../lib/html.js";
 import type { HttpClient } from "../../lib/http.js";
-import { inferWorkplaceType } from "../../lib/normalize.js";
+import { containsPhrase, inferWorkplaceType } from "../../lib/normalize.js";
 import { searchAdzuna, type AdzunaCredentials } from "./client.js";
 import type { AdzunaJob } from "./schema.js";
 
 const CURRENCY_BY_COUNTRY: Record<string, string> = { us: "USD", gb: "GBP", ca: "CAD" };
+
+/**
+ * Adzuna's display_name is "City, County" with no state, so append the state
+ * and country from `area` (["US", "New Jersey", "Middlesex County", ...]).
+ * Location filters need them; the dedupe key only uses the first segment.
+ */
+export function formatLocation(location: AdzunaJob["location"]): string | null {
+  const name = location?.display_name;
+  if (!name) return null;
+  const [country, state] = location.area ?? [];
+  const extra = [state, country].filter(
+    (part): part is string => part !== undefined && !containsPhrase(name, part),
+  );
+  return [name, ...extra].join(", ");
+}
 
 export function toJob(result: AdzunaJob, country: string): Job | null {
   const companyName = result.company?.display_name?.trim();
   if (!companyName) return null;
 
   const title = htmlToText(result.title);
-  const location = result.location?.display_name ?? null;
+  const location = formatLocation(result.location);
   const description = htmlToText(result.description);
   // Predicted salaries are Adzuna's estimate, not the employer's; don't store them as fact.
   const hasRealSalary =

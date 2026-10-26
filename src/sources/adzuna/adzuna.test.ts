@@ -3,7 +3,7 @@ import { parseConfig } from "../../core/config.js";
 import { createFakeHttp } from "../../test/fake-http.js";
 import page1 from "./fixtures/search-page-1.json" with { type: "json" };
 import { buildSearchUrl } from "./client.js";
-import { createAdzunaSource } from "./source.js";
+import { createAdzunaSource, formatLocation } from "./source.js";
 
 const credentials = { appId: "test-id", appKey: "test-key" };
 
@@ -54,6 +54,27 @@ describe("buildSearchUrl", () => {
   });
 });
 
+describe("formatLocation", () => {
+  it("adds the state and country from area", () => {
+    expect(
+      formatLocation({
+        display_name: "North Brunswick, Middlesex County",
+        area: ["US", "New Jersey", "Middlesex County", "North Brunswick"],
+      }),
+    ).toBe("North Brunswick, Middlesex County, New Jersey, US");
+  });
+
+  it("does not repeat a state already in the name", () => {
+    expect(
+      formatLocation({ display_name: "New York City, New York", area: ["US", "New York"] }),
+    ).toBe("New York City, New York, US");
+  });
+
+  it("handles a missing location", () => {
+    expect(formatLocation(undefined)).toBeNull();
+  });
+});
+
 describe("createAdzunaSource", () => {
   it("maps results to Jobs", async () => {
     const http = createFakeHttp([{ match: isAdzuna, body: page1 }]);
@@ -68,7 +89,7 @@ describe("createAdzunaSource", () => {
       applyUrl: null,
       title: "Full Stack Engineer – React & Node",
       companyName: "Acme Inc.",
-      location: "Manhattan, New York County",
+      location: "Manhattan, New York County, US",
       workplaceType: "HYBRID",
       descriptionTruncated: true,
       salary: { min: 130000, max: 160000, currency: "USD" },
