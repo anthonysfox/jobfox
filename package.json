@@ -5,6 +5,7 @@
   "scripts": {
     "discover": "tsx --env-file=.env src/scripts/discover.ts",
     "matches": "tsx --env-file=.env src/scripts/matches.ts",
+    "score": "tsx --env-file=.env src/scripts/score.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",

@@ -112,7 +112,7 @@ model JobScore {
   id         String   @id @default(cuid())
   jobId      String
   job        Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
-  /// sha256 of the resume text, so editing the resume triggers re-scoring.
+  /// sha256 of the full scoring system prompt (resume + preferences + rubric), so editing any of them re-scores.
   resumeHash String
   model      String
   /// Cosine similarity between the job and resume embeddings.

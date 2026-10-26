@@ -1,56 +1,53 @@
 import userConfig from "../../jobfox.config.js";
 import { parseConfig } from "../core/config.js";
 import { createDb } from "../lib/db.js";
-import { containsPhrase } from "../lib/normalize.js";
-import { rejectReasons } from "../pipeline/filters.js";
+import { findCurrentMatches, STALE_AFTER_DAYS, type MatchedJob } from "../pipeline/matches.js";
+import { currentScore, loadScoringContext } from "../scoring/context.js";
 
 /*
- * List jobs worth applying to. Filters are re-applied from the current
- * jobfox.config.ts, so config changes show up without fetching again.
- * Jobs not seen in the last few runs have likely been filled and are hidden.
+ * List jobs worth applying to, best fit first. Weak fits are counted but not
+ * listed; run `pnpm score` first to score new jobs.
  */
 
-const STALE_AFTER_DAYS = 3;
+function where(job: MatchedJob): string {
+  return [job.location, job.workplaceType !== "UNKNOWN" ? job.workplaceType : null]
+    .filter(Boolean)
+    .join(" · ");
+}
 
 async function main(): Promise<void> {
   const config = parseConfig(userConfig);
+  const context = loadScoringContext(config);
   const db = createDb();
 
   try {
-    const since = new Date(Date.now() - STALE_AFTER_DAYS * 24 * 60 * 60 * 1000);
-    const jobs = await db.job.findMany({
-      where: { lastSeenAt: { gte: since } },
-      include: { company: true },
-      orderBy: { firstSeenAt: "desc" },
-    });
-
-    const matches = jobs
-      .map((job) => ({ job, companyName: job.company.name }))
-      .filter(
-        ({ job, companyName }) =>
-          rejectReasons({ ...job, companyName }, config.filters).length === 0,
-      );
-
-    const isLocal = (location: string | null) =>
-      config.filters.locations.some((place) => containsPhrase(location ?? "", place));
-    const local = matches.filter(({ job }) => isLocal(job.location));
-    const elsewhere = matches.filter(({ job }) => !isLocal(job.location));
+    const jobs = await findCurrentMatches(db, config.filters);
+    const withScores = jobs.map((job) => ({ job, score: currentScore(job.scores, context) }));
+    const byVerdict = (verdict: string) =>
+      withScores
+        .filter((x) => x.score?.verdict === verdict)
+        .sort((a, b) => (b.score?.fitScore ?? 0) - (a.score?.fitScore ?? 0));
 
     for (const [heading, group] of [
-      ["Local", local],
-      ["Remote", elsewhere],
+      ["Strong fits", byVerdict("STRONG")],
+      ["Possible fits", byVerdict("POSSIBLE")],
     ] as const) {
       console.log(`\n${heading} (${group.length})`);
-      for (const { job, companyName } of group) {
-        const where = [job.location, job.workplaceType !== "UNKNOWN" ? job.workplaceType : null]
-          .filter(Boolean)
-          .join(" · ");
-        console.log(`  ${companyName} — ${job.title}${where ? ` — ${where}` : ""}`);
-        console.log(`    ${job.applyUrl}`);
+      for (const { job, score } of group) {
+        console.log(
+          `  ${String(score?.fitScore).padStart(3)}  ${job.company.name} — ${job.title} — ${where(job)}`,
+        );
+        if (score) console.log(`       ${score.summary}`);
+        if (score && score.gaps.length > 0) console.log(`       Gaps: ${score.gaps.join("; ")}`);
+        console.log(`       ${job.applyUrl}`);
       }
     }
+
+    const weak = byVerdict("WEAK").length;
+    const unscored = withScores.filter((x) => !x.score).length;
     console.log(
-      `\n${matches.length} matches from ${jobs.length} jobs seen in the last ${STALE_AFTER_DAYS} days`,
+      `\n${jobs.length} matches seen in the last ${STALE_AFTER_DAYS} days: ` +
+        `${weak} weak fits hidden${unscored > 0 ? `, ${unscored} not scored yet (pnpm score)` : ""}.`,
     );
   } finally {
     await db.$disconnect();

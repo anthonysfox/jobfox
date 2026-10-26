@@ -67,6 +67,11 @@ export function parseConfig(raw: unknown): JobfoxConfig {
 
 const envSchema = z.object({
   DATABASE_URL: z.url(),
+  // Only needed for pnpm score / pnpm eval. The SDK reads it from the environment itself.
+  ANTHROPIC_API_KEY: z
+    .string()
+    .optional()
+    .transform((v) => v || undefined),
   // Optional so the project runs (HN only) before you have Adzuna keys.
   ADZUNA_APP_ID: z
     .string()
