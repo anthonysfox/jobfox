@@ -2,7 +2,7 @@
 
 A personal job-search pipeline. It finds postings, filters them against hard rules, and (in later phases) scores them against my resume and drafts tailored material for me to review. **I submit every application myself**: jobfox never fills in or submits forms.
 
-**Status:** Phase 1 (discovery, running locally). The Greenhouse, Lever, and Ashby clients are in progress; their tests in `src/sources/ats/*/` are the spec and currently fail on purpose.
+**Status:** Phase 1 (discovery, running locally) is working: Adzuna, Hacker News, and direct polling of Greenhouse, Lever, and Ashby boards.
 
 ## How it works
 
