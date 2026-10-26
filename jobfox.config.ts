@@ -27,6 +27,21 @@ export default defineConfig({
 
   hn: { enabled: true },
 
+  scoring: {
+    model: "claude-haiku-5-5",
+    effort: "medium",
+    maxJobsPerRun: 400,
+    concurrency: 4,
+    preferences: [
+      "Mid-level roles: full-stack, frontend, cloud, solutions engineer, or forward-deployed engineer.",
+      "On-site or hybrid in the NYC / Northern NJ area, or remote within the US.",
+      "Strongest in TypeScript, React, Next.js, Node.js, Prisma, and Postgres; AWS Solutions Architect Associate.",
+      "Not looking for staff/principal/management roles, or roles centered on a stack I haven't used.",
+    ].join("\n"),
+    strongThreshold: 75,
+    possibleThreshold: 50,
+  },
+
   filters: {
     titleKeywords: [
       "full stack",

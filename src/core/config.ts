@@ -19,6 +19,20 @@ export const configSchema = z.object({
     maxPagesPerSearch: z.number().int().positive().default(2),
   }),
   hn: z.object({ enabled: z.boolean().default(true) }).prefault({}),
+  scoring: z
+    .object({
+      model: z.string().default("claude-haiku-5-5"),
+      effort: z.enum(["low", "medium", "high", "xhigh", "max"]).default("medium"),
+      /** Only the most resume-similar unscored jobs are sent to the model each run. */
+      maxJobsPerRun: z.number().int().positive().default(400),
+      concurrency: z.number().int().min(1).max(16).default(4),
+      /** What I'm looking for, in my own words. Goes into the scoring prompt. */
+      preferences: z.string().default(""),
+      /** fitScore cutoffs for the STRONG and POSSIBLE verdicts. */
+      strongThreshold: z.number().int().min(0).max(100).default(75),
+      possibleThreshold: z.number().int().min(0).max(100).default(50),
+    })
+    .prefault({}),
   filters: z.object({
     /** The title must contain at least one of these phrases. */
     titleKeywords: phrases,
