@@ -1,0 +1,98 @@
+generator client {
+  provider      = "prisma-client-js"
+  output        = "../src/generated/prisma"
+  // Phase 2 (Lambda) will add "linux-arm64-openssl-3.0.x" here.
+  binaryTargets = ["native"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Source {
+  ADZUNA
+  HN_HIRING
+  GREENHOUSE
+  LEVER
+  ASHBY
+}
+
+enum Ats {
+  GREENHOUSE
+  LEVER
+  ASHBY
+}
+
+enum WorkplaceType {
+  ONSITE
+  HYBRID
+  REMOTE
+  UNKNOWN
+}
+
+model Company {
+  id             String    @id @default(cuid())
+  name           String
+  normalizedName String    @unique
+  ats            Ats?
+  /// Greenhouse board token, Lever site name, or Ashby job board name.
+  atsSlug        String?
+  pollEnabled    Boolean   @default(true)
+  lastPolledAt   DateTime?
+  discoveredVia  Source?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  jobs           Job[]
+
+  @@unique([ats, atsSlug])
+}
+
+/// One row per real-world job, after dedupe across sources.
+model Job {
+  id                String        @id @default(cuid())
+  /// normalized company | title | location
+  dedupeKey         String        @unique
+  companyId         String
+  company           Company       @relation(fields: [companyId], references: [id])
+  title             String
+  location          String?
+  workplaceType     WorkplaceType @default(UNKNOWN)
+  /// Best available description (ATS > HN > Adzuna).
+  description       String?
+  descriptionSource Source?
+  /// Direct ATS URL once enriched; otherwise the source URL.
+  applyUrl          String
+  salaryMin         Int?
+  salaryMax         Int?
+  salaryCurrency    String?
+  postedAt          DateTime?
+  /// Empty means the job passed every hard filter.
+  rejectedReasons   String[]
+  firstSeenAt       DateTime      @default(now())
+  lastSeenAt        DateTime      @default(now())
+  postings          JobPosting[]
+
+  @@index([firstSeenAt])
+}
+
+/// One row per sighting of a job in a source, kept for provenance.
+model JobPosting {
+  id                   String   @id @default(cuid())
+  jobId                String
+  job                  Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  source               Source
+  externalId           String
+  url                  String
+  title                String
+  companyName          String
+  location             String?
+  description          String?
+  descriptionTruncated Boolean  @default(false)
+  raw                  Json
+  firstSeenAt          DateTime @default(now())
+  lastSeenAt           DateTime @default(now())
+
+  @@unique([source, externalId])
+  @@index([jobId])
+}

@@ -1,0 +1,20 @@
+services:
+  db:
+    # pgvector image so Phase 3 (embeddings) needs only a migration, not a new database.
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_USER: jobfox
+      POSTGRES_PASSWORD: jobfox
+      POSTGRES_DB: jobfox
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U jobfox -d jobfox"]
+      interval: 2s
+      timeout: 3s
+      retries: 15
+
+volumes:
+  pgdata:
