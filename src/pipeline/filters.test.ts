@@ -7,6 +7,7 @@ const filters: FilterConfig = {
   titleKeywords: ["full stack", "frontend", "software engineer", "solutions engineer"],
   locations: ["new york", "nyc", "jersey city", "hoboken"],
   remoteOk: true,
+  remoteUsOnly: true,
   remoteExcludedRegions: ["europe", "emea", "uk", "canada"],
   seniorityExclude: ["staff", "principal", "director"],
   companyBlocklist: ["Globex Corporation"],
@@ -85,6 +86,38 @@ describe("rejectReasons", () => {
         filters,
       ),
     ).toEqual(["remote:region:emea"]);
+  });
+
+  it.each([
+    "Remote",
+    "Remote (US)",
+    "United States",
+    "REMOTE (US Timezones)",
+    "Remote (Global)",
+    "Austin, TX",
+  ])("treats remote in %s as US-eligible", (location) => {
+    expect(rejectReasons({ ...base, location, workplaceType: "REMOTE" }, filters)).toEqual([]);
+  });
+
+  it.each([
+    "Spain",
+    "Singapore",
+    "Mexico City",
+    "REMOTE (Poland or Romania)",
+    "Remote (EU time zone)",
+  ])("rejects remote in %s as outside the US", (location) => {
+    expect(rejectReasons({ ...base, location, workplaceType: "REMOTE" }, filters)).toEqual([
+      "remote:outside-us",
+    ]);
+  });
+
+  it("allows non-US remote when remoteUsOnly is off", () => {
+    expect(
+      rejectReasons(
+        { ...base, location: "Spain", workplaceType: "REMOTE" },
+        { ...filters, remoteUsOnly: false },
+      ),
+    ).toEqual([]);
   });
 
   it("rejects remote jobs when remote is off", () => {

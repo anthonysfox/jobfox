@@ -25,6 +25,8 @@ export const configSchema = z.object({
     /** On-site and hybrid jobs must be in one of these places. */
     locations: phrases,
     remoteOk: z.boolean().default(true),
+    /** Reject remote jobs based outside the US, e.g. "Spain" or "Remote (EU)". */
+    remoteUsOnly: z.boolean().default(true),
     /** Remote jobs restricted to these regions are rejected. */
     remoteExcludedRegions: phrases,
     /** Titles containing any of these phrases are rejected. */

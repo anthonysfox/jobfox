@@ -1,6 +1,11 @@
 import type { FilterConfig } from "../core/config.js";
 import { UNKNOWN_TITLE } from "../core/job.js";
-import { containsPhrase, normalizeCompany, normalizeTitle } from "../lib/normalize.js";
+import {
+  containsPhrase,
+  normalizeCompany,
+  normalizeTitle,
+  toPhraseText,
+} from "../lib/normalize.js";
 import type { CanonicalJob } from "./dedupe.js";
 
 type FilterableJob = Pick<CanonicalJob, "companyName" | "title" | "location" | "workplaceType">;
@@ -8,6 +13,20 @@ type FilterableJob = Pick<CanonicalJob, "companyName" | "title" | "location" | "
 /** Title matching goes through the same aliases as dedupe, so "Fullstack" matches "full stack". */
 function titleHas(title: string, phrase: string): boolean {
   return containsPhrase(normalizeTitle(title), normalizeTitle(phrase));
+}
+
+const WORKPLACE_WORDS = /\b(remote|hybrid|onsite|on site|in office|first|only|fully|or|and)\b/g;
+const US_ELIGIBLE =
+  /\b(us|usa|united states|america|north america|global|worldwide|anywhere|est|et|eastern|pst|pt|pacific|cst|ct|central|mountain)\b/;
+const US_STATE = /, ?[A-Z]{2}\b/;
+
+/**
+ * A remote job counts as US-eligible when it names nowhere ("Remote"), names
+ * the US or a US time zone, says global, or gives a "City, ST" location.
+ */
+function isUsEligible(location: string): boolean {
+  const text = toPhraseText(location).replace(WORKPLACE_WORDS, "").trim();
+  return !text || US_ELIGIBLE.test(text) || US_STATE.test(location);
 }
 
 function checkLocation(job: FilterableJob, filters: FilterConfig): string | null {
@@ -21,7 +40,8 @@ function checkLocation(job: FilterableJob, filters: FilterConfig): string | null
     const region = filters.remoteExcludedRegions.find(
       (r) => containsPhrase(location, r) || containsPhrase(job.title, r),
     );
-    return region ? `remote:region:${region}` : null;
+    if (region) return `remote:region:${region}`;
+    return filters.remoteUsOnly && !isUsEligible(location) ? "remote:outside-us" : null;
   }
 
   // Unknown location: keep it and let me decide in review rather than drop it silently.

@@ -4,6 +4,7 @@
   "description": "Finds job postings, scores them against my resume, and drafts application material for human review.",
   "scripts": {
     "discover": "tsx --env-file=.env src/scripts/discover.ts",
+    "matches": "tsx --env-file=.env src/scripts/matches.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",

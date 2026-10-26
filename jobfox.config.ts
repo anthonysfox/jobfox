@@ -58,6 +58,7 @@ export default defineConfig({
       "nj",
     ],
     remoteOk: true,
+    remoteUsOnly: true,
     remoteExcludedRegions: [
       "europe",
       "emea",

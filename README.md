@@ -38,12 +38,13 @@ pnpm discover
 
 Without Adzuna keys, `discover` runs with HN and known boards only.
 
-| Script           | What it does                         |
-| ---------------- | ------------------------------------ |
-| `pnpm discover`  | Fetch, filter, store, print summary  |
-| `pnpm test`      | Vitest (no network, no database)     |
-| `pnpm check`     | Typecheck + lint + test              |
-| `pnpm db:studio` | Browse the database in Prisma Studio |
+| Script           | What it does                                |
+| ---------------- | ------------------------------------------- |
+| `pnpm discover`  | Fetch, filter, store, print summary         |
+| `pnpm matches`   | List jobs to apply to, with current filters |
+| `pnpm test`      | Vitest (no network, no database)            |
+| `pnpm check`     | Typecheck + lint + test                     |
+| `pnpm db:studio` | Browse the database in Prisma Studio        |
 
 ## Design decisions
 
