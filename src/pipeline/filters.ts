@@ -1,4 +1,5 @@
 import type { FilterConfig } from "../core/config.js";
+import { UNKNOWN_TITLE } from "../core/job.js";
 import { containsPhrase, normalizeCompany, normalizeTitle } from "../lib/normalize.js";
 import type { CanonicalJob } from "./dedupe.js";
 
@@ -42,7 +43,9 @@ export function rejectReasons(job: FilterableJob, filters: FilterConfig): string
     if (titleHas(job.title, phrase)) reasons.push(`seniority:${phrase}`);
   }
 
+  // Like unknown locations, an unknown title goes to review instead of being rejected.
   if (
+    job.title !== UNKNOWN_TITLE &&
     filters.titleKeywords.length > 0 &&
     !filters.titleKeywords.some((keyword) => titleHas(job.title, keyword))
   ) {

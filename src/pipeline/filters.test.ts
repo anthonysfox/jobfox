@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { FilterConfig } from "../core/config.js";
+import { UNKNOWN_TITLE } from "../core/job.js";
 import { rejectReasons } from "./filters.js";
 
 const filters: FilterConfig = {
@@ -99,6 +100,10 @@ describe("rejectReasons", () => {
     expect(rejectReasons({ ...base, location: null, workplaceType: "UNKNOWN" }, filters)).toEqual(
       [],
     );
+  });
+
+  it("keeps jobs with an unknown title", () => {
+    expect(rejectReasons({ ...base, title: UNKNOWN_TITLE }, filters)).toEqual([]);
   });
 
   it("collects every reason", () => {

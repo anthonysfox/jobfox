@@ -35,6 +35,9 @@ export interface Job {
   raw: unknown;
 }
 
+/** Title for a posting that never names a role. Filters treat it as unknown, not a mismatch. */
+export const UNKNOWN_TITLE = "(role not stated)";
+
 /** ATS sources outrank aggregators when choosing which description to keep. */
 export const SOURCE_PRIORITY: Record<Source, number> = {
   GREENHOUSE: 3,

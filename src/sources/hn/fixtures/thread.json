@@ -1,0 +1,100 @@
+{
+  "id": 50000001,
+  "created_at": "2026-11-02T16:00:00.000Z",
+  "created_at_i": 1793635200,
+  "type": "story",
+  "author": "whoishiring",
+  "title": "Ask HN: Who is hiring? (November 2026)",
+  "url": null,
+  "text": "Please state the location and include REMOTE for remote work...",
+  "points": 300,
+  "parent_id": null,
+  "story_id": 50000001,
+  "options": [],
+  "children": [
+    {
+      "id": 50000101,
+      "created_at": "2026-11-02T16:01:00.000Z",
+      "type": "comment",
+      "author": "northwind_eng",
+      "text": "Northwind (Remote US) — Full-Stack Engineer — TypeScript &#x2F; Postgres &#x2F; React<p>We build tools for teachers. Apply: <a href=\"https:&#x2F;&#x2F;boards.greenhouse.io&#x2F;northwind&#x2F;jobs&#x2F;4012345\" rel=\"nofollow\">https:&#x2F;&#x2F;boards.greenhouse.io&#x2F;northwind&#x2F;jobs&#x2F;4012345</a>",
+      "points": null,
+      "parent_id": 50000001,
+      "story_id": 50000001,
+      "options": [],
+      "children": [
+        {
+          "id": 50000901,
+          "created_at": "2026-11-02T17:00:00.000Z",
+          "type": "comment",
+          "author": "curious",
+          "text": "Is this open to Canada?",
+          "parent_id": 50000101,
+          "story_id": 50000001,
+          "options": [],
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": 50000102,
+      "created_at": "2026-11-02T16:02:00.000Z",
+      "type": "comment",
+      "author": "contoso_hiring",
+      "text": "Contoso (Series B) | ONSITE | New York, NY<p>We&#x27;re hiring across engineering. <a href=\"https:&#x2F;&#x2F;contoso.example&#x2F;careers\" rel=\"nofollow\">https:&#x2F;&#x2F;contoso.example&#x2F;careers</a>",
+      "points": null,
+      "parent_id": 50000001,
+      "story_id": 50000001,
+      "options": [],
+      "children": []
+    },
+    {
+      "id": 50000103,
+      "created_at": "2026-11-02T16:03:00.000Z",
+      "type": "comment",
+      "author": "fabrikam",
+      "text": "Fabrikam | Senior Frontend Engineer, Backend Engineer | NYC or REMOTE (US) | $150k-$190k | <a href=\"https:&#x2F;&#x2F;fabrikam.example\" rel=\"nofollow\">https:&#x2F;&#x2F;fabrikam.example</a><p>Roles: <a href=\"https:&#x2F;&#x2F;jobs.lever.co&#x2F;fabrikam\" rel=\"nofollow\">https:&#x2F;&#x2F;jobs.lever.co&#x2F;fabrikam</a>",
+      "points": null,
+      "parent_id": 50000001,
+      "story_id": 50000001,
+      "options": [],
+      "children": []
+    },
+    {
+      "id": 50000104,
+      "created_at": "2026-11-02T16:04:00.000Z",
+      "type": "comment",
+      "author": "initech",
+      "text": "Initech | Software Engineer, Payments | Hybrid - Jersey City, NJ | Full-time",
+      "points": null,
+      "parent_id": 50000001,
+      "story_id": 50000001,
+      "options": [],
+      "children": []
+    },
+    {
+      "id": 50000105,
+      "created_at": "2026-11-02T16:05:00.000Z",
+      "type": "comment",
+      "author": "lurker",
+      "text": "there used to be way more posts here :(",
+      "points": null,
+      "parent_id": 50000001,
+      "story_id": 50000001,
+      "options": [],
+      "children": []
+    },
+    {
+      "id": 50000106,
+      "created_at": "2026-11-02T16:06:00.000Z",
+      "type": "comment",
+      "author": null,
+      "text": null,
+      "points": null,
+      "parent_id": 50000001,
+      "story_id": 50000001,
+      "options": [],
+      "children": []
+    }
+  ]
+}
