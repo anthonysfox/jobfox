@@ -17,7 +17,8 @@ export async function findCurrentMatches(
 ) {
   const since = new Date(now.getTime() - STALE_AFTER_DAYS * 24 * 60 * 60 * 1000);
   const jobs = await db.job.findMany({
-    where: { lastSeenAt: { gte: since } },
+    // Skipped and applied jobs are done with; they don't come back as matches.
+    where: { lastSeenAt: { gte: since }, status: { in: ["NEW", "SAVED"] } },
     include: { company: true, scores: true, label: true },
     orderBy: { firstSeenAt: "desc" },
   });

@@ -24,6 +24,14 @@ enum Ats {
   ASHBY
 }
 
+/// Where I am with a job. Phase 5 may replace this with an Application table that keeps history.
+enum JobStatus {
+  NEW
+  SAVED
+  APPLIED
+  SKIPPED
+}
+
 enum WorkplaceType {
   ONSITE
   HYBRID
@@ -76,6 +84,8 @@ model Job {
   embedding         Unsupported("vector(384)")?
   scores            JobScore[]
   label             JobLabel?
+  status            JobStatus                   @default(NEW)
+  statusChangedAt   DateTime?
 
   @@index([firstSeenAt])
 }
@@ -134,4 +144,16 @@ model JobLabel {
   label     Verdict
   note      String?
   createdAt DateTime @default(now())
+}
+
+/// One pnpm eval run, so results can be shown and compared over time.
+model EvalRun {
+  id         String   @id @default(cuid())
+  model      String
+  effort     String
+  promptHash String
+  thresholds Json
+  metrics    Json
+  rows       Json
+  createdAt  DateTime @default(now())
 }

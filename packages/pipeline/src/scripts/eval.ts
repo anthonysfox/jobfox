@@ -1,5 +1,4 @@
 import Anthropic from "@anthropic-ai/sdk";
-import { mkdirSync, writeFileSync } from "node:fs";
 import userConfig from "../../jobfox.config.js";
 import { parseConfig, parseEnv } from "../core/config.js";
 import { createDb } from "../lib/db.js";
@@ -11,7 +10,7 @@ import { scoreJobs } from "../scoring/run.js";
 /*
  * Measure the scorer against my hand labels. Scores any labeled job that
  * isn't scored yet for the current prompt and model, then reports agreement,
- * rank correlation, and the embedding-only baseline. Results go to data/evals/.
+ * rank correlation, and the embedding-only baseline. Each run is saved as an EvalRun.
  *
  *   pnpm eval                          # model from jobfox.config.ts
  *   pnpm eval --model claude-sonnet-5-5
@@ -113,32 +112,27 @@ async function main(): Promise<void> {
       console.log(`\n  ${run.failures.length} jobs failed to score:`, run.failures.slice(0, 5));
     }
 
-    mkdirSync("data/evals", { recursive: true });
-    const file = `data/evals/${new Date().toISOString().replace(/[:.]/g, "-")}-${config.scoring.model}.json`;
-    writeFileSync(
-      file,
-      JSON.stringify(
-        {
-          model: config.scoring.model,
-          effort: config.scoring.effort,
-          promptHash: context.promptHash,
-          thresholds: {
-            strong: config.scoring.strongThreshold,
-            possible: config.scoring.possibleThreshold,
-          },
-          metrics,
-          rows: rows.map(({ job, row }) => ({
-            jobId: job.id,
-            title: job.title,
-            company: job.company.name,
-            ...row,
-          })),
+    const saved = await db.evalRun.create({
+      data: {
+        model: config.scoring.model,
+        effort: config.scoring.effort,
+        promptHash: context.promptHash,
+        thresholds: {
+          strong: config.scoring.strongThreshold,
+          possible: config.scoring.possibleThreshold,
         },
-        null,
-        2,
-      ),
-    );
-    console.log(`\n  Saved ${file}`);
+        metrics: { ...metrics },
+        rows: rows.map(({ job, score, row }) => ({
+          jobId: job.id,
+          title: job.title,
+          company: job.company.name,
+          summary: score.summary,
+          note: job.label?.note ?? null,
+          ...row,
+        })),
+      },
+    });
+    console.log(`\n  Saved eval run ${saved.id} (see /eval in the dashboard)`);
   } finally {
     await db.$disconnect();
   }
