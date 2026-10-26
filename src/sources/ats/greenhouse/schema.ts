@@ -1,20 +1,21 @@
 import { z } from "zod";
 
-/*
- * TODO(you): model the Greenhouse Job Board API responses.
- * Docs: https://developers.greenhouse.io/job-board.html
- *
- * Model only the fields toJob() needs and use z.looseObject so the raw
- * payload keeps the rest. See src/sources/adzuna/schema.ts for the pattern,
- * and fixtures/ for what real responses look like.
- */
+// https://developers.greenhouse.io/job-board.html
+// Loose objects keep fields we don't model, so the stored raw payload is complete.
 
 export const greenhouseJobSchema = z.looseObject({
-  // TODO: id, title, absolute_url, location.name, content, first_published, updated_at
+  id: z.number(),
+  title: z.string(),
+  absolute_url: z.url(),
+  location: z.looseObject({ name: z.string() }).nullish(),
+  /** HTML that has itself been entity-escaped: "&lt;p&gt;…". Only present with ?content=true. */
+  content: z.string().default(""),
+  first_published: z.iso.datetime({ offset: true }).nullish(),
+  updated_at: z.iso.datetime({ offset: true }),
 });
 
 export const greenhouseJobsResponseSchema = z.looseObject({
-  // TODO: jobs (array of greenhouseJobSchema)
+  jobs: z.array(greenhouseJobSchema),
 });
 
 export type GreenhouseJob = z.output<typeof greenhouseJobSchema>;

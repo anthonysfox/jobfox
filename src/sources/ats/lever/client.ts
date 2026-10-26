@@ -1,34 +1,83 @@
-/* eslint-disable @typescript-eslint/no-unused-vars -- stub; delete this line once implemented */
-import type { Job } from "../../../core/job.js";
-import type { HttpClient } from "../../../lib/http.js";
-import { NotImplementedError, type AtsBoard, type AtsClient } from "../types.js";
+import type { Job, WorkplaceType } from "../../../core/job.js";
+import { htmlToText } from "../../../lib/html.js";
+import { HttpError, type HttpClient } from "../../../lib/http.js";
+import { inferWorkplaceType } from "../../../lib/normalize.js";
+import type { AtsBoard, AtsClient } from "../types.js";
+import { leverPostingSchema, leverPostingsResponseSchema, type LeverPosting } from "./schema.js";
 
-/*
- * TODO(you): Lever Postings API client.
- * Docs: https://github.com/lever/postings-api
- *
- *   List:   GET https://api.lever.co/v0/postings/{site}?mode=json
- *   Single: GET https://api.lever.co/v0/postings/{site}/{posting_id}?mode=json
- *
- * Follow the Adzuna source: schema.ts (Zod) -> client.ts (URL + http.getJson)
- * -> a toJob() mapping into the shared Job type (src/sources/adzuna/source.ts).
- * Helpers you'll want: htmlToText (src/lib/html.ts), HttpError (src/lib/http.ts).
- *
- * The spec is lever.test.ts. Run `pnpm test lever` until it's green.
- */
+// https://github.com/lever/postings-api
 
 export const LEVER_API_HOST = "api.lever.co";
 
-export function listLeverJobs(http: HttpClient, board: AtsBoard): Promise<Job[]> {
-  return Promise.reject(new NotImplementedError("listLeverJobs"));
+const WORKPLACE_TYPES: Record<string, WorkplaceType> = {
+  onsite: "ONSITE",
+  hybrid: "HYBRID",
+  remote: "REMOTE",
+};
+
+/** Lever splits a posting into an intro, titled lists (HTML), and a closing section. */
+function buildDescription(posting: LeverPosting): string {
+  const lists = posting.lists.map((list) => `${list.text.trim()}\n${htmlToText(list.content)}`);
+  return [posting.descriptionPlain, ...lists, posting.additionalPlain]
+    .map((section) => section.trim())
+    .filter(Boolean)
+    .join("\n\n");
 }
 
-export function getLeverJob(
+export function toJob(posting: LeverPosting, board: AtsBoard): Job {
+  const location = posting.categories.location ?? null;
+  const description = buildDescription(posting);
+
+  return {
+    source: "LEVER",
+    externalId: posting.id,
+    url: posting.hostedUrl,
+    applyUrl: posting.applyUrl,
+    title: posting.text,
+    // Lever doesn't return a company name.
+    companyName: board.companyName,
+    location,
+    workplaceType:
+      WORKPLACE_TYPES[posting.workplaceType ?? ""] ?? inferWorkplaceType(posting.text, location),
+    description: description || null,
+    descriptionTruncated: false,
+    salary: posting.salaryRange
+      ? {
+          min: posting.salaryRange.min,
+          max: posting.salaryRange.max,
+          currency: posting.salaryRange.currency,
+        }
+      : null,
+    postedAt: new Date(posting.createdAt),
+    raw: posting,
+  };
+}
+
+function postingsUrl(board: AtsBoard, path = ""): URL {
+  const url = new URL(`https://${LEVER_API_HOST}/v0/postings/${board.slug}${path}`);
+  url.searchParams.set("mode", "json");
+  return url;
+}
+
+export async function listLeverJobs(http: HttpClient, board: AtsBoard): Promise<Job[]> {
+  const postings = await http.getJson(postingsUrl(board), leverPostingsResponseSchema);
+  return postings.map((posting) => toJob(posting, board));
+}
+
+export async function getLeverJob(
   http: HttpClient,
   board: AtsBoard,
   postingId: string,
 ): Promise<Job | null> {
-  return Promise.reject(new NotImplementedError("getLeverJob"));
+  try {
+    return toJob(
+      await http.getJson(postingsUrl(board, `/${postingId}`), leverPostingSchema),
+      board,
+    );
+  } catch (error) {
+    if (error instanceof HttpError && error.status === 404) return null;
+    throw error;
+  }
 }
 
 export const leverClient: AtsClient = {
