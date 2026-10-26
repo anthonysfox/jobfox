@@ -1,7 +1,12 @@
 import { describe, expect, it } from "vitest";
+import userConfig from "../../jobfox.config.js";
 import { parseConfig, parseEnv } from "./config.js";
 
 describe("parseConfig", () => {
+  it("accepts the real jobfox.config.ts", () => {
+    expect(() => parseConfig(userConfig)).not.toThrow();
+  });
+
   it("fills defaults", () => {
     const config = parseConfig({
       adzuna: { searches: [{ what: "react developer" }] },
