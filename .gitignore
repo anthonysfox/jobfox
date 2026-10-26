@@ -1,0 +1,5 @@
+node_modules/
+.env
+coverage/
+src/generated/
+.DS_Store
