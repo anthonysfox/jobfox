@@ -15,12 +15,12 @@ A personal job-search pipeline. It finds postings, filters them against hard rul
                                                 blocklist)
 ```
 
-1. **Sources** each implement `JobSource` and return the shared `Job` type ([src/core](src/core)).
+1. **Sources** each implement `JobSource` and return the shared `Job` type ([packages/pipeline/src/core](packages/pipeline/src/core)).
    - **Adzuna**: broad discovery. Descriptions are truncated snippets.
    - **Hacker News**: the latest "Ask HN: Who is hiring?" thread via the Algolia API, parsed heuristically.
    - **Company boards**: any company whose Greenhouse/Lever/Ashby board was discovered earlier is polled directly.
 2. **Dedupe** groups postings by a normalized `company | title | location` key.
-3. **Filters** ([jobfox.config.ts](jobfox.config.ts)) return a list of reasons rather than a boolean. Rejected jobs are stored with their reasons.
+3. **Filters** ([jobfox.config.ts](packages/pipeline/jobfox.config.ts)) return a list of reasons rather than a boolean. Rejected jobs are stored with their reasons.
 4. **Enrichment** looks for ATS links in jobs that pass, fetches the full posting from the ATS's public API, and records the company's board so later runs poll it.
 5. **Persistence** upserts everything idempotently; running twice produces no duplicates.
 
@@ -48,7 +48,7 @@ pnpm db:migrate
 pnpm discover
 ```
 
-Without Adzuna keys, `discover` runs with HN and known boards only. Scoring needs `ANTHROPIC_API_KEY` in `.env` and a resume at `data/resume.md` (gitignored).
+Without Adzuna keys, `discover` runs with HN and known boards only. Scoring needs `ANTHROPIC_API_KEY` in `.env` and a resume at `packages/pipeline/data/resume.md` (gitignored).
 
 | Script           | What it does                                |
 | ---------------- | ------------------------------------------- |

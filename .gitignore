@@ -1,7 +1,7 @@
 node_modules/
 .env
 coverage/
-src/generated/
+**/src/generated/
 .DS_Store
 
 # Personal data (resume, labels exports)
