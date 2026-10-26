@@ -1,4 +1,4 @@
-import type { WorkplaceType } from "../core/job.js";
+import type { WorkplaceType } from "../core/job.ts";
 
 /**
  * Lowercase, strip accents and punctuation, collapse whitespace.

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { canonicalize } from "./dedupe.js";
-import { makeJob } from "../test/make-job.js";
-import { formatSummary, type RunSummary } from "./summary.js";
+import { canonicalize } from "./dedupe.ts";
+import { makeJob } from "../test/make-job.ts";
+import { formatSummary, type RunSummary } from "./summary.ts";
 
 const summary: RunSummary = {
   startedAt: new Date("2026-10-26T16:00:00Z"),

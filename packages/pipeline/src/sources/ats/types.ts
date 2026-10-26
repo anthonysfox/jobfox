@@ -1,5 +1,5 @@
-import type { Job } from "../../core/job.js";
-import type { HttpClient } from "../../lib/http.js";
+import type { Job } from "../../core/job.ts";
+import type { HttpClient } from "../../lib/http.ts";
 
 /** A company's public job board on an ATS. */
 export interface AtsBoard {

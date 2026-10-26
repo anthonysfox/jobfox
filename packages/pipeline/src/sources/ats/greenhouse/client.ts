@@ -1,9 +1,9 @@
-import type { Job } from "../../../core/job.js";
-import { decodeEntities, htmlToText } from "../../../lib/html.js";
-import { HttpError, type HttpClient } from "../../../lib/http.js";
-import { inferWorkplaceType } from "../../../lib/normalize.js";
-import type { AtsBoard, AtsClient } from "../types.js";
-import { greenhouseJobSchema, greenhouseJobsResponseSchema, type GreenhouseJob } from "./schema.js";
+import type { Job } from "../../../core/job.ts";
+import { decodeEntities, htmlToText } from "../../../lib/html.ts";
+import { HttpError, type HttpClient } from "../../../lib/http.ts";
+import { inferWorkplaceType } from "../../../lib/normalize.ts";
+import type { AtsBoard, AtsClient } from "../types.ts";
+import { greenhouseJobSchema, greenhouseJobsResponseSchema, type GreenhouseJob } from "./schema.ts";
 
 // https://developers.greenhouse.io/job-board.html
 

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { createFakeHttp } from "../../../test/fake-http.js";
+import { createFakeHttp } from "../../../test/fake-http.ts";
 import postings from "./fixtures/postings.json" with { type: "json" };
-import { getLeverJob, listLeverJobs } from "./client.js";
+import { getLeverJob, listLeverJobs } from "./client.ts";
 
 const board = { slug: "fabrikam", companyName: "Fabrikam" };
 const ID = "5ac21346-8e0c-4494-8e7a-3eb92ff77902";

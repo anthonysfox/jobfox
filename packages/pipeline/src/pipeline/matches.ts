@@ -1,6 +1,6 @@
-import type { FilterConfig } from "../core/config.js";
-import type { PrismaClient } from "../lib/db.js";
-import { rejectReasons } from "./filters.js";
+import type { FilterConfig } from "../core/config.ts";
+import type { PrismaClient } from "../lib/db.ts";
+import { rejectReasons } from "./filters.ts";
 
 /** Jobs not seen within this window have most likely been filled. */
 export const STALE_AFTER_DAYS = 3;

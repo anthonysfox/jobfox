@@ -1,8 +1,8 @@
-import userConfig from "../../jobfox.config.js";
-import { parseConfig } from "../core/config.js";
-import { createDb } from "../lib/db.js";
-import { findCurrentMatches, STALE_AFTER_DAYS, type MatchedJob } from "../pipeline/matches.js";
-import { currentScore, loadScoringContext } from "../scoring/context.js";
+import userConfig from "../../jobfox.config.ts";
+import { parseConfig } from "../core/config.ts";
+import { createDb } from "../lib/db.ts";
+import { findCurrentMatches, STALE_AFTER_DAYS, type MatchedJob } from "../pipeline/matches.ts";
+import { currentScore, loadScoringContext } from "../scoring/context.ts";
 
 /*
  * List jobs worth applying to, best fit first. Weak fits are counted but not

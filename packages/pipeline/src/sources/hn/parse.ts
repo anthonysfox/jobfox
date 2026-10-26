@@ -1,7 +1,7 @@
-import { UNKNOWN_TITLE, type Job } from "../../core/job.js";
-import { extractUrls, htmlToText } from "../../lib/html.js";
-import { inferWorkplaceType } from "../../lib/normalize.js";
-import type { HnComment } from "./schema.js";
+import { UNKNOWN_TITLE, type Job } from "../../core/job.ts";
+import { extractUrls, htmlToText } from "../../lib/html.ts";
+import { inferWorkplaceType } from "../../lib/normalize.ts";
+import type { HnComment } from "./schema.ts";
 
 /*
  * Who's Hiring posts loosely follow "Company | Role | Location | ..." on the

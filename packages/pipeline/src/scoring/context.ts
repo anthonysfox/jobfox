@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
-import type { JobfoxConfig } from "../core/config.js";
-import { resumeHash } from "./embed.js";
-import { buildSystemPrompt } from "./prompt.js";
+import type { JobfoxConfig } from "../core/config.ts";
+import { resumeHash } from "./embed.ts";
+import { buildSystemPrompt } from "./prompt.ts";
 
 export const RESUME_PATH = "data/resume.md";
 

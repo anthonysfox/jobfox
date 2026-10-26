@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import type { FilterConfig } from "../core/config.js";
-import { UNKNOWN_TITLE } from "../core/job.js";
-import { rejectReasons } from "./filters.js";
+import type { FilterConfig } from "../core/config.ts";
+import { UNKNOWN_TITLE } from "../core/job.ts";
+import { rejectReasons } from "./filters.ts";
 
 const filters: FilterConfig = {
   titleKeywords: ["full stack", "frontend", "software engineer", "solutions engineer"],

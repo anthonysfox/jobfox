@@ -1,9 +1,9 @@
-import type { Job, WorkplaceType } from "../../../core/job.js";
-import { htmlToText } from "../../../lib/html.js";
-import { HttpError, type HttpClient } from "../../../lib/http.js";
-import { inferWorkplaceType } from "../../../lib/normalize.js";
-import type { AtsBoard, AtsClient } from "../types.js";
-import { leverPostingSchema, leverPostingsResponseSchema, type LeverPosting } from "./schema.js";
+import type { Job, WorkplaceType } from "../../../core/job.ts";
+import { htmlToText } from "../../../lib/html.ts";
+import { HttpError, type HttpClient } from "../../../lib/http.ts";
+import { inferWorkplaceType } from "../../../lib/normalize.ts";
+import type { AtsBoard, AtsClient } from "../types.ts";
+import { leverPostingSchema, leverPostingsResponseSchema, type LeverPosting } from "./schema.ts";
 
 // https://github.com/lever/postings-api
 

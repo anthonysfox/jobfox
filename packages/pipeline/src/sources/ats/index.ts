@@ -1,10 +1,10 @@
-import type { Ats } from "../../core/job.js";
-import type { JobSource } from "../../core/source.js";
-import type { HttpClient } from "../../lib/http.js";
-import { ashbyClient } from "./ashby/client.js";
-import { greenhouseClient } from "./greenhouse/client.js";
-import { leverClient } from "./lever/client.js";
-import type { AtsBoard, AtsClient } from "./types.js";
+import type { Ats } from "../../core/job.ts";
+import type { JobSource } from "../../core/source.ts";
+import type { HttpClient } from "../../lib/http.ts";
+import { ashbyClient } from "./ashby/client.ts";
+import { greenhouseClient } from "./greenhouse/client.ts";
+import { leverClient } from "./lever/client.ts";
+import type { AtsBoard, AtsClient } from "./types.ts";
 
 export const atsClients: Record<Ats, AtsClient> = {
   GREENHOUSE: greenhouseClient,

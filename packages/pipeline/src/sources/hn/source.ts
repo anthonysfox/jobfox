@@ -1,7 +1,7 @@
-import type { JobSource } from "../../core/source.js";
-import type { HttpClient } from "../../lib/http.js";
-import { fetchThread, findLatestHiringThreadId } from "./client.js";
-import { parseHiringComment } from "./parse.js";
+import type { JobSource } from "../../core/source.ts";
+import type { HttpClient } from "../../lib/http.ts";
+import { fetchThread, findLatestHiringThreadId } from "./client.ts";
+import { parseHiringComment } from "./parse.ts";
 
 export function createHnSource({ http }: { http: HttpClient }): JobSource {
   return {

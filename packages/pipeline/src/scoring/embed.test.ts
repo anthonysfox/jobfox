@@ -5,7 +5,7 @@ import {
   jobEmbeddingText,
   resumeHash,
   toVectorLiteral,
-} from "./embed.js";
+} from "./embed.ts";
 
 describe("jobEmbeddingText", () => {
   it("puts the title first and skips missing fields", () => {

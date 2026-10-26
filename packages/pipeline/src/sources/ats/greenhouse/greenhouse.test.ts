@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { createFakeHttp } from "../../../test/fake-http.js";
+import { createFakeHttp } from "../../../test/fake-http.ts";
 import jobs from "./fixtures/jobs.json" with { type: "json" };
-import { getGreenhouseJob, listGreenhouseJobs } from "./client.js";
+import { getGreenhouseJob, listGreenhouseJobs } from "./client.ts";
 
 const board = { slug: "northwind", companyName: "Northwind" };
 const LIST_URL = "https://boards-api.greenhouse.io/v1/boards/northwind/jobs?content=true";

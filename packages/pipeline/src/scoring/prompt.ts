@@ -1,4 +1,4 @@
-import type { Source, WorkplaceType } from "../core/job.js";
+import type { Source, WorkplaceType } from "../core/job.ts";
 
 /*
  * The system prompt holds everything that's the same for every job (rubric,

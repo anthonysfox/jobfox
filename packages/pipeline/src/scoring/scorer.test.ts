@@ -1,14 +1,14 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { describe, expect, it } from "vitest";
-import { parseConfig } from "../core/config.js";
-import { addUsage, emptyUsage, estimateCost } from "./cost.js";
+import { parseConfig } from "../core/config.ts";
+import { addUsage, emptyUsage, estimateCost } from "./cost.ts";
 import {
   buildJobMessage,
   buildSystemPrompt,
   MAX_DESCRIPTION_CHARS,
   type ScorableJob,
-} from "./prompt.js";
-import { createScorer, toVerdict } from "./scorer.js";
+} from "./prompt.ts";
+import { createScorer, toVerdict } from "./scorer.ts";
 
 const config = parseConfig({ adzuna: { searches: [{ what: "x" }] }, filters: {} }).scoring;
 

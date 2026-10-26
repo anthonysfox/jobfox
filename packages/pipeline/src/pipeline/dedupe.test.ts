@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { makeJob } from "../test/make-job.js";
-import { canonicalize, groupJobs, mergeCanonical } from "./dedupe.js";
+import { makeJob } from "../test/make-job.ts";
+import { canonicalize, groupJobs, mergeCanonical } from "./dedupe.ts";
 
 describe("groupJobs", () => {
   it("merges the same job from different sources", () => {

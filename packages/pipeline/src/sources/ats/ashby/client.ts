@@ -1,8 +1,8 @@
-import type { Job, WorkplaceType } from "../../../core/job.js";
-import type { HttpClient } from "../../../lib/http.js";
-import { inferWorkplaceType } from "../../../lib/normalize.js";
-import type { AtsBoard, AtsClient } from "../types.js";
-import { ashbyJobBoardResponseSchema, type AshbyJob } from "./schema.js";
+import type { Job, WorkplaceType } from "../../../core/job.ts";
+import type { HttpClient } from "../../../lib/http.ts";
+import { inferWorkplaceType } from "../../../lib/normalize.ts";
+import type { AtsBoard, AtsClient } from "../types.ts";
+import { ashbyJobBoardResponseSchema, type AshbyJob } from "./schema.ts";
 
 // https://developers.ashbyhq.com/docs/public-job-posting-api
 

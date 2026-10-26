@@ -4,8 +4,8 @@ import {
   type Salary,
   type Source,
   type WorkplaceType,
-} from "../core/job.js";
-import { dedupeKey } from "../lib/normalize.js";
+} from "../core/job.ts";
+import { dedupeKey } from "../lib/normalize.ts";
 
 /** Postings from one run that describe the same real-world job. */
 export interface JobGroup {

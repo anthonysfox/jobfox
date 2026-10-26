@@ -1,4 +1,4 @@
-import type { Job } from "../core/job.js";
+import type { Job } from "../core/job.ts";
 
 let counter = 0;
 

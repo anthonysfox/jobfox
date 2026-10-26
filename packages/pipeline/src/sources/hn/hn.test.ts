@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { UNKNOWN_TITLE } from "../../core/job.js";
-import { createFakeHttp } from "../../test/fake-http.js";
+import { UNKNOWN_TITLE } from "../../core/job.ts";
+import { createFakeHttp } from "../../test/fake-http.ts";
 import search from "./fixtures/search.json" with { type: "json" };
 import thread from "./fixtures/thread.json" with { type: "json" };
-import { parseHeader } from "./parse.js";
-import { createHnSource } from "./source.js";
+import { parseHeader } from "./parse.ts";
+import { createHnSource } from "./source.ts";
 
 const routes = [
   { match: (u: URL) => u.pathname === "/api/v1/search_by_date", body: search },

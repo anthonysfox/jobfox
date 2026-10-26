@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { detectAts } from "./detect.js";
+import { detectAts } from "./detect.ts";
 
 describe("detectAts", () => {
   it.each([

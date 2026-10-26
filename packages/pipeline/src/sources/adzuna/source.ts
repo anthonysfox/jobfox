@@ -1,11 +1,11 @@
-import type { JobfoxConfig } from "../../core/config.js";
-import type { Job } from "../../core/job.js";
-import type { JobSource } from "../../core/source.js";
-import { htmlToText } from "../../lib/html.js";
-import type { HttpClient } from "../../lib/http.js";
-import { containsPhrase, inferWorkplaceType } from "../../lib/normalize.js";
-import { searchAdzuna, type AdzunaCredentials } from "./client.js";
-import type { AdzunaJob } from "./schema.js";
+import type { JobfoxConfig } from "../../core/config.ts";
+import type { Job } from "../../core/job.ts";
+import type { JobSource } from "../../core/source.ts";
+import { htmlToText } from "../../lib/html.ts";
+import type { HttpClient } from "../../lib/http.ts";
+import { containsPhrase, inferWorkplaceType } from "../../lib/normalize.ts";
+import { searchAdzuna, type AdzunaCredentials } from "./client.ts";
+import type { AdzunaJob } from "./schema.ts";
 
 const CURRENCY_BY_COUNTRY: Record<string, string> = { us: "USD", gb: "GBP", ca: "CAD" };
 

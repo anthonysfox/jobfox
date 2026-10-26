@@ -1,8 +1,8 @@
-import type { Ats, Source } from "../core/job.js";
-import { Prisma, type Company, type PrismaClient } from "../lib/db.js";
-import { normalizeCompany } from "../lib/normalize.js";
-import { clearEmbedding } from "../scoring/store.js";
-import { canonicalize, mergeCanonical, type CanonicalJob, type JobGroup } from "./dedupe.js";
+import type { Ats, Source } from "../core/job.ts";
+import { Prisma, type Company, type PrismaClient } from "../lib/db.ts";
+import { normalizeCompany } from "../lib/normalize.ts";
+import { clearEmbedding } from "../scoring/store.ts";
+import { canonicalize, mergeCanonical, type CanonicalJob, type JobGroup } from "./dedupe.ts";
 
 type Tx = Prisma.TransactionClient;
 

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
-import { createHttpClient, HttpError, redactUrl } from "./http.js";
+import { createHttpClient, HttpError, redactUrl } from "./http.ts";
 
 function jsonResponse(body: unknown, init: ResponseInit = {}): Response {
   return new Response(JSON.stringify(body), {

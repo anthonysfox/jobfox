@@ -1,5 +1,5 @@
-import type { Ats } from "../core/job.js";
-import type { CanonicalJob } from "./dedupe.js";
+import type { Ats } from "../core/job.ts";
+import type { CanonicalJob } from "./dedupe.ts";
 
 export interface SourceReport {
   name: string;

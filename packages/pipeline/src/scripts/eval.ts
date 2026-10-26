@@ -1,11 +1,11 @@
 import Anthropic from "@anthropic-ai/sdk";
-import userConfig from "../../jobfox.config.js";
-import { parseConfig, parseEnv } from "../core/config.js";
-import { createDb } from "../lib/db.js";
-import { currentScore, loadScoringContext } from "../scoring/context.js";
-import { createLocalEmbedder } from "../scoring/embed.js";
-import { computeMetrics, VERDICTS, type EvalRow } from "../scoring/metrics.js";
-import { scoreJobs } from "../scoring/run.js";
+import userConfig from "../../jobfox.config.ts";
+import { parseConfig, parseEnv } from "../core/config.ts";
+import { createDb } from "../lib/db.ts";
+import { currentScore, loadScoringContext } from "../scoring/context.ts";
+import { createLocalEmbedder } from "../scoring/embed.ts";
+import { computeMetrics, VERDICTS, type EvalRow } from "../scoring/metrics.ts";
+import { scoreJobs } from "../scoring/run.ts";
 
 /*
  * Measure the scorer against my hand labels. Scores any labeled job that

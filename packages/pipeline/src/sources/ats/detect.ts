@@ -1,4 +1,4 @@
-import type { Ats } from "../../core/job.js";
+import type { Ats } from "../../core/job.ts";
 
 export interface AtsRef {
   ats: Ats;

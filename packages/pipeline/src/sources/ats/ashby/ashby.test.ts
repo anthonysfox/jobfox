@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { createFakeHttp } from "../../../test/fake-http.js";
+import { createFakeHttp } from "../../../test/fake-http.ts";
 import jobBoard from "./fixtures/job-board.json" with { type: "json" };
-import { getAshbyJob, listAshbyJobs } from "./client.js";
+import { getAshbyJob, listAshbyJobs } from "./client.ts";
 
 const board = { slug: "contoso", companyName: "Contoso" };
 const ID = "2efae53b-817c-43e7-9da3-72694813f608";

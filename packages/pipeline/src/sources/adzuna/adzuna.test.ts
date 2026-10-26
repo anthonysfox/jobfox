@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { parseConfig } from "../../core/config.js";
-import { createFakeHttp } from "../../test/fake-http.js";
+import { parseConfig } from "../../core/config.ts";
+import { createFakeHttp } from "../../test/fake-http.ts";
 import page1 from "./fixtures/search-page-1.json" with { type: "json" };
-import { buildSearchUrl } from "./client.js";
-import { createAdzunaSource, formatLocation } from "./source.js";
+import { buildSearchUrl } from "./client.ts";
+import { createAdzunaSource, formatLocation } from "./source.ts";
 
 const credentials = { appId: "test-id", appKey: "test-key" };
 

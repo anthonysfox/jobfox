@@ -1,12 +1,12 @@
-import type { FilterConfig } from "../core/config.js";
-import { UNKNOWN_TITLE } from "../core/job.js";
+import type { FilterConfig } from "../core/config.ts";
+import { UNKNOWN_TITLE } from "../core/job.ts";
 import {
   containsPhrase,
   normalizeCompany,
   normalizeTitle,
   toPhraseText,
-} from "../lib/normalize.js";
-import type { CanonicalJob } from "./dedupe.js";
+} from "../lib/normalize.ts";
+import type { CanonicalJob } from "./dedupe.ts";
 
 type FilterableJob = Pick<CanonicalJob, "companyName" | "title" | "location" | "workplaceType">;
 

@@ -6,7 +6,7 @@ import {
   normalizeCompany,
   normalizeLocation,
   normalizeTitle,
-} from "./normalize.js";
+} from "./normalize.ts";
 
 describe("normalizeCompany", () => {
   it.each([

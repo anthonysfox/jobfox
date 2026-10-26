@@ -1,10 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
-import type { Ats } from "../core/job.js";
-import { NotImplementedError, type AtsClient } from "../sources/ats/types.js";
-import { createFakeHttp } from "../test/fake-http.js";
-import { makeJob } from "../test/make-job.js";
-import type { JobGroup } from "./dedupe.js";
-import { candidateUrls, enrichGroup } from "./enrich.js";
+import type { Ats } from "../core/job.ts";
+import { NotImplementedError, type AtsClient } from "../sources/ats/types.ts";
+import { createFakeHttp } from "../test/fake-http.ts";
+import { makeJob } from "../test/make-job.ts";
+import type { JobGroup } from "./dedupe.ts";
+import { candidateUrls, enrichGroup } from "./enrich.ts";
 
 const GH_URL = "https://boards.greenhouse.io/acme/jobs/123";
 

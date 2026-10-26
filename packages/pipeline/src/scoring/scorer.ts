@@ -1,8 +1,8 @@
 import type Anthropic from "@anthropic-ai/sdk";
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import { z } from "zod";
-import type { JobfoxConfig } from "../core/config.js";
-import { buildJobMessage, type ScorableJob } from "./prompt.js";
+import type { JobfoxConfig } from "../core/config.ts";
+import { buildJobMessage, type ScorableJob } from "./prompt.ts";
 
 export const fitSchema = z.object({
   fitScore: z.number().int(),

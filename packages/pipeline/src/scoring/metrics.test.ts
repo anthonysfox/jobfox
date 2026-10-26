@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { computeMetrics, ranks, spearman, spreadEvenly, type EvalRow } from "./metrics.js";
+import { computeMetrics, ranks, spearman, spreadEvenly, type EvalRow } from "./metrics.ts";
 
 describe("ranks", () => {
   it("averages ties", () => {

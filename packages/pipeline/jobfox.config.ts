@@ -1,4 +1,4 @@
-import { defineConfig } from "./src/core/config.js";
+import { defineConfig } from "./src/core/config.ts";
 
 const roles = [
   "full stack engineer",

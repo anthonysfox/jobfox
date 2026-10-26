@@ -1,4 +1,4 @@
-import type { Verdict } from "./scorer.js";
+import type { Verdict } from "./scorer.ts";
 
 export const VERDICTS: Verdict[] = ["STRONG", "POSSIBLE", "WEAK"];
 const ORDINAL: Record<Verdict, number> = { STRONG: 2, POSSIBLE: 1, WEAK: 0 };

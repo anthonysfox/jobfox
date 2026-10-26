@@ -1,9 +1,9 @@
-import type { Ats } from "../core/job.js";
-import { extractUrls } from "../lib/html.js";
-import type { HttpClient } from "../lib/http.js";
-import { detectAts, type AtsRef } from "../sources/ats/detect.js";
-import { NotImplementedError, type AtsClient } from "../sources/ats/types.js";
-import { isAtsSource, type JobGroup } from "./dedupe.js";
+import type { Ats } from "../core/job.ts";
+import { extractUrls } from "../lib/html.ts";
+import type { HttpClient } from "../lib/http.ts";
+import { detectAts, type AtsRef } from "../sources/ats/detect.ts";
+import { NotImplementedError, type AtsClient } from "../sources/ats/types.ts";
+import { isAtsSource, type JobGroup } from "./dedupe.ts";
 
 /*
  * Find a Greenhouse/Lever/Ashby link for a group, fetch the full posting, and

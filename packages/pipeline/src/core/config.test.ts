@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import userConfig from "../../jobfox.config.js";
-import { parseConfig, parseEnv } from "./config.js";
+import userConfig from "../../jobfox.config.ts";
+import { parseConfig, parseEnv } from "./config.ts";
 
 describe("parseConfig", () => {
   it("accepts the real jobfox.config.ts", () => {

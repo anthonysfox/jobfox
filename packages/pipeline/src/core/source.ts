@@ -1,4 +1,4 @@
-import type { Job } from "./job.js";
+import type { Job } from "./job.ts";
 
 /**
  * Every job source implements this. Dependencies (HTTP client, credentials,

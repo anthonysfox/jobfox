@@ -1,13 +1,13 @@
 import Anthropic from "@anthropic-ai/sdk";
-import type { JobfoxConfig } from "../core/config.js";
-import type { PrismaClient } from "../lib/db.js";
-import type { MatchedJob } from "../pipeline/matches.js";
-import type { ScoringContext } from "./context.js";
-import { currentScore } from "./context.js";
-import { addUsage, emptyUsage, estimateCost, type UsageTotals } from "./cost.js";
-import { jobEmbeddingText, type Embedder } from "./embed.js";
-import { createScorer } from "./scorer.js";
-import { jobsMissingEmbeddings, rankBySimilarity, saveEmbedding } from "./store.js";
+import type { JobfoxConfig } from "../core/config.ts";
+import type { PrismaClient } from "../lib/db.ts";
+import type { MatchedJob } from "../pipeline/matches.ts";
+import type { ScoringContext } from "./context.ts";
+import { currentScore } from "./context.ts";
+import { addUsage, emptyUsage, estimateCost, type UsageTotals } from "./cost.ts";
+import { jobEmbeddingText, type Embedder } from "./embed.ts";
+import { createScorer } from "./scorer.ts";
+import { jobsMissingEmbeddings, rankBySimilarity, saveEmbedding } from "./store.ts";
 
 export interface ScoreRunResult {
   embedded: number;

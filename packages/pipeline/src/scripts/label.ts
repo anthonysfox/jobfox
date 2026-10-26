@@ -1,14 +1,14 @@
 import { stdin, stdout } from "node:process";
 import { createInterface } from "node:readline/promises";
-import userConfig from "../../jobfox.config.js";
-import { parseConfig } from "../core/config.js";
-import { createDb } from "../lib/db.js";
-import { findCurrentMatches, type MatchedJob } from "../pipeline/matches.js";
-import { loadScoringContext } from "../scoring/context.js";
-import { createLocalEmbedder } from "../scoring/embed.js";
-import { spreadEvenly } from "../scoring/metrics.js";
-import { embedMissing } from "../scoring/run.js";
-import { rankBySimilarity } from "../scoring/store.js";
+import userConfig from "../../jobfox.config.ts";
+import { parseConfig } from "../core/config.ts";
+import { createDb } from "../lib/db.ts";
+import { findCurrentMatches, type MatchedJob } from "../pipeline/matches.ts";
+import { loadScoringContext } from "../scoring/context.ts";
+import { createLocalEmbedder } from "../scoring/embed.ts";
+import { spreadEvenly } from "../scoring/metrics.ts";
+import { embedMissing } from "../scoring/run.ts";
+import { rankBySimilarity } from "../scoring/store.ts";
 
 /*
  * Hand-label jobs for the eval. Claude's score is never shown, so it can't

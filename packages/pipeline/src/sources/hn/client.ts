@@ -1,5 +1,5 @@
-import type { HttpClient } from "../../lib/http.js";
-import { storySearchSchema, threadSchema, type HnThread } from "./schema.js";
+import type { HttpClient } from "../../lib/http.ts";
+import { storySearchSchema, threadSchema, type HnThread } from "./schema.ts";
 
 export const HN_ALGOLIA_HOST = "hn.algolia.com";
 

@@ -1,5 +1,5 @@
-import type { HttpClient } from "../../lib/http.js";
-import { adzunaSearchResponseSchema, type AdzunaSearchResponse } from "./schema.js";
+import type { HttpClient } from "../../lib/http.ts";
+import { adzunaSearchResponseSchema, type AdzunaSearchResponse } from "./schema.ts";
 
 export const ADZUNA_HOST = "api.adzuna.com";
 

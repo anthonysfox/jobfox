@@ -1,5 +1,5 @@
 import type { z } from "zod";
-import { HttpError, type HttpClient } from "../lib/http.js";
+import { HttpError, type HttpClient } from "../lib/http.ts";
 
 /**
  * In-memory HttpClient for source tests. Routes map a URL predicate to a JSON

@@ -1,5 +1,5 @@
-import type { PrismaClient } from "../lib/db.js";
-import { toVectorLiteral } from "./embed.js";
+import type { PrismaClient } from "../lib/db.ts";
+import { toVectorLiteral } from "./embed.ts";
 
 // Prisma can't read or write Unsupported("vector") columns, so these use raw
 // SQL. Every value goes through a tagged template, which Prisma parameterizes.

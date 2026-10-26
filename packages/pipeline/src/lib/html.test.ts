@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { decodeEntities, extractUrls, htmlToText } from "./html.js";
+import { decodeEntities, extractUrls, htmlToText } from "./html.ts";
 
 describe("decodeEntities", () => {
   it("decodes named, decimal, and hex entities", () => {
