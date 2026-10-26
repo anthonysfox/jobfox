@@ -6,6 +6,8 @@
 
 export type Source = "ADZUNA" | "HN_HIRING" | "GREENHOUSE" | "LEVER" | "ASHBY";
 
+export type Ats = Extract<Source, "GREENHOUSE" | "LEVER" | "ASHBY">;
+
 export type WorkplaceType = "ONSITE" | "HYBRID" | "REMOTE" | "UNKNOWN";
 
 export interface Salary {

@@ -1,0 +1,38 @@
+{
+  "jobs": [
+    {
+      "absolute_url": "https://job-boards.greenhouse.io/northwind/jobs/4012345",
+      "data_compliance": [{ "type": "gdpr", "requires_consent": false, "requires_processing_consent": false, "requires_retention_consent": false, "retention_period": null, "demographic_data_consent_applies": false }],
+      "internal_job_id": 3901234,
+      "location": { "name": "New York, NY" },
+      "metadata": null,
+      "id": 4012345,
+      "updated_at": "2026-10-20T10:15:00-04:00",
+      "requisition_id": "ENG-112",
+      "title": "Full-Stack Engineer",
+      "company_name": "Northwind",
+      "first_published": "2026-10-01T09:00:00-04:00",
+      "language": "en",
+      "content": "&lt;h2&gt;&lt;strong&gt;About Northwind&lt;/strong&gt;&lt;/h2&gt;\n&lt;p&gt;We build tools for teachers. This role is hybrid, 3 days a week in NYC.&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;TypeScript &amp;amp; React&lt;/li&gt;\n&lt;li&gt;Postgres&lt;/li&gt;\n&lt;/ul&gt;",
+      "departments": [{ "id": 4001, "name": "Engineering", "child_ids": [], "parent_id": null }],
+      "offices": [{ "id": 5001, "name": "New York", "location": "New York, NY", "child_ids": [], "parent_id": null }]
+    },
+    {
+      "absolute_url": "https://job-boards.greenhouse.io/northwind/jobs/4012399",
+      "internal_job_id": 3901299,
+      "location": { "name": "Remote - US" },
+      "metadata": null,
+      "id": 4012399,
+      "updated_at": "2026-10-22T11:00:00-04:00",
+      "requisition_id": "ENG-118",
+      "title": "Frontend Engineer",
+      "company_name": "Northwind",
+      "first_published": null,
+      "language": "en",
+      "content": "&lt;p&gt;Fully remote within the US.&lt;/p&gt;",
+      "departments": [],
+      "offices": []
+    }
+  ],
+  "meta": { "total": 2 }
+}

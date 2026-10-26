@@ -1,0 +1,81 @@
+{
+  "apiVersion": "1",
+  "jobs": [
+    {
+      "id": "2efae53b-817c-43e7-9da3-72694813f608",
+      "title": "Product Engineer",
+      "department": "Engineering",
+      "team": "Product",
+      "employmentType": "FullTime",
+      "location": "New York",
+      "secondaryLocations": [
+        {
+          "location": "Jersey City",
+          "address": { "postalAddress": { "addressLocality": "Jersey City", "addressRegion": "NJ", "addressCountry": "USA" } }
+        }
+      ],
+      "publishedAt": "2026-10-15T14:00:00.000+00:00",
+      "isListed": true,
+      "isRemote": false,
+      "workplaceType": "Hybrid",
+      "address": { "postalAddress": { "addressLocality": "New York", "addressRegion": "NY", "addressCountry": "USA" } },
+      "jobUrl": "https://jobs.ashbyhq.com/contoso/2efae53b-817c-43e7-9da3-72694813f608",
+      "applyUrl": "https://jobs.ashbyhq.com/contoso/2efae53b-817c-43e7-9da3-72694813f608/application",
+      "descriptionHtml": "<p>Contoso builds logistics software.</p><ul><li>TypeScript</li></ul>",
+      "descriptionPlain": "Contoso builds logistics software.\n\n- TypeScript",
+      "shouldDisplayCompensationOnJobPostings": true,
+      "compensation": {
+        "compensationTierSummary": "$140K – $180K • Offers Equity",
+        "scrapeableCompensationSalarySummary": "$140K - $180K",
+        "compensationTiers": [],
+        "summaryComponents": [
+          { "minValue": 140000, "maxValue": 180000, "currencyCode": "USD", "interval": "1 YEAR", "compensationType": "Salary" },
+          { "compensationType": "EquityPercentage", "minValue": null, "maxValue": null, "interval": "1 YEAR" }
+        ]
+      }
+    },
+    {
+      "id": "7c8d9e0f-1a2b-4c3d-8e4f-5a6b7c8d9e0f",
+      "title": "Solutions Engineer",
+      "department": "Customer",
+      "team": "Solutions",
+      "employmentType": "FullTime",
+      "location": "Remote - US",
+      "secondaryLocations": [],
+      "publishedAt": "2026-10-18T14:00:00.000+00:00",
+      "isListed": true,
+      "isRemote": true,
+      "workplaceType": "Remote",
+      "jobUrl": "https://jobs.ashbyhq.com/contoso/7c8d9e0f-1a2b-4c3d-8e4f-5a6b7c8d9e0f",
+      "applyUrl": "https://jobs.ashbyhq.com/contoso/7c8d9e0f-1a2b-4c3d-8e4f-5a6b7c8d9e0f/application",
+      "descriptionHtml": "<p>Work with customers.</p>",
+      "descriptionPlain": "Work with customers.",
+      "shouldDisplayCompensationOnJobPostings": false,
+      "compensation": {
+        "compensationTierSummary": null,
+        "scrapeableCompensationSalarySummary": null,
+        "compensationTiers": [],
+        "summaryComponents": []
+      }
+    },
+    {
+      "id": "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
+      "title": "Internal Transfer Only",
+      "department": "Engineering",
+      "team": "Product",
+      "employmentType": "FullTime",
+      "location": "New York",
+      "secondaryLocations": [],
+      "publishedAt": "2026-10-10T14:00:00.000+00:00",
+      "isListed": false,
+      "isRemote": false,
+      "workplaceType": "OnSite",
+      "jobUrl": "https://jobs.ashbyhq.com/contoso/aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
+      "applyUrl": "https://jobs.ashbyhq.com/contoso/aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee/application",
+      "descriptionHtml": "<p>Not public.</p>",
+      "descriptionPlain": "Not public.",
+      "shouldDisplayCompensationOnJobPostings": false,
+      "compensation": { "compensationTierSummary": null, "scrapeableCompensationSalarySummary": null, "compensationTiers": [], "summaryComponents": [] }
+    }
+  ]
+}
