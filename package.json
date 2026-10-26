@@ -10,6 +10,7 @@
     "score": "pnpm --filter @jobfox/pipeline score",
     "label": "pnpm --filter @jobfox/pipeline label",
     "eval": "pnpm --filter @jobfox/pipeline eval",
+    "web": "pnpm --filter @jobfox/web dev",
     "test": "pnpm -r test",
     "typecheck": "pnpm -r typecheck",
     "lint": "eslint .",

@@ -4,6 +4,10 @@
   "private": true,
   "type": "module",
   "description": "Job discovery, filtering, and fit scoring.",
+  "exports": {
+    "./config": "./jobfox.config.ts",
+    "./*": "./src/*.ts"
+  },
   "scripts": {
     "discover": "tsx --env-file=../../.env src/scripts/discover.ts",
     "matches": "tsx --env-file=../../.env src/scripts/matches.ts",
