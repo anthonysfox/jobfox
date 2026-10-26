@@ -3,3 +3,6 @@ node_modules/
 coverage/
 src/generated/
 .DS_Store
+
+# Personal data (resume, labels exports)
+data/

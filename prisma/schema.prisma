@@ -50,14 +50,14 @@ model Company {
 
 /// One row per real-world job, after dedupe across sources.
 model Job {
-  id                String        @id @default(cuid())
+  id                String                      @id @default(cuid())
   /// normalized company | title | location
-  dedupeKey         String        @unique
+  dedupeKey         String                      @unique
   companyId         String
-  company           Company       @relation(fields: [companyId], references: [id])
+  company           Company                     @relation(fields: [companyId], references: [id])
   title             String
   location          String?
-  workplaceType     WorkplaceType @default(UNKNOWN)
+  workplaceType     WorkplaceType               @default(UNKNOWN)
   /// Best available description (ATS > HN > Adzuna).
   description       String?
   descriptionSource Source?
@@ -69,9 +69,13 @@ model Job {
   postedAt          DateTime?
   /// Empty means the job passed every hard filter.
   rejectedReasons   String[]
-  firstSeenAt       DateTime      @default(now())
-  lastSeenAt        DateTime      @default(now())
+  firstSeenAt       DateTime                    @default(now())
+  lastSeenAt        DateTime                    @default(now())
   postings          JobPosting[]
+  /// bge-small-en-v1.5 embedding of the job text. Written and read with raw SQL.
+  embedding         Unsupported("vector(384)")?
+  scores            JobScore[]
+  label             JobLabel?
 
   @@index([firstSeenAt])
 }
@@ -95,4 +99,39 @@ model JobPosting {
 
   @@unique([source, externalId])
   @@index([jobId])
+}
+
+enum Verdict {
+  STRONG
+  POSSIBLE
+  WEAK
+}
+
+/// An LLM fit assessment of one job against one version of the resume.
+model JobScore {
+  id         String   @id @default(cuid())
+  jobId      String
+  job        Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  /// sha256 of the resume text, so editing the resume triggers re-scoring.
+  resumeHash String
+  model      String
+  /// Cosine similarity between the job and resume embeddings.
+  similarity Float
+  fitScore   Int
+  verdict    Verdict
+  summary    String
+  strengths  String[]
+  gaps       String[]
+  createdAt  DateTime @default(now())
+
+  @@unique([jobId, resumeHash, model])
+}
+
+/// My own judgment of a job, used to evaluate the scorer.
+model JobLabel {
+  jobId     String   @id
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  label     Verdict
+  note      String?
+  createdAt DateTime @default(now())
 }
