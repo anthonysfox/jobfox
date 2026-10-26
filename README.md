@@ -2,7 +2,7 @@
 
 A personal job-search pipeline. It finds postings, filters them against hard rules, scores them against my resume, and (in later phases) drafts tailored material for me to review. **I submit every application myself**: jobfox never fills in or submits forms.
 
-**Status:** Phase 1 (discovery) works: Adzuna, Hacker News, and direct polling of Greenhouse, Lever, and Ashby boards. Phase 3 (fit scoring with an eval) is built and being evaluated against my hand labels.
+**Status:** Phase 1 (discovery) works: Adzuna, Hacker News, and direct polling of Greenhouse, Lever, and Ashby boards. Phase 3 (fit scoring with an eval) is built and being evaluated against my hand labels. A local dashboard (the first part of Phase 4) shows scored jobs, labeling, and eval results.
 
 ## How it works
 
@@ -36,6 +36,22 @@ A personal job-search pipeline. It finds postings, filters them against hard rul
 3. The most similar unscored jobs go to Claude (Haiku 5.5 by default) with my resume, my preferences, and a rubric. It returns a 0–100 fit score, strengths, gaps, and a one-line summary as validated JSON.
 4. `pnpm label` and `pnpm eval` measure the scorer against my own judgment of 20–30 jobs.
 
+### Dashboard
+
+`pnpm web` starts a Next.js app on `localhost:3000` that reads the same database:
+
+- **Jobs:** tabs for strong, possible, and weak fits plus saved and applied, filterable by area, description source, and minimum score. Save, Applied, and Skip update the job's status.
+- **Job detail:** the full description beside the model's strengths and gaps.
+- **Label:** blind labeling for the eval, one job at a time with keyboard shortcuts.
+- **Eval:** the latest eval run, with a confusion matrix and every disagreement.
+
+## Repository layout
+
+```
+packages/pipeline/   discovery, filtering, scoring, CLI scripts, Prisma schema
+apps/web/            Next.js dashboard; imports the pipeline's TypeScript source
+```
+
 ## Running it
 
 Requires Node 24+, pnpm, and Docker.
@@ -52,6 +68,7 @@ Without Adzuna keys, `discover` runs with HN and known boards only. Scoring need
 
 | Script           | What it does                                |
 | ---------------- | ------------------------------------------- |
+| `pnpm web`       | Dashboard on localhost:3000                 |
 | `pnpm discover`  | Fetch, filter, store, print summary         |
 | `pnpm matches`   | Jobs to apply to, best fit first            |
 | `pnpm score`     | Embed and score new matches (`--limit N`)   |
@@ -99,6 +116,14 @@ Without Adzuna keys, `discover` runs with HN and known boards only. Scoring need
 
 **The eval is blind and includes an embeddings-only baseline.** Labels are made without seeing the model's score, on jobs spread across the similarity range. The eval reports rank correlation for both the model and raw similarity: if the model can't beat the free baseline, it isn't worth paying for.
 
+### Dashboard decisions
+
+**One workspace, shared source.** The dashboard imports the pipeline's TypeScript directly (an `exports` map plus `transpilePackages`), so there's one Prisma schema, one client, and one set of types.
+
+**Server components and server actions, no API.** Pages query Prisma on the server. Buttons are plain forms bound to server actions, so they work without client-side JavaScript; the only client component adds the labeling shortcuts. Actions validate their input with Zod, because a server action is a public endpoint.
+
+**Imports name real files.** The pipeline imports `./filters.ts`, not `./filters.js`. Turbopack doesn't map `.js` to `.ts` the way TypeScript's NodeNext resolution does, and Node's built-in TypeScript support expects real extensions anyway.
+
 ## Respecting sources
 
 - Only official or public APIs: Adzuna's API, HN's Algolia API, and the public job board APIs of Greenhouse, Lever, and Ashby. No LinkedIn or Indeed scraping, nothing that works around CAPTCHAs or bot detection.
@@ -119,5 +144,5 @@ Without Adzuna keys, `discover` runs with HN and known boards only. Scoring need
 1. **Discovery, local** ✓
 2. AWS with Terraform: scheduled Lambda, SQS, SSM Parameter Store, GitHub Actions deploy, about $0/month. Prisma 6 needs `linux-arm64-openssl-3.0.x` in `binaryTargets` for Lambda, and the embedding model (~35 MB) and onnxruntime need a container-image Lambda.
 3. **Fit scoring**: pgvector embeddings plus an LLM explanation, evaluated against 20–30 hand-labeled jobs ← current
-4. Next.js review dashboard: approve, edit, or skip drafts
+4. **Next.js review dashboard**: scored jobs, status, labeling, and eval are done; tailored resume bullets and draft answers are next
 5. Application tracking and follow-up reminders
