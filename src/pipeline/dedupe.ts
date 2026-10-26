@@ -74,3 +74,31 @@ export function canonicalize(postings: Job[]): CanonicalJob {
     postedAt: postedDates.length > 0 ? new Date(Math.min(...postedDates)) : null,
   };
 }
+
+function rank(source: Source | null): number {
+  return source ? SOURCE_PRIORITY[source] : 0;
+}
+
+function earliest(a: Date | null, b: Date | null): Date | null {
+  if (!a || !b) return a ?? b;
+  return a < b ? a : b;
+}
+
+/**
+ * Merge a new sighting into a job already in the database. Whichever side has
+ * the better description source wins the main fields; gaps are filled from the other.
+ */
+export function mergeCanonical(existing: CanonicalJob, incoming: CanonicalJob): CanonicalJob {
+  const incomingWins = rank(incoming.descriptionSource) >= rank(existing.descriptionSource);
+  const [winner, other] = incomingWins ? [incoming, existing] : [existing, incoming];
+  const description = winner.description ? winner : other;
+
+  return {
+    ...winner,
+    description: description.description,
+    descriptionSource: description.descriptionSource,
+    workplaceType: winner.workplaceType !== "UNKNOWN" ? winner.workplaceType : other.workplaceType,
+    salary: winner.salary ?? other.salary,
+    postedAt: earliest(winner.postedAt, other.postedAt),
+  };
+}
