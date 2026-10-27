@@ -95,6 +95,12 @@ const envSchema = z.object({
     .string()
     .optional()
     .transform((v) => v || undefined),
+  // Comma-separated, e.g. "anthonyfox.dev, linkedin.com/in/me". Here rather than in the resume
+  // file because editing that file changes the scoring prompt and re-scores every job.
+  RESUME_LINKS: z
+    .string()
+    .optional()
+    .transform((v) => v || undefined),
   // Optional so the project runs (HN only) before you have Adzuna keys.
   ADZUNA_APP_ID: z
     .string()

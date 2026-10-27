@@ -150,8 +150,13 @@ export function tailorResume({
 export function contactFromEnv(env: {
   RESUME_EMAIL?: string | undefined;
   RESUME_PHONE?: string | undefined;
+  RESUME_LINKS?: string | undefined;
 }): string[] {
-  return [env.RESUME_EMAIL, env.RESUME_PHONE].filter((v): v is string => v !== undefined);
+  const links = (env.RESUME_LINKS ?? "")
+    .split(",")
+    .map((link) => link.trim())
+    .filter(Boolean);
+  return [...links, env.RESUME_EMAIL, env.RESUME_PHONE].filter((v): v is string => !!v);
 }
 
 /** "Anthony_Fox_Resume_Acme.pdf", from the resume's heading and the company. */

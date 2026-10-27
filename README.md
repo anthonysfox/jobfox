@@ -46,7 +46,7 @@ For a job I'm applying to, I paste the application form's questions into the job
 
 Code then checks each bullet: a rewrite's original line must exist in my resume, a new bullet's source must exist in my resume or profile and its entry on my resume, and no bullet may contain numbers that appear in neither. Problems show next to the bullet. I edit what I keep and paste it into the real form myself.
 
-From a draft, the job page's **Tailored resume (PDF)** button (or `pnpm resume <job id>`) builds a one-page PDF of my resume with the rewrites swapped in, the most relevant first within each role, as many new bullets as fit on the page, and the skills the posting mentions listed first on each skills line. Email and phone come from `RESUME_EMAIL` and `RESUME_PHONE` in `.env`.
+From a draft, the job page's **Tailored resume (PDF)** button (or `pnpm resume <job id>`) builds a one-page PDF of my resume with the rewrites swapped in, the most relevant first within each role, as many new bullets as fit on the page, and the skills the posting mentions listed first on each skills line. Email, phone, and links (such as a personal site) come from `RESUME_EMAIL`, `RESUME_PHONE`, and `RESUME_LINKS` in `.env`; editing `data/resume.md` instead would change the scoring prompt and re-score every job.
 
 ### Dashboard
 

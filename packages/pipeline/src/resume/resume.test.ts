@@ -135,9 +135,12 @@ describe("tailorResume", () => {
       resume,
       posting,
       bullets: [],
-      contact: contactFromEnv({ RESUME_EMAIL: "sam@example.com" }),
+      contact: contactFromEnv({
+        RESUME_EMAIL: "sam@example.com",
+        RESUME_LINKS: " samdoe.dev, ",
+      }),
     });
-    expect(markdown).toContain("Emerson, NJ · github.com/samdoe · sam@example.com");
+    expect(markdown).toContain("Emerson, NJ · github.com/samdoe · samdoe.dev · sam@example.com");
   });
 });
 
