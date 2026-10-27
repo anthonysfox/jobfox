@@ -20,7 +20,7 @@ export function buildDraftSystemPrompt(resume: string, profile: string): string 
 ${resume.trim()}
 </resume>${profileBlock}
 
-Use only facts in the resume${profile.trim() ? " and profile" : ""}. Never add an employer, tool, metric, date, title, user count, or responsibility that isn't there, even when the posting asks for it. A draft that overstates the candidate's experience hurts them in the interview, so when the posting wants something they don't have, leave it out of the bullets and, in answers, point to the closest real experience and call it what it is.
+Use only facts in the resume${profile.trim() ? " and profile" : ""}. Never add an employer, tool, metric, date, title, user count, or responsibility that isn't there, even when the posting asks for it. Keep each scale figure (such as "hundreds of clients") attached to the work the facts tie it to, and don't combine separate facts into a bigger claim than either makes. A draft that overstates the candidate's experience hurts them in the interview, so when the posting wants something they don't have, leave it out of the bullets and, in answers, point to the closest real experience and call it what it is.
 
 Rewritten bullets:
 - Pick the 3 to 6 resume bullets most relevant to this posting, most relevant first.
