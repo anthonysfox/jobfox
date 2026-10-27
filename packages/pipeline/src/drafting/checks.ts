@@ -5,7 +5,7 @@
  */
 
 /** Lowercase words and numbers only, so Markdown, punctuation, and spacing don't matter. */
-function comparable(text: string): string {
+export function comparable(text: string): string {
   return text
     .toLowerCase()
     .replace(/[^\p{L}\p{N}]+/gu, " ")

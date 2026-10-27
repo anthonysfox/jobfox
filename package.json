@@ -9,6 +9,7 @@
     "matches": "pnpm --filter @jobfox/pipeline matches",
     "score": "pnpm --filter @jobfox/pipeline score",
     "draft": "pnpm --filter @jobfox/pipeline draft",
+    "resume": "pnpm --filter @jobfox/pipeline resume",
     "label": "pnpm --filter @jobfox/pipeline label",
     "eval": "pnpm --filter @jobfox/pipeline eval",
     "web": "pnpm --filter @jobfox/web dev",

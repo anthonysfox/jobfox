@@ -86,6 +86,15 @@ const envSchema = z.object({
     .string()
     .optional()
     .transform((v) => v || undefined),
+  // Added to the tailored resume PDF only. Kept out of data/resume.md so they never reach the model.
+  RESUME_EMAIL: z
+    .string()
+    .optional()
+    .transform((v) => v || undefined),
+  RESUME_PHONE: z
+    .string()
+    .optional()
+    .transform((v) => v || undefined),
   // Optional so the project runs (HN only) before you have Adzuna keys.
   ADZUNA_APP_ID: z
     .string()
