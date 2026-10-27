@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { DraftPanel } from "@/components/DraftPanel";
 import { ScoreBadge } from "@/components/ScoreBadge";
 import { StatusButtons } from "@/components/StatusButtons";
-import { getJob } from "@/lib/queries";
+import { config, getJob } from "@/lib/queries";
 
 const SOURCE_NAMES: Record<string, string> = {
   GREENHOUSE: "Greenhouse",
@@ -15,7 +16,7 @@ const SOURCE_NAMES: Record<string, string> = {
 export default async function JobPage({ params }: { params: Promise<{ id: string }> }) {
   const found = await getJob((await params).id);
   if (!found) notFound();
-  const { job, score } = found;
+  const { job, score, draft } = found;
 
   const salary =
     job.salaryMin !== null || job.salaryMax !== null
@@ -62,6 +63,12 @@ export default async function JobPage({ params }: { params: Promise<{ id: string
           </div>
         </div>
       </header>
+
+      <DraftPanel
+        jobId={job.id}
+        draft={draft}
+        defaultQuestions={config.drafting.defaultQuestions}
+      />
 
       <div className="grid gap-6 md:grid-cols-[1fr_18rem]">
         <section className="order-2 md:order-1">

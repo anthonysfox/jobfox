@@ -1,13 +1,19 @@
 import "server-only";
+import path from "node:path";
 import userConfig from "@jobfox/pipeline/config";
 import { parseConfig } from "@jobfox/pipeline/core/config";
+import { storedBulletsSchema } from "@jobfox/pipeline/drafting/drafter";
 import { containsPhrase } from "@jobfox/pipeline/lib/normalize";
 import { findCurrentMatches, type MatchedJob } from "@jobfox/pipeline/pipeline/matches";
+import { RESUME_PATH } from "@jobfox/pipeline/scoring/context";
 import { spreadEvenly } from "@jobfox/pipeline/scoring/metrics";
 import { toVerdict, type Verdict } from "@jobfox/pipeline/scoring/scorer";
 import { db } from "./db";
 
 export const config = parseConfig(userConfig);
+
+// Next runs from apps/web; the resume lives with the pipeline.
+export const RESUME_FILE = path.join(process.cwd(), "../../packages/pipeline", RESUME_PATH);
 
 export type Score = MatchedJob["scores"][number] & { verdict: Verdict };
 export interface JobRow {
@@ -111,9 +117,14 @@ export async function getJob(id: string) {
       scores: true,
       label: true,
       postings: { select: { source: true, url: true } },
+      drafts: { orderBy: { createdAt: "desc" }, take: 1 },
     },
   });
-  return job ? { job, score: latestScore(job.scores) } : null;
+  if (!job) return null;
+  const [latest] = job.drafts;
+  const bullets = latest && storedBulletsSchema.safeParse(latest.bullets);
+  const draft = latest && bullets?.success ? { ...latest, bullets: bullets.data } : undefined;
+  return { job, score: latestScore(job.scores), draft };
 }
 
 export const DEFAULT_LABEL_TARGET = 30;
