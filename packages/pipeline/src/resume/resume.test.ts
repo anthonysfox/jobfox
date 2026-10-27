@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { DraftBullet } from "../drafting/drafter.ts";
 import { buildTailoredResume } from "./build.ts";
 import { inlineRuns, renderResumePdf } from "./render.ts";
-import { contactFromEnv, resumeFileName, tailorResume } from "./tailor.ts";
+import { contactFromEnv, contactLines, resumeFileName, tailorResume } from "./tailor.ts";
 
 const resume = `# Sam Doe
 
@@ -79,7 +79,9 @@ describe("tailorResume", () => {
       ],
     });
     expect(replaced).toBe(0);
-    expect(markdown).toBe(resume);
+    // Everything below the contact header is unchanged.
+    const body = (text: string) => text.slice(text.indexOf("## "));
+    expect(body(markdown)).toBe(body(resume));
   });
 
   it("adds new bullets under their entry, after rewrites and before untouched lines", () => {
@@ -140,7 +142,22 @@ describe("tailorResume", () => {
         RESUME_LINKS: " samdoe.dev, ",
       }),
     });
-    expect(markdown).toContain("Emerson, NJ · github.com/samdoe · samdoe.dev · sam@example.com");
+    expect(markdown).toContain("Emerson, NJ | sam@example.com\nsamdoe.dev | github.com/samdoe");
+  });
+});
+
+describe("contactLines", () => {
+  it("puts location, phone, and email on one line and links on the next", () => {
+    expect(
+      contactLines("Emerson, NJ · github.com/me · playlistfox.com", [
+        "linkedin.com/in/me",
+        "me@example.com",
+        "201-555-0100",
+      ]),
+    ).toEqual([
+      "Emerson, NJ | 201-555-0100 | me@example.com",
+      "linkedin.com/in/me | github.com/me | playlistfox.com",
+    ]);
   });
 });
 

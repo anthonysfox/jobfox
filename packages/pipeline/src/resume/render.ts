@@ -73,14 +73,15 @@ export function renderResumePdf(markdown: string): Promise<RenderedResume> {
       afterName = true;
       continue;
     }
+    // Every line between the name and the first heading is contact info.
+    if (afterName && !line.startsWith("#")) {
+      doc.fontSize(BODY_SIZE).fillColor(MUTED);
+      writeRuns(doc, line, left, width, "center");
+      continue;
+    }
     if (afterName) {
       afterName = false;
-      if (!line.startsWith("#")) {
-        doc.fontSize(BODY_SIZE).fillColor(MUTED);
-        writeRuns(doc, line, left, width, "center");
-        doc.moveDown(0.4);
-        continue;
-      }
+      doc.moveDown(0.4);
     }
 
     if (line.startsWith("## ")) {

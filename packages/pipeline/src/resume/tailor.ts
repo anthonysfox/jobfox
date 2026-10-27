@@ -14,8 +14,9 @@ import { LIST_ITEM, listEntries } from "./entries.ts";
  *   untouched lines in their original order. New bullets are used in the
  *   draft's order up to maxAdditions, so the caller can fit the page.
  * - In the skills section, skills the posting mentions move to the front of their line.
- * - Contact details, which stay out of the resume file the model sees, are
- *   added to the line under my name.
+ * - Contact details, which stay out of the resume file the model sees, join
+ *   the line under my name, which is split in two: how to reach me
+ *   (location, phone, email), then links.
  */
 
 export interface TailorOptions {
@@ -83,9 +84,7 @@ export function tailorResume({
     }
     if (afterName && text.trim() !== "") {
       afterName = false;
-      if (!text.startsWith("#") && contact.length > 0) {
-        return { text: [text.trim(), ...contact].join(" · ") };
-      }
+      if (!text.startsWith("#")) return { text: contactLines(text, contact).join("\n") };
     }
     if (text.startsWith("## ")) section = text.toLowerCase();
 
@@ -145,6 +144,25 @@ export function tailorResume({
   flush();
 
   return { markdown: out.join("\n"), replaced: used.size, added };
+}
+
+const LINK = /^(https?:\/\/)?[\w-]+(\.[\w-]+)+(\/\S*)?$/;
+
+/**
+ * "Emerson, NJ · github.com/me" plus extras becomes
+ * ["Emerson, NJ | 555-555-5555 | me@example.com", "linkedin.com/in/me | github.com/me"].
+ * Extra links come first, in the order given.
+ */
+export function contactLines(line: string, extra: string[]): string[] {
+  const own = line.split(/\s+[·|]\s+/).map((part) => part.trim());
+  const isLink = (part: string) => LINK.test(part) && !part.includes("@");
+  const reach = [...own, ...extra].filter((part) => part && !isLink(part));
+  const rank = (part: string) => (part.includes("@") ? 2 : /\d{3}.*\d{4}/.test(part) ? 1 : 0);
+  const links = [...extra.filter(isLink), ...own.filter(isLink)];
+  return [
+    [...reach].sort((a, b) => rank(a) - rank(b)).join(" | "),
+    [...new Set(links)].join(" | "),
+  ].filter(Boolean);
 }
 
 export function contactFromEnv(env: {
