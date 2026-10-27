@@ -127,8 +127,8 @@ model JobScore {
   model      String
   /// Cosine similarity between the job and resume embeddings.
   similarity Float
+  /// The verdict isn't stored: it's derived from fitScore and the current thresholds when read.
   fitScore   Int
-  verdict    Verdict
   summary    String
   strengths  String[]
   gaps       String[]

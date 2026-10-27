@@ -6,6 +6,7 @@ import { currentScore, loadScoringContext } from "../scoring/context.ts";
 import { createLocalEmbedder } from "../scoring/embed.ts";
 import { computeMetrics, VERDICTS, type EvalRow } from "../scoring/metrics.ts";
 import { scoreJobs } from "../scoring/run.ts";
+import { toVerdict } from "../scoring/scorer.ts";
 
 /*
  * Measure the scorer against my hand labels. Scores any labeled job that
@@ -63,7 +64,7 @@ async function main(): Promise<void> {
       if (!score || !job.label) return [];
       const row: EvalRow = {
         label: job.label.label,
-        verdict: score.verdict,
+        verdict: toVerdict(score.fitScore, config.scoring),
         fitScore: score.fitScore,
         similarity: score.similarity,
       };

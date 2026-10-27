@@ -4,24 +4,27 @@ import { parseConfig } from "@jobfox/pipeline/core/config";
 import { containsPhrase } from "@jobfox/pipeline/lib/normalize";
 import { findCurrentMatches, type MatchedJob } from "@jobfox/pipeline/pipeline/matches";
 import { spreadEvenly } from "@jobfox/pipeline/scoring/metrics";
+import { toVerdict, type Verdict } from "@jobfox/pipeline/scoring/scorer";
 import { db } from "./db";
 
 export const config = parseConfig(userConfig);
 
-export type Score = MatchedJob["scores"][number];
+export type Score = MatchedJob["scores"][number] & { verdict: Verdict };
 export interface JobRow {
   job: MatchedJob;
   score: Score | undefined;
 }
 
 /**
- * The newest score from the configured model. The CLI matches on the exact
- * prompt hash; the dashboard shows the latest so it doesn't need the resume file.
+ * The newest score from the configured model, with its verdict under the current
+ * thresholds. The CLI matches on the exact prompt hash; the dashboard shows the
+ * latest so it doesn't need the resume file.
  */
-export function latestScore(scores: Score[]): Score | undefined {
-  return scores
+export function latestScore(scores: MatchedJob["scores"]): Score | undefined {
+  const latest = scores
     .filter((s) => s.model === config.scoring.model)
     .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())[0];
+  return latest && { ...latest, verdict: toVerdict(latest.fitScore, config.scoring) };
 }
 
 export const TABS = ["strong", "possible", "weak", "unscored", "saved", "applied"] as const;

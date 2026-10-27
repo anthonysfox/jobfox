@@ -38,8 +38,10 @@ export default defineConfig({
       "Strongest in TypeScript, React, Next.js, Node.js, Prisma, and Postgres; AWS Solutions Architect Associate.",
       "Not looking for staff/principal/management roles, or roles centered on a stack I haven't used.",
     ].join("\n"),
-    strongThreshold: 75,
-    possibleThreshold: 50,
+    // Tuned on my first eval (11 labels): every job I called strong scored 62+, and
+    // every possible/weak one 22-42. Revisit as labels accumulate.
+    strongThreshold: 60,
+    possibleThreshold: 35,
   },
 
   filters: {

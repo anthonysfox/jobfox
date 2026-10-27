@@ -15,7 +15,6 @@ export type Verdict = "STRONG" | "POSSIBLE" | "WEAK";
 
 export interface Fit {
   fitScore: number;
-  verdict: Verdict;
   summary: string;
   strengths: string[];
   gaps: string[];
@@ -27,7 +26,10 @@ export type ScoreOutcome =
 
 type ScoringConfig = JobfoxConfig["scoring"];
 
-/** The verdict comes from the score and my thresholds, so the two never disagree. */
+/**
+ * The verdict comes from the score and my thresholds at read time, so retuning
+ * the thresholds re-sorts existing scores without calling the model again.
+ */
 export function toVerdict(
   fitScore: number,
   config: Pick<ScoringConfig, "strongThreshold" | "possibleThreshold">,
@@ -84,7 +86,6 @@ export function createScorer({ client, systemPrompt, config }: ScorerOptions) {
       ok: true,
       fit: {
         fitScore,
-        verdict: toVerdict(fitScore, config),
         summary: parsed.summary.trim(),
         strengths: parsed.strengths.slice(0, 4),
         gaps: parsed.gaps.slice(0, 4),

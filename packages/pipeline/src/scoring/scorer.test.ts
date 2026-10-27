@@ -91,7 +91,7 @@ describe("createScorer", () => {
     expect(body).not.toHaveProperty("temperature");
   });
 
-  it("returns the fit with a verdict derived from the score", async () => {
+  it("returns the parsed fit", async () => {
     const { client } = clientReturning({
       content: [
         { type: "thinking", thinking: "", signature: "sig" },
@@ -103,7 +103,7 @@ describe("createScorer", () => {
 
     expect(outcome).toMatchObject({
       ok: true,
-      fit: { fitScore: 82, verdict: "STRONG", gaps: ["No Kubernetes"] },
+      fit: { fitScore: 82, gaps: ["No Kubernetes"] },
     });
     // At most four strengths are kept.
     expect(outcome.ok && outcome.fit.strengths).toHaveLength(4);

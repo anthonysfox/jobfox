@@ -3,6 +3,7 @@ import { parseConfig } from "../core/config.ts";
 import { createDb } from "../lib/db.ts";
 import { findCurrentMatches, STALE_AFTER_DAYS, type MatchedJob } from "../pipeline/matches.ts";
 import { currentScore, loadScoringContext } from "../scoring/context.ts";
+import { toVerdict } from "../scoring/scorer.ts";
 
 /*
  * List jobs worth applying to, best fit first. Weak fits are counted but not
@@ -25,7 +26,7 @@ async function main(): Promise<void> {
     const withScores = jobs.map((job) => ({ job, score: currentScore(job.scores, context) }));
     const byVerdict = (verdict: string) =>
       withScores
-        .filter((x) => x.score?.verdict === verdict)
+        .filter((x) => x.score && toVerdict(x.score.fitScore, config.scoring) === verdict)
         .sort((a, b) => (b.score?.fitScore ?? 0) - (a.score?.fitScore ?? 0));
 
     for (const [heading, group] of [
