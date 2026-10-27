@@ -33,6 +33,20 @@ export const configSchema = z.object({
       possibleThreshold: z.number().int().min(0).max(100).default(50),
     })
     .prefault({}),
+  drafting: z
+    .object({
+      /** Drafting is on demand, a few jobs a week, so a stronger writer is affordable. */
+      model: z.string().default("claude-sonnet-5-5"),
+      effort: z.enum(["low", "medium", "high", "xhigh", "max"]).default("medium"),
+      /** Prefilled when a job has no draft yet; replace with the form's real questions. */
+      defaultQuestions: z
+        .array(z.string().trim().min(1))
+        .default([
+          "Why are you interested in this role?",
+          "Tell us about a project you're proud of that's relevant to this role.",
+        ]),
+    })
+    .prefault({}),
   filters: z.object({
     /** The title must contain at least one of these phrases. */
     titleKeywords: phrases,

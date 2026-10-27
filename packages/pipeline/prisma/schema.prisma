@@ -84,6 +84,7 @@ model Job {
   embedding         Unsupported("vector(384)")?
   scores            JobScore[]
   label             JobLabel?
+  drafts            ApplicationDraft[]
   status            JobStatus                   @default(NEW)
   statusChangedAt   DateTime?
 
@@ -156,4 +157,24 @@ model EvalRun {
   metrics    Json
   rows       Json
   createdAt  DateTime @default(now())
+}
+
+/// Tailored resume bullets and answers for one job's application form. Drafts
+/// are for me to review, edit, and paste; jobfox never submits anything.
+model ApplicationDraft {
+  id         String   @id @default(cuid())
+  jobId      String
+  job        Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  model      String
+  /// sha256 of the drafting system prompt (resume + instructions).
+  promptHash String
+  questions  String[]
+  /// [{ text, source, issues }]. issues come from checks in code, not the model.
+  bullets    Json
+  /// One answer per question, in the same order.
+  answers    String[]
+  costUsd    Float?
+  createdAt  DateTime @default(now())
+
+  @@index([jobId, createdAt])
 }

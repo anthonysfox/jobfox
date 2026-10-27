@@ -8,6 +8,7 @@
     "discover": "pnpm --filter @jobfox/pipeline discover",
     "matches": "pnpm --filter @jobfox/pipeline matches",
     "score": "pnpm --filter @jobfox/pipeline score",
+    "draft": "pnpm --filter @jobfox/pipeline draft",
     "label": "pnpm --filter @jobfox/pipeline label",
     "eval": "pnpm --filter @jobfox/pipeline eval",
     "web": "pnpm --filter @jobfox/web dev",

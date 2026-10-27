@@ -44,6 +44,11 @@ export default defineConfig({
     possibleThreshold: 35,
   },
 
+  drafting: {
+    model: "claude-sonnet-5-5",
+    effort: "medium",
+  },
+
   filters: {
     titleKeywords: [
       "full stack",

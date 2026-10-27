@@ -13,13 +13,16 @@ export interface ScoringContext {
   model: string;
 }
 
-export function loadScoringContext(config: JobfoxConfig): ScoringContext {
-  let resume: string;
+export function readResume(path = RESUME_PATH): string {
   try {
-    resume = readFileSync(RESUME_PATH, "utf8");
+    return readFileSync(path, "utf8");
   } catch {
-    throw new Error(`Put your resume in ${RESUME_PATH} (Markdown or plain text).`);
+    throw new Error(`Put your resume in ${path} (Markdown or plain text).`);
   }
+}
+
+export function loadScoringContext(config: JobfoxConfig): ScoringContext {
+  const resume = readResume();
   const systemPrompt = buildSystemPrompt(resume, config.scoring.preferences);
   return {
     resume,

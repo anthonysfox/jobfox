@@ -2,6 +2,7 @@ import type Anthropic from "@anthropic-ai/sdk";
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import { z } from "zod";
 import type { JobfoxConfig } from "../core/config.ts";
+import { readStructured } from "../lib/structured.ts";
 import { buildJobMessage, type ScorableJob } from "./prompt.ts";
 
 export const fitSchema = z.object({
@@ -47,8 +48,6 @@ export interface ScorerOptions {
 
 export function createScorer({ client, systemPrompt, config }: ScorerOptions) {
   return async function score(job: ScorableJob): Promise<ScoreOutcome> {
-    // messages.create rather than messages.parse: parse() throws on a truncated
-    // response, and stop_reason has to be checked before the output is trusted.
     const response = await client.messages.create({
       model: config.model,
       // Thinking is on by default and counts toward this limit, so leave headroom.
@@ -58,27 +57,8 @@ export function createScorer({ client, systemPrompt, config }: ScorerOptions) {
       messages: [{ role: "user", content: buildJobMessage(job) }],
     });
 
-    if (response.stop_reason === "refusal") {
-      return {
-        ok: false,
-        reason: `refused (${response.stop_details?.category ?? "no category"})`,
-        usage: response.usage,
-      };
-    }
-    if (response.stop_reason === "max_tokens") {
-      return { ok: false, reason: "hit max_tokens", usage: response.usage };
-    }
-    const text = response.content.find((block) => block.type === "text")?.text ?? "";
-    let json: unknown;
-    try {
-      json = JSON.parse(text);
-    } catch {
-      return { ok: false, reason: "output was not JSON", usage: response.usage };
-    }
-    const result = fitSchema.safeParse(json);
-    if (!result.success) {
-      return { ok: false, reason: "output did not match the schema", usage: response.usage };
-    }
+    const result = readStructured(response, fitSchema);
+    if (!result.ok) return { ok: false, reason: result.reason, usage: response.usage };
     const parsed = result.data;
 
     const fitScore = Math.min(100, Math.max(0, Math.round(parsed.fitScore)));

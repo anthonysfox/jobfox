@@ -12,6 +12,7 @@
     "discover": "tsx --env-file=../../.env src/scripts/discover.ts",
     "matches": "tsx --env-file=../../.env src/scripts/matches.ts",
     "score": "tsx --env-file=../../.env src/scripts/score.ts",
+    "draft": "tsx --env-file=../../.env src/scripts/draft.ts",
     "label": "tsx --env-file=../../.env src/scripts/label.ts",
     "eval": "tsx --env-file=../../.env src/scripts/eval.ts",
     "test": "vitest run",
