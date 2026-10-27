@@ -38,14 +38,15 @@ A personal job-search pipeline. It finds postings, filters them against hard rul
 
 ### Drafting
 
-For a job I'm applying to, I paste the application form's questions into the job page (or run `pnpm draft <job id>`). Claude (Sonnet 5.5) gets my resume, the posting, and the scorer's strengths and gaps, and returns:
+For a job I'm applying to, I paste the application form's questions into the job page (or run `pnpm draft <job id>`). Claude (Sonnet 5.5) gets my resume, an optional profile (`data/profile.md`: more detail than fits on a resume, with accuracy notes such as "I built the configuration surface, not the AI detection"), the posting, and the scorer's strengths and gaps, and returns:
 
 - 3–6 of my resume bullets, rewritten to lead with what this posting cares about, each paired with the original line it came from.
+- Up to 5 new bullets from profile facts the resume leaves out, most relevant first, each naming its source line and the resume entry it goes under.
 - An answer to each question, with bracketed placeholders such as `[your salary expectations]` where the resume doesn't have the facts.
 
-Code then checks each bullet: its original line must exist in my resume, and it may not contain numbers my resume doesn't. Problems show next to the bullet. I edit what I keep and paste it into the real form myself.
+Code then checks each bullet: a rewrite's original line must exist in my resume, a new bullet's source must exist in my resume or profile and its entry on my resume, and no bullet may contain numbers that appear in neither. Problems show next to the bullet. I edit what I keep and paste it into the real form myself.
 
-From a draft, the job page's **Tailored resume (PDF)** button (or `pnpm resume <job id>`) builds a one-page PDF of my resume with the drafted bullets swapped in, the most relevant first within each role, and the skills the posting mentions listed first on each skills line. Email and phone come from `RESUME_EMAIL` and `RESUME_PHONE` in `.env`.
+From a draft, the job page's **Tailored resume (PDF)** button (or `pnpm resume <job id>`) builds a one-page PDF of my resume with the rewrites swapped in, the most relevant first within each role, as many new bullets as fit on the page, and the skills the posting mentions listed first on each skills line. Email and phone come from `RESUME_EMAIL` and `RESUME_PHONE` in `.env`.
 
 ### Dashboard
 
@@ -138,6 +139,8 @@ Without Adzuna keys, `discover` runs with HN and known boards only. Scoring need
 **Answers are keyed to my questions by position.** The model's echo of each question is ignored, so a reworded or skipped question can't shift answers onto the wrong question.
 
 **The tailored resume is built by code, not written by the model.** The PDF is my own resume Markdown with plain string edits: drafted bullets replace the lines they name, flagged bullets are skipped, and skills are reordered but never added. The model can't change my titles, dates, or summary, and the same draft always produces the same resume. Rendering uses pdfkit with built-in Helvetica: no headless browser, and the text stays selectable for applicant tracking systems.
+
+**The model ranks; code fits the page.** New bullets come back in order of relevance, and the PDF builder adds them one at a time, rendering and counting pages, until the next one would spill onto a second page. Rendering takes milliseconds, so measuring is simpler and more exact than estimating text height.
 
 **Contact details never reach the model.** They're kept out of `data/resume.md`, which goes into every prompt, and are added only when the PDF is rendered.
 

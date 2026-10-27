@@ -46,9 +46,18 @@ export function DraftPanel({
               {draft.bullets.map((bullet) => (
                 <li key={bullet.text} className="flex gap-3">
                   <div className="flex-1 text-sm">
-                    <p>{bullet.text}</p>
+                    <p>
+                      {bullet.entry !== undefined && (
+                        <span className="mr-2 rounded bg-sky-100 px-1.5 py-0.5 text-xs font-medium text-sky-800 dark:bg-sky-950 dark:text-sky-300">
+                          New · {bullet.entry}
+                        </span>
+                      )}
+                      {bullet.text}
+                    </p>
                     <details className="mt-1 text-xs text-stone-500">
-                      <summary className="cursor-pointer">Original</summary>
+                      <summary className="cursor-pointer">
+                        {bullet.entry === undefined ? "Original" : "Based on"}
+                      </summary>
                       <p className="mt-1">{bullet.source}</p>
                     </details>
                     {bullet.issues.map((issue) => (
@@ -93,8 +102,8 @@ export function DraftPanel({
               Tailored resume (PDF) ↗
             </a>
             <span className="text-xs text-stone-500">
-              Your resume with these bullets swapped in and matching skills listed first. Flagged
-              bullets are left as you wrote them.
+              Your resume with the rewrites swapped in, as many new bullets as fit on one page, and
+              matching skills listed first. Flagged bullets are left out.
             </span>
           </div>
 

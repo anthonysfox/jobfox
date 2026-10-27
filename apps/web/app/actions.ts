@@ -2,11 +2,11 @@
 
 import Anthropic from "@anthropic-ai/sdk";
 import { draftForJob, parseQuestions } from "@jobfox/pipeline/drafting/run";
-import { readResume } from "@jobfox/pipeline/scoring/context";
+import { readProfile, readResume } from "@jobfox/pipeline/scoring/context";
 import { refresh } from "next/cache";
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { config, RESUME_FILE } from "@/lib/queries";
+import { config, PROFILE_FILE, RESUME_FILE } from "@/lib/queries";
 
 // Server actions are POST endpoints, even on localhost, so validate what comes in.
 const jobId = z.string().min(1).max(64);
@@ -59,6 +59,7 @@ export async function generateDraft(
       client: new Anthropic(),
       config,
       resume: readResume(RESUME_FILE),
+      profile: readProfile(PROFILE_FILE),
       jobId: jobId.parse(id),
       questions,
     });
