@@ -20,8 +20,8 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
   return new Response(new Uint8Array(pdf), {
     headers: {
       "Content-Type": "application/pdf",
-      // inline: opens in the browser's viewer, which has its own download button.
-      "Content-Disposition": `inline; filename="${resumeFileName(resume, found.job.company.name)}"`,
+      // attachment: some viewers save an inline PDF as "resume.pdf", ignoring the name.
+      "Content-Disposition": `attachment; filename="${resumeFileName(resume, found.job.title, found.job.company.name)}"`,
       "Cache-Control": "no-store",
     },
   });

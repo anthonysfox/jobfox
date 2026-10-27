@@ -177,13 +177,33 @@ export function contactFromEnv(env: {
   return [...links, env.RESUME_EMAIL, env.RESUME_PHONE].filter((v): v is string => !!v);
 }
 
-/** "Anthony_Fox_Resume_Acme.pdf", from the resume's heading and the company. */
-export function resumeFileName(resume: string, company: string): string {
+/**
+ * The role from a posting title, without the noise postings add:
+ * "Full Stack Developer (React/Node) | Newark" -> "Full Stack Developer", and
+ * "Full-Stack Engineer / Senior Full-Stack Engineer" -> "Full-Stack Engineer".
+ */
+export function roleFromTitle(title: string): string {
+  const role = title
+    .replace(/\([^)]*\)|\[[^\]]*\]/g, " ")
+    .split(/\s+[|/–—-]\s+|,/)[0]
+    ?.trim();
+  return (role ?? "").split(/\s+/).slice(0, 6).join(" ");
+}
+
+/**
+ * "Anthony_Fox_Forward_Deployed_Engineer_Resume_Acme.pdf", from the resume's
+ * heading, the job title, and the company. The role is left out when the
+ * posting doesn't name one.
+ */
+export function resumeFileName(resume: string, title: string, company: string): string {
   const name = /^# (.+)$/m.exec(resume)?.[1] ?? "Resume";
   const part = (text: string) =>
     text
       .normalize("NFKD")
       .replace(/[^A-Za-z0-9]+/g, "_")
       .replace(/^_|_$/g, "");
-  return `${part(name)}_Resume_${part(company)}.pdf`;
+  return [part(name), part(roleFromTitle(title)), "Resume", part(company)]
+    .filter(Boolean)
+    .join("_")
+    .concat(".pdf");
 }

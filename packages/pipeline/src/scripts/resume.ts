@@ -40,7 +40,7 @@ async function main(): Promise<void> {
       posting: job.description ?? "",
       contact: contactFromEnv(env),
     });
-    const file = path.join(OUT_DIR, resumeFileName(resume, job.company.name));
+    const file = path.join(OUT_DIR, resumeFileName(resume, job.title, job.company.name));
     mkdirSync(OUT_DIR, { recursive: true });
     writeFileSync(file, tailored.pdf);
     console.log(

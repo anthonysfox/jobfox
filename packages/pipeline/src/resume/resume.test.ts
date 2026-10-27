@@ -2,7 +2,13 @@ import { describe, expect, it } from "vitest";
 import type { DraftBullet } from "../drafting/drafter.ts";
 import { buildTailoredResume } from "./build.ts";
 import { inlineRuns, renderResumePdf } from "./render.ts";
-import { contactFromEnv, contactLines, resumeFileName, tailorResume } from "./tailor.ts";
+import {
+  contactFromEnv,
+  contactLines,
+  resumeFileName,
+  roleFromTitle,
+  tailorResume,
+} from "./tailor.ts";
 
 const resume = `# Sam Doe
 
@@ -163,7 +169,25 @@ describe("contactLines", () => {
 
 describe("resumeFileName", () => {
   it("builds a safe file name from the name and company", () => {
-    expect(resumeFileName(resume, "Acme, Inc. (NYC)")).toBe("Sam_Doe_Resume_Acme_Inc_NYC.pdf");
+    expect(resumeFileName(resume, "Forward Deployed Engineer | NY, USA", "Acme, Inc. (NYC)")).toBe(
+      "Sam_Doe_Forward_Deployed_Engineer_Resume_Acme_Inc_NYC.pdf",
+    );
+  });
+
+  it("leaves the role out when the posting doesn't name one", () => {
+    expect(resumeFileName(resume, "(role not stated)", "Acme")).toBe("Sam_Doe_Resume_Acme.pdf");
+  });
+});
+
+describe("roleFromTitle", () => {
+  it.each([
+    ["Full Stack Developer (React/Node/AWS) (Newark)", "Full Stack Developer"],
+    ["Full-Stack Engineer / Senior Full-Stack Engineer", "Full-Stack Engineer"],
+    ["Software Engineer - Payments", "Software Engineer"],
+    ["Senior React Developer (Jersey City)", "Senior React Developer"],
+    ["Engineer, Platform", "Engineer"],
+  ])("%s -> %s", (title, role) => {
+    expect(roleFromTitle(title)).toBe(role);
   });
 });
 

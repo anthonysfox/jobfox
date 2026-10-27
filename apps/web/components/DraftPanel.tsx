@@ -95,11 +95,9 @@ export function DraftPanel({
           <div className="flex flex-wrap items-center gap-3 border-t border-stone-200 pt-4 dark:border-stone-800">
             <a
               href={`/jobs/${jobId}/resume.pdf`}
-              target="_blank"
-              rel="noopener"
               className="rounded-md bg-stone-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-stone-700 dark:bg-stone-100 dark:text-stone-900 dark:hover:bg-stone-300"
             >
-              Tailored resume (PDF) ↗
+              Download tailored resume (PDF)
             </a>
             <span className="text-xs text-stone-500">
               Your resume with the rewrites swapped in, as many new bullets as fit on one page, and
