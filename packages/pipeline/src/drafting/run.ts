@@ -2,6 +2,7 @@ import type Anthropic from "@anthropic-ai/sdk";
 import type { JobfoxConfig } from "../core/config.ts";
 import type { PrismaClient } from "../lib/db.ts";
 import { addUsage, emptyUsage, estimateCost } from "../scoring/cost.ts";
+import { resumeEntries } from "../resume/entries.ts";
 import { resumeHash } from "../scoring/embed.ts";
 import { createDrafter } from "./drafter.ts";
 import { buildDraftSystemPrompt } from "./prompt.ts";
@@ -22,6 +23,8 @@ export interface DraftForJobOptions {
   client: Anthropic;
   config: JobfoxConfig;
   resume: string;
+  /** Optional extra detail beyond the resume; see data/profile.md. */
+  profile: string;
   jobId: string;
   questions: string[];
 }
@@ -32,6 +35,7 @@ export async function draftForJob({
   client,
   config,
   resume,
+  profile,
   jobId,
   questions,
 }: DraftForJobOptions) {
@@ -44,8 +48,9 @@ export async function draftForJob({
   });
   if (!job) return { ok: false as const, reason: "job not found" };
 
-  const systemPrompt = buildDraftSystemPrompt(resume);
-  const draft = createDrafter({ client, resume, systemPrompt, config: config.drafting });
+  const systemPrompt = buildDraftSystemPrompt(resume, profile);
+  const facts = { resume, profile, entries: resumeEntries(resume) };
+  const draft = createDrafter({ client, facts, systemPrompt, config: config.drafting });
   const outcome = await draft({ ...job, companyName: job.company.name }, questions, job.scores[0]);
 
   const usage = emptyUsage();

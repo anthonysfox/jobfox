@@ -14,6 +14,11 @@ const resume = `# Sam Doe
 - Rebuilt the **camera dashboard** in React and TypeScript, cutting load time by 40%.
 - Built a Node.js API on AWS Lambda serving 1,200 customers.`;
 
+const profile = `- Demoed the features I built to 3 client teams.
+- Accuracy: I did not own requirements gathering.`;
+
+const facts = { resume, profile, entries: ["Experience"] };
+
 const job: ScorableJob = {
   companyName: "Acme",
   title: "Full Stack Engineer",
@@ -32,12 +37,34 @@ describe("bulletIssues", () => {
       text: "Cut dashboard load time 40% by rebuilding it in React and TypeScript.",
       source: "Rebuilt the camera dashboard in React and TypeScript, cutting load time by 40%",
     };
-    expect(bulletIssues(bullet, resume)).toEqual([]);
+    expect(bulletIssues(bullet, facts)).toEqual([]);
+  });
+
+  it("accepts a new bullet drawn from the profile under a real entry", () => {
+    const bullet = {
+      text: "Demoed new features to 3 client teams.",
+      source: "Demoed the features I built to 3 client teams.",
+      entry: "experience",
+    };
+    expect(bulletIssues(bullet, facts)).toEqual([]);
+  });
+
+  it("requires rewrites to come from the resume, not the profile", () => {
+    const bullet = { text: "Ran demos.", source: "Demoed the features I built to 3 client teams." };
+    expect(bulletIssues(bullet, facts)).toEqual(["The source line isn't in your resume."]);
+  });
+
+  it("flags a new bullet with an unknown source or entry", () => {
+    const bullet = { text: "Led a team.", source: "Led a team.", entry: "Leadership" };
+    expect(bulletIssues(bullet, facts)).toEqual([
+      "The source isn't in your resume or profile.",
+      '"Leadership" isn\'t a section of your resume.',
+    ]);
   });
 
   it("flags a source line that isn't in the resume", () => {
     const bullet = { text: "Led a team.", source: "Led a team of five engineers." };
-    expect(bulletIssues(bullet, resume)).toEqual(["The source line isn't in your resume."]);
+    expect(bulletIssues(bullet, facts)).toEqual(["The source line isn't in your resume."]);
   });
 
   it("flags numbers that appear nowhere in the resume", () => {
@@ -45,7 +72,7 @@ describe("bulletIssues", () => {
       text: "Served 5,000 customers with a Node.js API, cutting load time by 40%.",
       source: "Built a Node.js API on AWS Lambda serving 1,200 customers.",
     };
-    expect(bulletIssues(bullet, resume)).toEqual(["Numbers not in your resume: 5000."]);
+    expect(bulletIssues(bullet, facts)).toEqual(["Numbers not in your resume or profile: 5000."]);
   });
 
   it("reads numbers with separators and decimals", () => {
@@ -69,8 +96,15 @@ describe("parseQuestions", () => {
 });
 
 describe("prompts", () => {
-  it("puts the resume in the system prompt", () => {
-    expect(buildDraftSystemPrompt(resume)).toContain(`<resume>\n${resume}\n</resume>`);
+  it("puts the resume, profile, and resume entries in the system prompt", () => {
+    const prompt = buildDraftSystemPrompt(resume, profile);
+    expect(prompt).toContain(`<resume>\n${resume}\n</resume>`);
+    expect(prompt).toContain(`<profile>\n${profile}\n</profile>`);
+    expect(prompt).toContain("from this list:\n- Experience\n");
+  });
+
+  it("leaves the profile out when there isn't one", () => {
+    expect(buildDraftSystemPrompt(resume, "")).not.toContain("<profile>");
   });
 
   it("includes the job, the fit assessment, and numbered questions", () => {
@@ -90,12 +124,19 @@ describe("prompts", () => {
 
 describe("createDrafter", () => {
   const output = {
-    bullets: [
+    rewrites: [
       {
         text: "  Cut dashboard load time by 40% with a React and TypeScript rebuild. ",
         source: "Rebuilt the camera dashboard in React and TypeScript, cutting load time by 40%.",
       },
       { text: "Mentored 12 engineers.", source: "Mentored engineers." },
+    ],
+    additions: [
+      {
+        text: "Demoed features to 3 client teams.",
+        source: "Demoed the features I built to 3 client teams.",
+        entry: "Experience",
+      },
     ],
     answers: [{ question: "Why do you want this job (reworded)?", answer: " Because… " }],
   };
@@ -105,7 +146,7 @@ describe("createDrafter", () => {
       content: [{ type: "text", text: JSON.stringify(output) }],
       stop_reason: "end_turn",
     });
-    await createDrafter({ client, resume, systemPrompt: "SYSTEM", config })(job, ["Why?"]);
+    await createDrafter({ client, facts, systemPrompt: "SYSTEM", config })(job, ["Why?"]);
 
     expect(requests[0]).toMatchObject({
       model: "claude-sonnet-5-5",
@@ -119,7 +160,7 @@ describe("createDrafter", () => {
       content: [{ type: "text", text: JSON.stringify(output) }],
       stop_reason: "end_turn",
     });
-    const outcome = await createDrafter({ client, resume, systemPrompt: "SYSTEM", config })(job, [
+    const outcome = await createDrafter({ client, facts, systemPrompt: "SYSTEM", config })(job, [
       "Why do you want this job?",
       "What's your notice period?",
     ]);
@@ -132,8 +173,9 @@ describe("createDrafter", () => {
     });
     expect(outcome.draft.bullets[1]?.issues).toEqual([
       "The source line isn't in your resume.",
-      "Numbers not in your resume: 12.",
+      "Numbers not in your resume or profile: 12.",
     ]);
+    expect(outcome.draft.bullets[2]).toMatchObject({ entry: "Experience", issues: [] });
     // The model answered one of two questions; the second stays empty rather than shifting.
     expect(outcome.draft.answers).toEqual(["Because…", ""]);
   });
@@ -143,10 +185,7 @@ describe("createDrafter", () => {
       content: [{ type: "text", text: '{"bullets": [' }],
       stop_reason: "max_tokens",
     });
-    const outcome = await createDrafter({ client, resume, systemPrompt: "SYSTEM", config })(
-      job,
-      [],
-    );
+    const outcome = await createDrafter({ client, facts, systemPrompt: "SYSTEM", config })(job, []);
     expect(outcome).toMatchObject({ ok: false, reason: "hit max_tokens" });
   });
 });

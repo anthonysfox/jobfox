@@ -4,7 +4,7 @@ import { parseConfig, parseEnv } from "../core/config.ts";
 import { storedBulletsSchema } from "../drafting/drafter.ts";
 import { draftForJob } from "../drafting/run.ts";
 import { createDb } from "../lib/db.ts";
-import { readResume } from "../scoring/context.ts";
+import { readProfile, readResume } from "../scoring/context.ts";
 
 /*
  * Draft tailored resume bullets and answers for one job. The dashboard's job
@@ -31,6 +31,7 @@ async function main(): Promise<void> {
       client: new Anthropic(),
       config,
       resume: readResume(),
+      profile: readProfile(),
       jobId,
       questions,
     });
@@ -38,7 +39,7 @@ async function main(): Promise<void> {
 
     console.log("\nResume bullets");
     for (const bullet of storedBulletsSchema.parse(result.draft.bullets)) {
-      console.log(`  - ${bullet.text}`);
+      console.log(`  ${bullet.entry ? `+ [${bullet.entry}]` : "-"} ${bullet.text}`);
       for (const issue of bullet.issues) console.log(`    ! ${issue}`);
     }
     result.draft.questions.forEach((question, i) => {

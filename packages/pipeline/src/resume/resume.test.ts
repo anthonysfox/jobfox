@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { DraftBullet } from "../drafting/drafter.ts";
+import { buildTailoredResume } from "./build.ts";
 import { inlineRuns, renderResumePdf } from "./render.ts";
 import { contactFromEnv, resumeFileName, tailorResume } from "./tailor.ts";
 
@@ -81,6 +82,47 @@ describe("tailorResume", () => {
     expect(markdown).toBe(resume);
   });
 
+  it("adds new bullets under their entry, after rewrites and before untouched lines", () => {
+    const { markdown, added } = tailorResume({
+      resume,
+      posting: "",
+      bullets: [
+        bullet(
+          "Shipped a Node.js API to 1,200 customers.",
+          "Built a Node.js API serving 1,200 customers.",
+        ),
+        {
+          ...bullet("Demoed features to clients.", "Demoed the features I built."),
+          entry: "acme — new york, ny",
+        },
+        { ...bullet("Wrote Go tests.", "Wrote tests."), entry: "Projects" },
+      ],
+    });
+    expect(added).toBe(2);
+    expect(markdown).toContain(
+      [
+        "- Shipped a Node.js API to 1,200 customers.",
+        "- Demoed features to clients.",
+        "- Onboarded engineers onto the Laravel services.",
+      ].join("\n"),
+    );
+    expect(markdown).toContain("- Wrote Go tests.\n- Built a CLI in Go.");
+  });
+
+  it("uses only the first maxAdditions new bullets", () => {
+    const { added, markdown } = tailorResume({
+      resume,
+      posting: "",
+      maxAdditions: 1,
+      bullets: [
+        { ...bullet("First.", "a"), entry: "Projects" },
+        { ...bullet("Second.", "b"), entry: "Projects" },
+      ],
+    });
+    expect(added).toBe(1);
+    expect(markdown).not.toContain("Second.");
+  });
+
   it("puts skills the posting mentions first, only in the skills section", () => {
     const { markdown } = tailorResume({ resume, posting, bullets: [] });
     expect(markdown).toContain("- **Languages:** Python, TypeScript, PHP");
@@ -105,6 +147,24 @@ describe("resumeFileName", () => {
   });
 });
 
+describe("buildTailoredResume", () => {
+  it("adds new bullets only while the resume fits on one page", async () => {
+    const many = Array.from({ length: 5 }, (_, i) => ({
+      ...bullet(`New bullet ${"long text ".repeat(40)} ${i}`, "x"),
+      entry: "Projects",
+    }));
+    const filler = Array.from({ length: 30 }, (_, i) => `- Existing line ${i}.`).join("\n");
+    const result = await buildTailoredResume({
+      resume: `${resume}\n${filler}`,
+      posting: "",
+      bullets: many,
+    });
+    expect(result.pages).toBe(1);
+    expect(result.added).toBeGreaterThan(0);
+    expect(result.added).toBeLessThan(5);
+  });
+});
+
 describe("renderResumePdf", () => {
   it("splits bold runs", () => {
     expect(inlineRuns("**Languages:** TypeScript, *Go*")).toEqual([
@@ -114,8 +174,8 @@ describe("renderResumePdf", () => {
   });
 
   it("produces a PDF", async () => {
-    const pdf = await renderResumePdf(resume);
+    const { pdf, pages } = await renderResumePdf(resume);
     expect(pdf.subarray(0, 5).toString()).toBe("%PDF-");
-    expect(pdf.length).toBeGreaterThan(1000);
+    expect(pages).toBe(1);
   });
 });

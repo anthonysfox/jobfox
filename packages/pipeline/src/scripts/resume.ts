@@ -4,8 +4,8 @@ import userConfig from "../../jobfox.config.ts";
 import { parseConfig, parseEnv } from "../core/config.ts";
 import { storedBulletsSchema } from "../drafting/drafter.ts";
 import { createDb } from "../lib/db.ts";
-import { renderResumePdf } from "../resume/render.ts";
-import { contactFromEnv, resumeFileName, tailorResume } from "../resume/tailor.ts";
+import { buildTailoredResume } from "../resume/build.ts";
+import { contactFromEnv, resumeFileName } from "../resume/tailor.ts";
 import { readResume } from "../scoring/context.ts";
 
 /*
@@ -34,7 +34,7 @@ async function main(): Promise<void> {
     if (!draft) throw new Error(`No draft for this job yet. Run pnpm draft ${jobId} first.`);
 
     const resume = readResume();
-    const tailored = tailorResume({
+    const tailored = await buildTailoredResume({
       resume,
       bullets: storedBulletsSchema.parse(draft.bullets),
       posting: job.description ?? "",
@@ -42,8 +42,10 @@ async function main(): Promise<void> {
     });
     const file = path.join(OUT_DIR, resumeFileName(resume, job.company.name));
     mkdirSync(OUT_DIR, { recursive: true });
-    writeFileSync(file, await renderResumePdf(tailored.markdown));
-    console.log(`Wrote ${file} (${tailored.replaced} tailored bullets).`);
+    writeFileSync(file, tailored.pdf);
+    console.log(
+      `Wrote ${file}: ${tailored.replaced} rewritten bullets, ${tailored.added} new, ${tailored.pages} page(s).`,
+    );
   } finally {
     await db.$disconnect();
   }

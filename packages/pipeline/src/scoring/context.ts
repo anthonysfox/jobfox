@@ -1,9 +1,11 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import type { JobfoxConfig } from "../core/config.ts";
 import { resumeHash } from "./embed.ts";
 import { buildSystemPrompt } from "./prompt.ts";
 
 export const RESUME_PATH = "data/resume.md";
+/** Optional: more detail than the resume holds, with accuracy notes. Used for drafting only. */
+export const PROFILE_PATH = "data/profile.md";
 
 export interface ScoringContext {
   resume: string;
@@ -19,6 +21,10 @@ export function readResume(path = RESUME_PATH): string {
   } catch {
     throw new Error(`Put your resume in ${path} (Markdown or plain text).`);
   }
+}
+
+export function readProfile(path = PROFILE_PATH): string {
+  return existsSync(path) ? readFileSync(path, "utf8") : "";
 }
 
 export function loadScoringContext(config: JobfoxConfig): ScoringContext {

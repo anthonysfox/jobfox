@@ -7,7 +7,7 @@ import PDFDocument from "pdfkit";
  * dependency-free and ATS-readable (real text, not an image).
  */
 
-const MARGIN = 43; // 0.6 in
+const MARGIN = 36; // 0.5 in
 const REGULAR = "Helvetica";
 const BOLD = "Helvetica-Bold";
 const TEXT = "#1c1917";
@@ -36,17 +36,25 @@ function writeRuns(doc: Doc, text: string, x: number, width: number, align: "lef
   });
 }
 
-export function renderResumePdf(markdown: string): Promise<Buffer> {
+export interface RenderedResume {
+  pdf: Buffer;
+  pages: number;
+}
+
+export function renderResumePdf(markdown: string): Promise<RenderedResume> {
   const doc = new PDFDocument({
     size: "LETTER",
+    // Keeps pages in memory until end(), so the page count is known.
+    bufferPages: true,
     margins: { top: MARGIN, bottom: MARGIN, left: MARGIN, right: MARGIN },
     info: { Title: /^# (.+)$/m.exec(markdown)?.[1] ?? "Resume" },
   });
   const chunks: Buffer[] = [];
   doc.on("data", (chunk: Buffer) => chunks.push(chunk));
-  const done = new Promise<Buffer>((resolve, reject) => {
+  let pages = 1;
+  const done = new Promise<RenderedResume>((resolve, reject) => {
     doc.on("end", () => {
-      resolve(Buffer.concat(chunks));
+      resolve({ pdf: Buffer.concat(chunks), pages });
     });
     doc.on("error", reject);
   });
@@ -76,7 +84,7 @@ export function renderResumePdf(markdown: string): Promise<Buffer> {
     }
 
     if (line.startsWith("## ")) {
-      doc.moveDown(0.6);
+      doc.moveDown(0.5);
       doc
         .font(BOLD)
         .fontSize(10.5)
@@ -107,6 +115,7 @@ export function renderResumePdf(markdown: string): Promise<Buffer> {
     }
   }
 
+  pages = doc.bufferedPageRange().count;
   doc.end();
   return done;
 }

@@ -1,6 +1,7 @@
 import { comparable } from "../drafting/checks.ts";
 import type { DraftBullet } from "../drafting/drafter.ts";
 import { containsPhrase } from "../lib/normalize.ts";
+import { LIST_ITEM, listEntries } from "./entries.ts";
 
 /*
  * Builds a tailored copy of my resume Markdown from a draft, with plain string
@@ -9,7 +10,9 @@ import { containsPhrase } from "../lib/normalize.ts";
  * - Each drafted bullet replaces the resume line it names as its source.
  *   Bullets the checks flagged are skipped, so that line stays as I wrote it.
  * - Within each list, replaced bullets move to the top in the draft's order
- *   (most relevant first); the rest keep their original order.
+ *   (most relevant first), then any new bullets for that entry, then the
+ *   untouched lines in their original order. New bullets are used in the
+ *   draft's order up to maxAdditions, so the caller can fit the page.
  * - In the skills section, skills the posting mentions move to the front of their line.
  * - Contact details, which stay out of the resume file the model sees, are
  *   added to the line under my name.
@@ -22,19 +25,24 @@ export interface TailorOptions {
   posting: string;
   /** Extra contact details, e.g. email and phone. */
   contact?: string[];
+  /** How many new bullets to use, most relevant first. Defaults to all. */
+  maxAdditions?: number;
 }
 
 export interface TailoredResume {
   markdown: string;
-  /** How many drafted bullets were used. */
+  /** How many rewritten bullets were used. */
   replaced: number;
+  /** How many new bullets were added. */
+  added: number;
 }
 
-const LIST_ITEM = /^(\s*[-*]\s+)(.*)$/;
 const SKILL_LINE = /^(\s*[-*]\s+\*\*[^*]+\*\*\s*)(.+)$/;
 
 interface Line {
   text: string;
+  /** The entry this list item belongs to, if any. */
+  entry?: string | undefined;
   /** Position of the drafted bullet that replaced this line, if any. */
   rank?: number;
 }
@@ -52,15 +60,23 @@ export function tailorResume({
   bullets,
   posting,
   contact = [],
+  maxAdditions = Infinity,
 }: TailorOptions): TailoredResume {
   const usable = bullets
     .map((bullet, rank) => ({ bullet, rank, source: comparable(bullet.source) }))
     .filter((b) => b.bullet.issues.length === 0 && b.source.length > 0);
+  const rewrites = usable.filter((b) => b.bullet.entry === undefined);
+  let additions = usable
+    .filter((b) => b.bullet.entry !== undefined)
+    .slice(0, maxAdditions)
+    .map(({ bullet }) => ({ text: bullet.text, entry: comparable(bullet.entry ?? "") }));
   const used = new Set<number>();
   let section = "";
   let afterName = false;
 
-  const lines: Line[] = resume.split("\n").map((text) => {
+  const resumeLines = resume.split("\n");
+  const entryOf = listEntries(resumeLines);
+  const lines: Line[] = resumeLines.map((text, index) => {
     if (text.startsWith("# ")) {
       afterName = true;
       return { text };
@@ -76,6 +92,7 @@ export function tailorResume({
     const item = LIST_ITEM.exec(text);
     if (!item) return { text };
     const [, marker = "", content = ""] = item;
+    const entry = entryOf[index];
 
     if (section.includes("skill")) {
       const skill = SKILL_LINE.exec(text);
@@ -86,22 +103,35 @@ export function tailorResume({
 
     const key = comparable(content);
     // The source may quote part of a line; require it to cover most of the line.
-    const match = usable.find(
+    const match = rewrites.find(
       (b) => !used.has(b.rank) && key.includes(b.source) && b.source.length >= key.length / 2,
     );
-    if (!match) return { text };
+    if (!match) return { text, entry };
     used.add(match.rank);
-    return { text: `${marker}${match.bullet.text}`, rank: match.rank };
+    return { text: `${marker}${match.bullet.text}`, rank: match.rank, entry };
   });
 
-  // Reorder each run of consecutive list items: replaced first, by rank; stable otherwise.
+  // Reorder each run of consecutive list items: replaced first by rank, then
+  // new bullets for the entry, then the rest in their original order.
   const out: string[] = [];
   let run: Line[] = [];
+  let added = 0;
   const flush = () => {
+    const first = run[0];
+    if (!first) return;
+    const marker = LIST_ITEM.exec(first.text)?.[1] ?? "- ";
     const replaced = run
       .filter((l) => l.rank !== undefined)
       .sort((a, b) => (a.rank ?? 0) - (b.rank ?? 0));
-    out.push(...[...replaced, ...run.filter((l) => l.rank === undefined)].map((l) => l.text));
+    const entry = first.entry === undefined ? undefined : comparable(first.entry);
+    const extra = additions.filter((a) => entry !== undefined && a.entry === entry);
+    additions = additions.filter((a) => !extra.includes(a));
+    added += extra.length;
+    out.push(
+      ...replaced.map((l) => l.text),
+      ...extra.map((a) => `${marker}${a.text}`),
+      ...run.filter((l) => l.rank === undefined).map((l) => l.text),
+    );
     run = [];
   };
   for (const line of lines) {
@@ -114,7 +144,7 @@ export function tailorResume({
   }
   flush();
 
-  return { markdown: out.join("\n"), replaced: used.size };
+  return { markdown: out.join("\n"), replaced: used.size, added };
 }
 
 export function contactFromEnv(env: {
