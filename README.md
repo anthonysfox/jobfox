@@ -45,6 +45,8 @@ For a job I'm applying to, I paste the application form's questions into the job
 
 Code then checks each bullet: its original line must exist in my resume, and it may not contain numbers my resume doesn't. Problems show next to the bullet. I edit what I keep and paste it into the real form myself.
 
+From a draft, the job page's **Tailored resume (PDF)** button (or `pnpm resume <job id>`) builds a one-page PDF of my resume with the drafted bullets swapped in, the most relevant first within each role, and the skills the posting mentions listed first on each skills line. Email and phone come from `RESUME_EMAIL` and `RESUME_PHONE` in `.env`.
+
 ### Dashboard
 
 `pnpm web` starts a Next.js app on `localhost:3000` that reads the same database:
@@ -82,6 +84,7 @@ Without Adzuna keys, `discover` runs with HN and known boards only. Scoring need
 | `pnpm matches`   | Jobs to apply to, best fit first            |
 | `pnpm score`     | Embed and score new matches (`--limit N`)   |
 | `pnpm draft ID`  | Draft bullets and answers for one job       |
+| `pnpm resume ID` | Tailored resume PDF from the latest draft   |
 | `pnpm label`     | Hand-label jobs for the eval (blind)        |
 | `pnpm eval`      | Measure the scorer (`--model X` to compare) |
 | `pnpm test`      | Vitest (no network, no database)            |
@@ -133,6 +136,10 @@ Without Adzuna keys, `discover` runs with HN and known boards only. Scoring need
 **Don't trust the model's claims about the resume; check them.** The prompt forbids inventing experience, but the real guard is in code: each bullet must quote the resume line it rewrites, so a program can confirm that line exists and that no new numbers appeared. Those checks are deterministic, cheap, and tested, and anything they flag is shown rather than silently dropped.
 
 **Answers are keyed to my questions by position.** The model's echo of each question is ignored, so a reworded or skipped question can't shift answers onto the wrong question.
+
+**The tailored resume is built by code, not written by the model.** The PDF is my own resume Markdown with plain string edits: drafted bullets replace the lines they name, flagged bullets are skipped, and skills are reordered but never added. The model can't change my titles, dates, or summary, and the same draft always produces the same resume. Rendering uses pdfkit with built-in Helvetica: no headless browser, and the text stays selectable for applicant tracking systems.
+
+**Contact details never reach the model.** They're kept out of `data/resume.md`, which goes into every prompt, and are added only when the PDF is rendered.
 
 **Drafts are kept, not overwritten.** Each run saves a new `ApplicationDraft` with the model, prompt hash, and cost, and the page shows the latest. Nothing is ever submitted; the panel only has copy buttons.
 
