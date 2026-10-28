@@ -1,6 +1,6 @@
 import type Anthropic from "@anthropic-ai/sdk";
 import type { JobfoxConfig } from "../core/config.ts";
-import type { PrismaClient } from "../lib/db.ts";
+import { Prisma, type PrismaClient } from "../lib/db.ts";
 import { addUsage, emptyUsage, estimateCost } from "../scoring/cost.ts";
 import { resumeEntries } from "../resume/entries.ts";
 import { resumeHash } from "../scoring/embed.ts";
@@ -65,6 +65,7 @@ export async function draftForJob({
       promptHash: resumeHash(systemPrompt),
       questions,
       bullets: outcome.draft.bullets,
+      summary: outcome.draft.summary ?? Prisma.DbNull,
       answers: outcome.draft.answers,
       costUsd,
     },

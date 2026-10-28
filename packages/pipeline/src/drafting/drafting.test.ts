@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { parseConfig } from "../core/config.ts";
 import type { ScorableJob } from "../scoring/prompt.ts";
 import { clientReturning } from "../test/fake-anthropic.ts";
-import { bulletIssues, numbersIn } from "./checks.ts";
+import { bulletIssues, numbersIn, summaryIssues } from "./checks.ts";
 import { createDrafter } from "./drafter.ts";
 import { buildDraftMessage, buildDraftSystemPrompt } from "./prompt.ts";
 import { parseQuestions } from "./run.ts";
@@ -78,6 +78,58 @@ describe("bulletIssues", () => {
   it("reads numbers with separators and decimals", () => {
     expect(numbersIn("1,200 users, 99.9% uptime, $3")).toEqual(["1200", "99.9", "3"]);
   });
+
+  it('reads spelled-out counts, but not "one"', () => {
+    expect(numbersIn("Six years, hundreds of clients, one of two apps")).toEqual([
+      "six",
+      "hundreds",
+      "two",
+    ]);
+  });
+});
+
+describe("summaryIssues", () => {
+  const dashboard =
+    "Rebuilt the camera dashboard in React and TypeScript, cutting load time by 40%.";
+  const demos = "Demoed the features I built to 3 client teams.";
+
+  it("accepts sentences that each cite real lines", () => {
+    expect(
+      summaryIssues(
+        [
+          { text: "React engineer who cut dashboard load time 40%.", sources: [dashboard] },
+          { text: "Demos features to 3 client teams.", sources: [demos] },
+        ],
+        facts,
+      ),
+    ).toEqual([]);
+  });
+
+  it("requires each number to come from the sentence's own sources", () => {
+    // 40% is on the resume, but not in the line this sentence cites.
+    expect(
+      summaryIssues(
+        [{ text: "Demoed to clients, cutting load time 40%.", sources: [demos] }],
+        facts,
+      ),
+    ).toEqual(["Sentence 1 has numbers its sources don't: 40."]);
+  });
+
+  it("flags missing or unknown sources and length", () => {
+    expect(
+      summaryIssues(
+        [
+          { text: "Engineer.", sources: [] },
+          { text: "word ".repeat(80), sources: ["Led a team of five."] },
+        ],
+        facts,
+      ),
+    ).toEqual([
+      "Sentence 1 doesn't say what it's based on.",
+      'Sentence 2 cites a line that isn\'t in your resume or profile: "Led a team of five."',
+      "It's 81 words; keep it under 80.",
+    ]);
+  });
 });
 
 describe("parseQuestions", () => {
@@ -124,6 +176,13 @@ describe("prompts", () => {
 
 describe("createDrafter", () => {
   const output = {
+    summary: [
+      {
+        text: " Ships React dashboards. ",
+        sources: [" Demoed the features I built to 3 client teams. "],
+      },
+      { text: "", sources: [] },
+    ],
     rewrites: [
       {
         text: "  Cut dashboard load time by 40% with a React and TypeScript rebuild. ",
@@ -176,6 +235,11 @@ describe("createDrafter", () => {
       "Numbers not in your resume or profile: 12.",
     ]);
     expect(outcome.draft.bullets[2]).toMatchObject({ entry: "Experience", issues: [] });
+    expect(outcome.draft.summary).toEqual({
+      text: "Ships React dashboards.",
+      sources: ["Demoed the features I built to 3 client teams."],
+      issues: [],
+    });
     // The model answered one of two questions; the second stays empty rather than shifting.
     expect(outcome.draft.answers).toEqual(["Because…", ""]);
   });

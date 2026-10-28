@@ -171,6 +171,8 @@ model ApplicationDraft {
   questions  String[]
   /// [{ text, source, issues }]. issues come from checks in code, not the model.
   bullets    Json
+  /// { text, sources, issues }: a summary tailored to the job. Null on older drafts.
+  summary    Json?
   /// One answer per question, in the same order.
   answers    String[]
   costUsd    Float?

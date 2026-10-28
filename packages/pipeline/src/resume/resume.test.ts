@@ -152,6 +152,62 @@ describe("tailorResume", () => {
   });
 });
 
+describe("tailored summary", () => {
+  const withSummary = resume.replace(
+    "## Technical skills",
+    "## Summary\nFull-stack engineer.\nSecond paragraph.\n\n## Technical skills",
+  );
+  const summary = {
+    text: "React engineer who rebuilt a camera dashboard.",
+    sources: ["x"],
+    issues: [],
+  };
+
+  it("replaces the text under the Summary heading with one paragraph", () => {
+    const { markdown, summarized } = tailorResume({
+      resume: withSummary,
+      posting: "",
+      bullets: [],
+      summary,
+    });
+    expect(summarized).toBe(true);
+    expect(markdown).toContain("## Summary\nReact engineer who rebuilt a camera dashboard.\n");
+    expect(markdown).not.toContain("Full-stack engineer.");
+    expect(markdown).not.toContain("Second paragraph.");
+  });
+
+  it("keeps the original when the summary was flagged", () => {
+    const { markdown, summarized } = tailorResume({
+      resume: withSummary,
+      posting: "",
+      bullets: [],
+      summary: { ...summary, issues: ["Numbers not in your resume or profile: 9."] },
+    });
+    expect(summarized).toBe(false);
+    expect(markdown).toContain("Full-stack engineer.");
+  });
+
+  it("falls back to the original summary when the tailored one won't fit", async () => {
+    const filler = Array.from({ length: 30 }, (_, i) => `- Existing line ${i}.`).join("\n");
+    const long = { ...summary, text: "Long summary text. ".repeat(60) };
+    const tooLong = tailorResume({
+      resume: `${withSummary}\n${filler}`,
+      posting: "",
+      bullets: [],
+      summary: long,
+    });
+    expect((await renderResumePdf(tooLong.markdown)).pages).toBe(2);
+    const result = await buildTailoredResume({
+      resume: `${withSummary}\n${filler}`,
+      posting: "",
+      bullets: [],
+      summary: long,
+    });
+    expect(result.pages).toBe(1);
+    expect(result.summarized).toBe(false);
+  });
+});
+
 describe("contactLines", () => {
   it("puts location, phone, and email on one line and links on the next", () => {
     expect(

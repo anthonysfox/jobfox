@@ -1,8 +1,9 @@
-import type { DraftBullet } from "@jobfox/pipeline/drafting/drafter";
+import type { DraftBullet, DraftSummary } from "@jobfox/pipeline/drafting/drafter";
 import { CopyButton } from "./CopyButton";
 import { DraftForm } from "./DraftForm";
 
 interface Draft {
+  summary: DraftSummary | null;
   bullets: DraftBullet[];
   questions: string[];
   answers: string[];
@@ -34,6 +35,29 @@ export function DraftPanel({
 
       {draft && (
         <>
+          {draft.summary && (
+            <div>
+              <div className="mb-2 flex items-center justify-between">
+                <h3 className={heading}>Summary</h3>
+                <CopyButton text={draft.summary.text} />
+              </div>
+              <p className="text-sm">{draft.summary.text}</p>
+              <details className="mt-1 text-xs text-stone-500">
+                <summary className="cursor-pointer">Based on</summary>
+                <ul className="mt-1 list-disc space-y-1 pl-4">
+                  {draft.summary.sources.map((source) => (
+                    <li key={source}>{source}</li>
+                  ))}
+                </ul>
+              </details>
+              {draft.summary.issues.map((issue) => (
+                <p key={issue} className="mt-1 text-xs text-amber-700 dark:text-amber-400">
+                  Check this: {issue}
+                </p>
+              ))}
+            </div>
+          )}
+
           <div>
             <div className="mb-2 flex items-center justify-between">
               <h3 className={heading}>Resume bullets</h3>
@@ -100,8 +124,8 @@ export function DraftPanel({
               Download tailored resume (PDF)
             </a>
             <span className="text-xs text-stone-500">
-              Your resume with the rewrites swapped in, as many new bullets as fit on one page, and
-              matching skills listed first. Flagged bullets are left out.
+              Your resume with the tailored summary and rewrites swapped in, as many new bullets as
+              fit on one page, and matching skills listed first. Anything flagged is left out.
             </span>
           </div>
 

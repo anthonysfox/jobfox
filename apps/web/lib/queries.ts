@@ -2,7 +2,7 @@ import "server-only";
 import path from "node:path";
 import userConfig from "@jobfox/pipeline/config";
 import { parseConfig } from "@jobfox/pipeline/core/config";
-import { storedBulletsSchema } from "@jobfox/pipeline/drafting/drafter";
+import { storedBulletsSchema, storedSummarySchema } from "@jobfox/pipeline/drafting/drafter";
 import { containsPhrase } from "@jobfox/pipeline/lib/normalize";
 import { findCurrentMatches, type MatchedJob } from "@jobfox/pipeline/pipeline/matches";
 import { PROFILE_PATH, RESUME_PATH } from "@jobfox/pipeline/scoring/context";
@@ -124,7 +124,12 @@ export async function getJob(id: string) {
   if (!job) return null;
   const [latest] = job.drafts;
   const bullets = latest && storedBulletsSchema.safeParse(latest.bullets);
-  const draft = latest && bullets?.success ? { ...latest, bullets: bullets.data } : undefined;
+  // Older drafts have no summary; an unreadable one is treated the same way.
+  const summary = storedSummarySchema.safeParse(latest?.summary);
+  const draft =
+    latest && bullets?.success
+      ? { ...latest, bullets: bullets.data, summary: summary.success ? summary.data : null }
+      : undefined;
   return { job, score: latestScore(job.scores), draft };
 }
 

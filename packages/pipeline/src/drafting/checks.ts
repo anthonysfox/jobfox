@@ -12,9 +12,20 @@ export function comparable(text: string): string {
     .trim();
 }
 
-/** Numbers as written, e.g. "40%", "$1.2M", "3", with thousands separators dropped. */
+// Spelled-out counts, so "seven years" can't slip past a resume that says "Six years".
+// "one" is left out: it's too common outside counts ("one of", "the one I'm proudest of").
+const NUMBER_WORDS =
+  /\b(two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|dozens?|hundreds|thousands|millions)\b/gi;
+
+/**
+ * Numbers as written, e.g. "40%", "$1.2M", "3", with thousands separators
+ * dropped, plus spelled-out counts such as "six" and "hundreds", lowercased.
+ */
 export function numbersIn(text: string): string[] {
-  return [...text.matchAll(/\d[\d,]*(?:\.\d+)?/g)].map((m) => m[0].replaceAll(",", ""));
+  return [
+    ...[...text.matchAll(/\d[\d,]*(?:\.\d+)?/g)].map((m) => m[0].replaceAll(",", "")),
+    ...[...text.matchAll(NUMBER_WORDS)].map((m) => m[0].toLowerCase()),
+  ];
 }
 
 /** What the drafts may draw on. The profile is optional extra detail beyond the resume. */
@@ -50,11 +61,53 @@ export function bulletIssues(
     issues.push(`"${bullet.entry}" isn't a section of your resume.`);
   }
 
-  // Compare against all the facts, so a number moved in from another line is fine.
+  return [...issues, ...numberIssues(bullet.text, facts)];
+}
+
+// Compare against all the facts, so a number moved in from another line is fine.
+function numberIssues(text: string, facts: Facts): string[] {
   const known = new Set(numbersIn(`${facts.resume}\n${facts.profile}`));
-  const invented = [...new Set(numbersIn(bullet.text))].filter((n) => !known.has(n));
-  if (invented.length > 0) {
-    issues.push(`Numbers not in your resume or profile: ${invented.join(", ")}.`);
+  const invented = [...new Set(numbersIn(text))].filter((n) => !known.has(n));
+  return invented.length > 0
+    ? [`Numbers not in your resume or profile: ${invented.join(", ")}.`]
+    : [];
+}
+
+/** Longer than this and the summary crowds out bullets; mine is about 65 words. */
+export const MAX_SUMMARY_WORDS = 80;
+
+export interface SummarySentence {
+  text: string;
+  /** The resume or profile lines this sentence is based on. */
+  sources: string[];
+}
+
+/**
+ * A summary combines facts from several lines, so each sentence names its
+ * own sources. That makes the number check strict: a figure must come from
+ * the lines that sentence cites, so "hundreds of clients" can't move from the
+ * app it describes onto a different claim.
+ */
+export function summaryIssues(sentences: SummarySentence[], facts: Facts): string[] {
+  const issues: string[] = [];
+  const searched = comparable(`${facts.resume}\n${facts.profile}`);
+  sentences.forEach((sentence, i) => {
+    const label = `Sentence ${i + 1}`;
+    if (sentence.sources.length === 0) issues.push(`${label} doesn't say what it's based on.`);
+    for (const source of sentence.sources) {
+      if (!searched.includes(comparable(source))) {
+        issues.push(`${label} cites a line that isn't in your resume or profile: "${source}"`);
+      }
+    }
+    const cited = new Set(numbersIn(sentence.sources.join("\n")));
+    const unsupported = [...new Set(numbersIn(sentence.text))].filter((n) => !cited.has(n));
+    if (unsupported.length > 0) {
+      issues.push(`${label} has numbers its sources don't: ${unsupported.join(", ")}.`);
+    }
+  });
+  const words = sentences.flatMap((s) => s.text.split(/\s+/)).filter(Boolean).length;
+  if (words > MAX_SUMMARY_WORDS) {
+    issues.push(`It's ${words} words; keep it under ${MAX_SUMMARY_WORDS}.`);
   }
   return issues;
 }

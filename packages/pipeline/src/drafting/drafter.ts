@@ -4,10 +4,11 @@ import { z } from "zod";
 import type { JobfoxConfig } from "../core/config.ts";
 import { readStructured } from "../lib/structured.ts";
 import type { ScorableJob } from "../scoring/prompt.ts";
-import { bulletIssues, type Facts } from "./checks.ts";
+import { bulletIssues, summaryIssues, type Facts } from "./checks.ts";
 import { buildDraftMessage, type FitNotes } from "./prompt.ts";
 
 export const draftSchema = z.object({
+  summary: z.array(z.object({ text: z.string(), sources: z.array(z.string()) })),
   rewrites: z.array(z.object({ text: z.string(), source: z.string() })),
   additions: z.array(z.object({ text: z.string(), source: z.string(), entry: z.string() })),
   answers: z.array(z.object({ question: z.string(), answer: z.string() })),
@@ -27,7 +28,20 @@ export const storedBulletsSchema = z.array(
 );
 export type DraftBullet = z.output<typeof storedBulletsSchema>[number];
 
+/**
+ * How the tailored summary is stored in ApplicationDraft.summary: the
+ * sentences joined, with every line they cite. Issues are checked per sentence.
+ */
+export const storedSummarySchema = z.object({
+  text: z.string(),
+  sources: z.array(z.string()),
+  issues: z.array(z.string()),
+});
+export type DraftSummary = z.output<typeof storedSummarySchema>;
+
 export interface Draft {
+  /** Null when the model left it blank. */
+  summary: DraftSummary | null;
   bullets: DraftBullet[];
   /** One per question, in the order asked. */
   answers: string[];
@@ -61,10 +75,24 @@ export function createDrafter({ client, facts, systemPrompt, config }: DrafterOp
 
     const result = readStructured(response, draftSchema);
     if (!result.ok) return { ok: false, reason: result.reason, usage: response.usage };
+    const sentences = result.data.summary
+      .map((s) => ({
+        text: s.text.trim(),
+        sources: s.sources.map((x) => x.trim()).filter(Boolean),
+      }))
+      .filter((s) => s.text);
 
     return {
       ok: true,
       draft: {
+        summary:
+          sentences.length > 0
+            ? {
+                text: sentences.map((s) => s.text).join(" "),
+                sources: [...new Set(sentences.flatMap((s) => s.sources))],
+                issues: summaryIssues(sentences, facts),
+              }
+            : null,
         bullets: [
           ...result.data.rewrites.slice(0, 6).map((b) => ({
             text: b.text.trim(),

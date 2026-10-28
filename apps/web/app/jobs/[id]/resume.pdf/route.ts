@@ -14,6 +14,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
   const { pdf } = await buildTailoredResume({
     resume,
     bullets: found.draft.bullets,
+    summary: found.draft.summary,
     posting: found.job.description ?? "",
     contact: contactFromEnv(parseEnv(process.env)),
   });

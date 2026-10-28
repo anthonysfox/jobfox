@@ -1,5 +1,5 @@
 import { comparable } from "../drafting/checks.ts";
-import type { DraftBullet } from "../drafting/drafter.ts";
+import type { DraftBullet, DraftSummary } from "../drafting/drafter.ts";
 import { containsPhrase } from "../lib/normalize.ts";
 import { LIST_ITEM, listEntries } from "./entries.ts";
 
@@ -7,6 +7,8 @@ import { LIST_ITEM, listEntries } from "./entries.ts";
  * Builds a tailored copy of my resume Markdown from a draft, with plain string
  * edits: no model call, and nothing changes except what's described here.
  *
+ * - A tailored summary that passed the checks replaces the text under the
+ *   "## Summary" heading.
  * - Each drafted bullet replaces the resume line it names as its source.
  *   Bullets the checks flagged are skipped, so that line stays as I wrote it.
  * - Within each list, replaced bullets move to the top in the draft's order
@@ -22,6 +24,8 @@ import { LIST_ITEM, listEntries } from "./entries.ts";
 export interface TailorOptions {
   resume: string;
   bullets: DraftBullet[];
+  /** The draft's tailored summary; ignored when missing or flagged. */
+  summary?: DraftSummary | null | undefined;
   /** The posting text, for ordering skills. */
   posting: string;
   /** Extra contact details, e.g. email and phone. */
@@ -36,7 +40,11 @@ export interface TailoredResume {
   replaced: number;
   /** How many new bullets were added. */
   added: number;
+  /** Whether the tailored summary was used. */
+  summarized: boolean;
 }
+
+const SUMMARY_HEADING = /^## (summary|profile|about)\b/i;
 
 const SKILL_LINE = /^(\s*[-*]\s+\*\*[^*]+\*\*\s*)(.+)$/;
 
@@ -59,6 +67,7 @@ function orderSkills(items: string, posting: string): string {
 export function tailorResume({
   resume,
   bullets,
+  summary,
   posting,
   contact = [],
   maxAdditions = Infinity,
@@ -74,6 +83,8 @@ export function tailorResume({
   const used = new Set<number>();
   let section = "";
   let afterName = false;
+  const newSummary = summary && summary.issues.length === 0 ? summary.text : undefined;
+  let summarized = false;
 
   const resumeLines = resume.split("\n");
   const entryOf = listEntries(resumeLines);
@@ -86,14 +97,21 @@ export function tailorResume({
       afterName = false;
       if (!text.startsWith("#")) return { text: contactLines(text, contact).join("\n") };
     }
-    if (text.startsWith("## ")) section = text.toLowerCase();
+    if (text.startsWith("## ")) section = text;
+
+    // The summary's paragraphs become the one tailored paragraph.
+    if (newSummary && SUMMARY_HEADING.test(section) && text.trim() && !text.startsWith("#")) {
+      if (summarized) return { text: "" };
+      summarized = true;
+      return { text: newSummary };
+    }
 
     const item = LIST_ITEM.exec(text);
     if (!item) return { text };
     const [, marker = "", content = ""] = item;
     const entry = entryOf[index];
 
-    if (section.includes("skill")) {
+    if (section.toLowerCase().includes("skill")) {
       const skill = SKILL_LINE.exec(text);
       return skill
         ? { text: `${skill[1] ?? ""}${orderSkills(skill[2] ?? "", posting)}` }
@@ -143,7 +161,7 @@ export function tailorResume({
   }
   flush();
 
-  return { markdown: out.join("\n"), replaced: used.size, added };
+  return { markdown: out.join("\n"), replaced: used.size, added, summarized };
 }
 
 const LINK = /^(https?:\/\/)?[\w-]+(\.[\w-]+)+(\/\S*)?$/;

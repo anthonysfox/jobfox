@@ -1,7 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import userConfig from "../../jobfox.config.ts";
 import { parseConfig, parseEnv } from "../core/config.ts";
-import { storedBulletsSchema } from "../drafting/drafter.ts";
+import { storedBulletsSchema, storedSummarySchema } from "../drafting/drafter.ts";
 import { draftForJob } from "../drafting/run.ts";
 import { createDb } from "../lib/db.ts";
 import { readProfile, readResume } from "../scoring/context.ts";
@@ -37,6 +37,11 @@ async function main(): Promise<void> {
     });
     if (!result.ok) throw new Error(`Couldn't draft: ${result.reason}`);
 
+    const summary = storedSummarySchema.nullable().parse(result.draft.summary);
+    if (summary) {
+      console.log(`\nSummary\n  ${summary.text}`);
+      for (const issue of summary.issues) console.log(`    ! ${issue}`);
+    }
     console.log("\nResume bullets");
     for (const bullet of storedBulletsSchema.parse(result.draft.bullets)) {
       console.log(`  ${bullet.entry ? `+ [${bullet.entry}]` : "-"} ${bullet.text}`);

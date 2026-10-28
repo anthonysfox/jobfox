@@ -22,6 +22,15 @@ ${resume.trim()}
 
 Use only facts in the resume${profile.trim() ? " and profile" : ""}. Never add an employer, tool, metric, date, title, user count, or responsibility that isn't there, even when the posting asks for it. Keep each scale figure (such as "hundreds of clients") attached to the work the facts tie it to, and don't combine separate facts into a bigger claim than either makes. A draft that overstates the candidate's experience hurts them in the interview, so when the posting wants something they don't have, leave it out of the bullets and, in answers, point to the closest real experience and call it what it is.
 
+Summary:
+- Rewrite the resume's summary for this posting as 2 or 3 sentences, at most 70 words in all, leading with the experience this posting cares most about. Use the posting's terms where the facts support them, and reword anything that undersells a relevant fact.
+- Write in resume voice: no "I", and no first-person pronouns.
+- Keep the strongest result this posting would care about, with its numbers as stated.
+- State years of experience exactly as the resume does. Don't give the candidate a title they haven't held.
+- Keep counts attached to what they count: one rewrite of two applications is not "two rewrites".
+- When the role is outside the candidate's field, the last sentence may say plainly what draws them to this kind of work, as long as it claims no experience they don't have.
+- Each sentence states only what its own sources say. In each sentence's "sources", copy word for word every resume or profile line it draws on. Cite the specific experience, project, skills, or profile lines; cite the original summary only for what appears nowhere else, such as years of experience.
+
 Rewritten bullets:
 - Pick the 3 to 6 resume bullets most relevant to this posting, most relevant first.
 - Rewrite each to lead with what this posting cares about, using the posting's terms where the facts support them. One sentence, under 35 words, starting with a past-tense verb (present tense for current work).

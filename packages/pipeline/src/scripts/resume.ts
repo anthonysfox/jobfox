@@ -2,7 +2,7 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import userConfig from "../../jobfox.config.ts";
 import { parseConfig, parseEnv } from "../core/config.ts";
-import { storedBulletsSchema } from "../drafting/drafter.ts";
+import { storedBulletsSchema, storedSummarySchema } from "../drafting/drafter.ts";
 import { createDb } from "../lib/db.ts";
 import { buildTailoredResume } from "../resume/build.ts";
 import { contactFromEnv, resumeFileName } from "../resume/tailor.ts";
@@ -37,6 +37,7 @@ async function main(): Promise<void> {
     const tailored = await buildTailoredResume({
       resume,
       bullets: storedBulletsSchema.parse(draft.bullets),
+      summary: storedSummarySchema.nullable().parse(draft.summary),
       posting: job.description ?? "",
       contact: contactFromEnv(env),
     });
@@ -44,7 +45,7 @@ async function main(): Promise<void> {
     mkdirSync(OUT_DIR, { recursive: true });
     writeFileSync(file, tailored.pdf);
     console.log(
-      `Wrote ${file}: ${tailored.replaced} rewritten bullets, ${tailored.added} new, ${tailored.pages} page(s).`,
+      `Wrote ${file}: ${tailored.summarized ? "tailored summary, " : ""}${tailored.replaced} rewritten bullets, ${tailored.added} new, ${tailored.pages} page(s).`,
     );
   } finally {
     await db.$disconnect();
