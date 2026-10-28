@@ -8,6 +8,17 @@ const roles = [
   "cloud engineer",
   "solutions engineer",
   "forward deployed engineer",
+  // Banks, insurers, hospitals, and media companies often title the same work this way.
+  "application developer",
+];
+
+// Client-facing technical roles my EarthCam work supports.
+const adjacentRoles = [
+  "implementation engineer",
+  "integration engineer",
+  "technical consultant",
+  "customer engineer",
+  "sales engineer",
 ];
 
 export default defineConfig({
@@ -17,8 +28,8 @@ export default defineConfig({
     // daily and monthly caps, so check your usage at developer.adzuna.com.
     searches: [
       // ~40 km around Manhattan covers Jersey City, Hoboken, and Newark.
-      ...roles.map((what) => ({ what, where: "New York", distanceKm: 40 })),
-      ...roles.map((what) => ({ what: `${what} remote` })),
+      ...[...roles, ...adjacentRoles].map((what) => ({ what, where: "New York", distanceKm: 40 })),
+      ...[...roles, ...adjacentRoles].map((what) => ({ what: `${what} remote` })),
     ],
     maxDaysOld: 14,
     resultsPerPage: 50,
@@ -34,6 +45,8 @@ export default defineConfig({
     concurrency: 4,
     preferences: [
       "Mid-level roles: full-stack, frontend, cloud, solutions engineer, or forward-deployed engineer.",
+      "Also open to client-facing technical roles: implementation, integration, technical consulting, customer engineering, sales engineering, or technical support engineering.",
+      "Any industry: finance, healthcare, media, retail, and government are as welcome as tech companies.",
       "On-site or hybrid in the NYC / Northern NJ area, or remote within the US.",
       "Strongest in TypeScript, React, Next.js, Node.js, Prisma, and Postgres; AWS Solutions Architect Associate.",
       "Not looking for staff/principal/management roles, or roles centered on a stack I haven't used.",
@@ -66,6 +79,27 @@ export default defineConfig({
       "solutions engineer",
       "solutions architect",
       "forward deployed",
+      // The same work at non-tech employers.
+      "application developer",
+      "applications developer",
+      "programmer analyst",
+      "software development engineer",
+      "ui developer",
+      "ui engineer",
+      "web engineer",
+      // Client-facing technical roles.
+      "solution engineer",
+      "solution consultant",
+      "solutions consultant",
+      "sales engineer",
+      "implementation engineer",
+      "implementation consultant",
+      "implementation specialist",
+      "integration engineer",
+      "integrations engineer",
+      "technical consultant",
+      "customer engineer",
+      "support engineer",
     ],
     // Whole-word matches. Avoid bare "ny": it would also match Albany, NY.
     locations: [

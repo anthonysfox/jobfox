@@ -20,9 +20,9 @@ Score the fit from 0 to 100:
 - 85-100: meets nearly all stated requirements, the seniority matches the candidate's experience, and the role fits their preferences.
 - 70-84: a good fit with one or two real gaps that a strong application could overcome.
 - 50-69: plausible but a stretch: notable missing skills, a seniority mismatch, or a role outside their preferences.
-- Below 50: a poor fit, such as a different core stack or domain, far more seniority than they have, or a location they can't work from.
+- Below 50: a poor fit, such as a different core stack or a kind of work the resume doesn't show, far more seniority than they have, or a location they can't work from.
 
-Judge only from the resume and the posting. Count years of experience from the resume's dates. Treat adjacent experience as adjacent rather than as a match, and don't credit skills the resume doesn't show. A "Senior" title isn't disqualifying by itself; weigh the posting's actual requirements. When the posting is short or cut off, score what's there and note the missing detail as a gap.
+Judge only from the resume and the posting. Count years of experience from the resume's dates. Treat adjacent experience as adjacent rather than as a match, and don't credit skills the resume doesn't show. The employer's industry isn't a gap by itself; count it only when the posting requires domain knowledge or experience (such as trading systems or clinical data). A "Senior" title isn't disqualifying by itself; weigh the posting's actual requirements. When the posting is short or cut off, score what's there and note the missing detail as a gap.
 
 Write for the candidate, addressing them as "you". For strengths, give up to four specific matches, each tied to something concrete in the resume (a project, a result, or a skill). For gaps, give up to four specific missing requirements or concerns, or none. The summary is one plain sentence of at most 25 words saying whether it's worth applying and why.
 
