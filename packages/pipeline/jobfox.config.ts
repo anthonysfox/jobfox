@@ -58,17 +58,13 @@ export default defineConfig({
     effort: "medium",
     maxJobsPerRun: 400,
     concurrency: 4,
+    // An example. My real preferences, including pay, live in data/preferences.md
+    // (gitignored), which replaces this when it exists. One preference per line.
     preferences: [
-      "Mid-level roles: full-stack, frontend, cloud, solutions engineer, or forward-deployed engineer.",
-      "Also open to roles that mix building with client contact, roughly half coding: implementation, integration, deployment, professional services, customer engineering, technical consulting, or creative technologist.",
-      "I want to be hands-on, building things myself (UI, integrations, prototypes, customer deployments), more than advising, documenting, or managing.",
-      "Avoid roles with a sales quota or commission-based pay.",
-      "Any industry: finance, healthcare, media, retail, and government are as welcome as tech companies.",
-      "A plus, not a requirement: music and media, AI tools and agents, construction tech, or cameras and IoT.",
-      "Also open to hands-on work outside software: AV and systems integration (especially AV programming), show control, exhibits and installations, project coordination, and customer onboarding or training. For these, weigh transferable experience: client contact, demos, onboarding people, leading a migration, and building things that come together.",
+      "Mid-level roles: full-stack, frontend, or solutions engineering.",
+      "On-site or hybrid near my city, or remote within my country.",
+      "Strongest in TypeScript, React, Node.js, and Postgres.",
       "Pay: a stated range that tops out below my minimum is a poor fit.",
-      "On-site or hybrid in the NYC / Northern NJ area, or remote within the US.",
-      "Strongest in TypeScript, React, Next.js, Node.js, Prisma, and Postgres; AWS Solutions Architect Associate.",
       "Not looking for staff/principal/management roles, or roles centered on a stack I haven't used.",
     ].join("\n"),
     // Tuned on my first eval (11 labels): every job I called strong scored 62+, and

@@ -77,7 +77,7 @@ pnpm db:migrate
 pnpm discover
 ```
 
-Without Adzuna keys, `discover` runs with HN and known boards only. Scoring needs `ANTHROPIC_API_KEY` in `.env` and a resume at `packages/pipeline/data/resume.md` (gitignored).
+Without Adzuna keys, `discover` runs with HN and known boards only. Scoring needs `ANTHROPIC_API_KEY` in `.env` and a resume at `packages/pipeline/data/resume.md` (gitignored). Put your own scoring preferences in `packages/pipeline/data/preferences.md`, one per line; until then, scoring uses the example in `jobfox.config.ts`. They're kept out of the repo because they include pay.
 
 | Script           | What it does                                |
 | ---------------- | ------------------------------------------- |

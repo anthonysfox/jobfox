@@ -6,6 +6,8 @@ import { buildSystemPrompt } from "./prompt.ts";
 export const RESUME_PATH = "data/resume.md";
 /** Optional: more detail than the resume holds, with accuracy notes. Used for drafting only. */
 export const PROFILE_PATH = "data/profile.md";
+/** Optional: my real scoring preferences, kept out of the repo because they include pay. */
+export const PREFERENCES_PATH = "data/preferences.md";
 
 export interface ScoringContext {
   resume: string;
@@ -27,9 +29,14 @@ export function readProfile(path = PROFILE_PATH): string {
   return existsSync(path) ? readFileSync(path, "utf8") : "";
 }
 
+/** data/preferences.md when it exists, otherwise the example in jobfox.config.ts. */
+export function readPreferences(fallback: string, path = PREFERENCES_PATH): string {
+  return existsSync(path) ? readFileSync(path, "utf8") : fallback;
+}
+
 export function loadScoringContext(config: JobfoxConfig): ScoringContext {
   const resume = readResume();
-  const systemPrompt = buildSystemPrompt(resume, config.scoring.preferences);
+  const systemPrompt = buildSystemPrompt(resume, readPreferences(config.scoring.preferences));
   return {
     resume,
     systemPrompt,
