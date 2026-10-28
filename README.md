@@ -104,6 +104,8 @@ Without Adzuna keys, `discover` runs with HN and known boards only. Scoring need
 
 **Hard filters reject only on known facts.** A job with no stated location or role goes to review rather than being dropped.
 
+**Titles decide what's in scope; scoring decides what's good.** The title filter is a broad allowlist of role phrases, including the titles non-tech employers use ("Application Developer", "Programmer Analyst") and client-facing engineering roles. Things a title can't show, such as a sales quota, the industry, or whether the work is hands-on, go to the model as preferences. Interests like music and media are a plus in scoring rather than a filter, so a strong role elsewhere isn't hidden. The rubric also says outright that an employer's industry isn't a gap unless the posting requires domain knowledge, so a bank's React role isn't marked down for being at a bank.
+
 **Adzuna redirect links are never followed automatically.** `redirect_url` is a tracked click that advertisers may pay for. Resolving hundreds by script would inflate their numbers and likely break Adzuna's terms. Adzuna jobs are upgraded when they merge with an HN post or a polled ATS board instead.
 
 **Zod at every boundary.** API responses, environment, and config are validated where they enter the system. A changed API shape fails with a field path instead of writing `undefined` to the database. Schemas are loose objects so the raw payload keeps fields we don't model.

@@ -12,13 +12,16 @@ const roles = [
   "application developer",
 ];
 
-// Client-facing technical roles my EarthCam work supports.
+// Roles that mix building with client contact, roughly half coding. No sales
+// engineer: those usually carry a quota.
 const adjacentRoles = [
   "implementation engineer",
   "integration engineer",
+  "deployment engineer",
+  "professional services engineer",
   "technical consultant",
   "customer engineer",
-  "sales engineer",
+  "creative technologist",
 ];
 
 export default defineConfig({
@@ -45,8 +48,11 @@ export default defineConfig({
     concurrency: 4,
     preferences: [
       "Mid-level roles: full-stack, frontend, cloud, solutions engineer, or forward-deployed engineer.",
-      "Also open to client-facing technical roles: implementation, integration, technical consulting, customer engineering, sales engineering, or technical support engineering.",
+      "Also open to roles that mix building with client contact, roughly half coding: implementation, integration, deployment, professional services, customer engineering, technical consulting, or creative technologist.",
+      "I want to be hands-on, building things myself (UI, integrations, prototypes, customer deployments), more than advising, documenting, or managing.",
+      "Avoid roles with a sales quota or commission-based pay.",
       "Any industry: finance, healthcare, media, retail, and government are as welcome as tech companies.",
+      "A plus, not a requirement: music and media, AI tools and agents, construction tech, or cameras and IoT.",
       "On-site or hybrid in the NYC / Northern NJ area, or remote within the US.",
       "Strongest in TypeScript, React, Next.js, Node.js, Prisma, and Postgres; AWS Solutions Architect Associate.",
       "Not looking for staff/principal/management roles, or roles centered on a stack I haven't used.",
@@ -86,17 +92,23 @@ export default defineConfig({
       "software development engineer",
       "ui developer",
       "ui engineer",
+      "ux engineer",
       "web engineer",
+      "creative technologist",
+      "design technologist",
       // Client-facing technical roles.
       "solution engineer",
       "solution consultant",
       "solutions consultant",
-      "sales engineer",
       "implementation engineer",
       "implementation consultant",
       "implementation specialist",
       "integration engineer",
       "integrations engineer",
+      "deployment engineer",
+      "professional services engineer",
+      "developer advocate",
+      "developer relations engineer",
       "technical consultant",
       "customer engineer",
       "support engineer",
