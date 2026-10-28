@@ -11,7 +11,7 @@ export function buildDraftSystemPrompt(resume: string, profile: string): string 
     .map((entry) => `- ${entry}`)
     .join("\n");
   const profileBlock = profile.trim()
-    ? `\n\nThe candidate's profile adds detail the resume leaves out. Its accuracy notes are binding: they say what the candidate did not do. Planned work is not done work.\n\n<profile>\n${profile.trim()}\n</profile>`
+    ? `\n\nThe candidate's profile adds detail the resume leaves out. Its accuracy notes are binding: they say what the candidate did not do. Planned work is not done work. The notes limit what you claim; don't repeat them as disclaimers to the employer, just leave out what they rule out.\n\n<profile>\n${profile.trim()}\n</profile>`
     : "";
 
   return `You help one candidate tailor a job application. You write drafts; the candidate reviews and edits everything and submits the application themselves.
