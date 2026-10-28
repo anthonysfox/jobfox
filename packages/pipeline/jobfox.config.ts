@@ -24,6 +24,17 @@ const adjacentRoles = [
   "creative technologist",
 ];
 
+// Hands-on work outside software. On-site by nature, so searched near NYC only.
+const nonTechRoles = [
+  "av programmer",
+  "audio visual engineer",
+  "show control",
+  "exhibit technician",
+  "project coordinator",
+  "customer onboarding",
+  "technical trainer",
+];
+
 export default defineConfig({
   adzuna: {
     country: "us",
@@ -33,6 +44,7 @@ export default defineConfig({
       // ~40 km around Manhattan covers Jersey City, Hoboken, and Newark.
       ...[...roles, ...adjacentRoles].map((what) => ({ what, where: "New York", distanceKm: 40 })),
       ...[...roles, ...adjacentRoles].map((what) => ({ what: `${what} remote` })),
+      ...nonTechRoles.map((what) => ({ what, where: "New York", distanceKm: 40 })),
     ],
     maxDaysOld: 14,
     resultsPerPage: 50,
@@ -53,6 +65,8 @@ export default defineConfig({
       "Avoid roles with a sales quota or commission-based pay.",
       "Any industry: finance, healthcare, media, retail, and government are as welcome as tech companies.",
       "A plus, not a requirement: music and media, AI tools and agents, construction tech, or cameras and IoT.",
+      "Also open to hands-on work outside software: AV and systems integration (especially AV programming), show control, exhibits and installations, project coordination, and customer onboarding or training. For these, weigh transferable experience: client contact, demos, onboarding people, leading a migration, and building things that come together.",
+      "Pay: a stated range that tops out below my minimum is a poor fit.",
       "On-site or hybrid in the NYC / Northern NJ area, or remote within the US.",
       "Strongest in TypeScript, React, Next.js, Node.js, Prisma, and Postgres; AWS Solutions Architect Associate.",
       "Not looking for staff/principal/management roles, or roles centered on a stack I haven't used.",
@@ -112,6 +126,22 @@ export default defineConfig({
       "technical consultant",
       "customer engineer",
       "support engineer",
+      // Hands-on work outside software.
+      "av programmer",
+      "av engineer",
+      "av technician",
+      "av integration",
+      "audio visual",
+      "audiovisual",
+      "crestron",
+      "show control",
+      "exhibit technician",
+      "exhibit fabricator",
+      "project coordinator",
+      "onboarding specialist",
+      "customer onboarding",
+      "technical trainer",
+      "training specialist",
     ],
     // Whole-word matches. Avoid bare "ny": it would also match Albany, NY.
     locations: [
