@@ -4,6 +4,10 @@ A personal job-search pipeline. It finds postings, filters them against hard rul
 
 **Status:** Phases 1, 3, and 4 work locally: discovery from Adzuna, Hacker News, and Greenhouse/Lever/Ashby boards; fit scoring with an eval against my hand labels; and a dashboard for triage, labeling, eval results, and application drafts. Next are AWS deployment (Phase 2) and application tracking (Phase 5).
 
+![The jobs dashboard: scored postings with summaries and gaps](docs/screenshots/jobs.png)
+
+_Screenshots use demo data with invented companies._
+
 ## How it works
 
 ```
@@ -36,6 +40,8 @@ A personal job-search pipeline. It finds postings, filters them against hard rul
 3. The most similar unscored jobs go to Claude (Haiku 5.5 by default) with my resume, my preferences, and a rubric. It returns a 0–100 fit score, strengths, gaps, and a one-line summary as validated JSON.
 4. `pnpm label` and `pnpm eval` measure the scorer against my own judgment of 20–30 jobs.
 
+![The eval page: agreement, precision@k, rank correlation against the embeddings-only baseline, a confusion matrix, and every disagreement](docs/screenshots/eval.png)
+
 ### Drafting
 
 For a job I'm applying to, I paste the application form's questions into the job page (or run `pnpm draft <job id>`). Claude (Sonnet 5.5) gets my resume, an optional profile (`data/profile.md`: more detail than fits on a resume, with accuracy notes such as "I built the configuration surface, not the AI detection"), the posting, and the scorer's strengths and gaps, and returns:
@@ -49,6 +55,8 @@ Code then checks each bullet: a rewrite's original line must exist in my resume,
 
 From a draft, the job page's **Tailored resume (PDF)** button (or `pnpm resume <job id>`) builds a one-page PDF of my resume with the tailored summary and rewrites swapped in, the most relevant first within each role, as many new bullets as fit on the page, and the skills the posting mentions listed first on each skills line. Email, phone, and links (such as a personal site) come from `RESUME_EMAIL`, `RESUME_PHONE`, and `RESUME_LINKS` in `.env`; editing `data/resume.md` instead would change the scoring prompt and re-score every job.
 
+![A job page with a tailored draft; a bullet with an invented number is flagged by the code checks](docs/screenshots/job-detail.png)
+
 ### Dashboard
 
 `pnpm web` starts a Next.js app on `localhost:3000` that reads the same database:
@@ -57,6 +65,8 @@ From a draft, the job page's **Tailored resume (PDF)** button (or `pnpm resume <
 - **Job detail:** the full description beside the model's strengths and gaps, plus the application draft panel with copy buttons.
 - **Label:** blind labeling for the eval, one job at a time with keyboard shortcuts.
 - **Eval:** the latest eval run, with a confusion matrix and every disagreement.
+
+![Blind labeling, one job at a time with keyboard shortcuts](docs/screenshots/label.png)
 
 ## Repository layout
 
