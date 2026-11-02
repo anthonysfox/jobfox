@@ -175,6 +175,8 @@ model ApplicationDraft {
   summary    Json?
   /// One answer per question, in the same order.
   answers    String[]
+  /// { text, issues }: a note to the hiring manager. Null on older drafts.
+  message    Json?
   costUsd    Float?
   createdAt  DateTime @default(now())
 

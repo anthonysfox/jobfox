@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { parseConfig } from "../core/config.ts";
 import type { ScorableJob } from "../scoring/prompt.ts";
 import { clientReturning } from "../test/fake-anthropic.ts";
-import { bulletIssues, numbersIn, summaryIssues } from "./checks.ts";
+import { bulletIssues, messageIssues, numbersIn, summaryIssues } from "./checks.ts";
 import { createDrafter } from "./drafter.ts";
 import { buildDraftMessage, buildDraftSystemPrompt } from "./prompt.ts";
 import { parseQuestions } from "./run.ts";
@@ -132,6 +132,15 @@ describe("summaryIssues", () => {
   });
 });
 
+describe("messageIssues", () => {
+  it("accepts a short note with known numbers and flags a long one", () => {
+    expect(messageIssues("Hi [name], I cut load time by 40%.", facts)).toEqual([]);
+    expect(messageIssues("word ".repeat(151), facts)).toEqual([
+      "It's 151 words; keep it under 150.",
+    ]);
+  });
+});
+
 describe("parseQuestions", () => {
   it("takes one question per line and drops blanks", () => {
     expect(parseQuestions("  Why us?\n\nWhat's your stack?  \n")).toEqual([
@@ -198,6 +207,7 @@ describe("createDrafter", () => {
       },
     ],
     answers: [{ question: "Why do you want this job (reworded)?", answer: " Because… " }],
+    message: " Hi [hiring manager's name], I applied for the role and served 9,000 users. ",
   };
 
   it("sends a cached system prompt with structured output", async () => {
@@ -242,6 +252,10 @@ describe("createDrafter", () => {
     });
     // The model answered one of two questions; the second stays empty rather than shifting.
     expect(outcome.draft.answers).toEqual(["Because…", ""]);
+    expect(outcome.draft.message).toEqual({
+      text: "Hi [hiring manager's name], I applied for the role and served 9,000 users.",
+      issues: ["Numbers not in your resume or profile: 9000."],
+    });
   });
 
   it("reports truncated responses", async () => {

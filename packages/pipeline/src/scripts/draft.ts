@@ -1,7 +1,11 @@
 import Anthropic from "@anthropic-ai/sdk";
 import userConfig from "../../jobfox.config.ts";
 import { parseConfig, parseEnv } from "../core/config.ts";
-import { storedBulletsSchema, storedSummarySchema } from "../drafting/drafter.ts";
+import {
+  storedBulletsSchema,
+  storedMessageSchema,
+  storedSummarySchema,
+} from "../drafting/drafter.ts";
 import { draftForJob } from "../drafting/run.ts";
 import { createDb } from "../lib/db.ts";
 import { readProfile, readResume } from "../scoring/context.ts";
@@ -50,6 +54,11 @@ async function main(): Promise<void> {
     result.draft.questions.forEach((question, i) => {
       console.log(`\n${question}\n${result.draft.answers[i] ?? ""}`);
     });
+    const message = storedMessageSchema.nullable().parse(result.draft.message);
+    if (message) {
+      console.log(`\nMessage to the hiring manager\n${message.text}`);
+      for (const issue of message.issues) console.log(`  ! ${issue}`);
+    }
     if (result.draft.costUsd !== null) console.log(`\n~$${result.draft.costUsd.toFixed(3)}`);
   } finally {
     await db.$disconnect();

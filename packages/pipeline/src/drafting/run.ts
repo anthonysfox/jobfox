@@ -66,6 +66,7 @@ export async function draftForJob({
       questions,
       bullets: outcome.draft.bullets,
       summary: outcome.draft.summary ?? Prisma.DbNull,
+      message: outcome.draft.message ?? Prisma.DbNull,
       answers: outcome.draft.answers,
       costUsd,
     },

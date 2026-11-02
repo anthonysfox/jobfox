@@ -1,4 +1,4 @@
-import type { DraftBullet, DraftSummary } from "@jobfox/pipeline/drafting/drafter";
+import type { DraftBullet, DraftMessage, DraftSummary } from "@jobfox/pipeline/drafting/drafter";
 import { CopyButton } from "./CopyButton";
 import { DraftForm } from "./DraftForm";
 
@@ -7,6 +7,7 @@ interface Draft {
   bullets: DraftBullet[];
   questions: string[];
   answers: string[];
+  message: DraftMessage | null;
   model: string;
   costUsd: number | null;
   createdAt: Date;
@@ -113,6 +114,27 @@ export function DraftPanel({
                   </div>
                 );
               })}
+            </div>
+          )}
+
+          {draft.message && (
+            <div>
+              <div className="flex items-start justify-between gap-3">
+                <h3 className={heading}>Message to the hiring manager</h3>
+                <CopyButton text={draft.message.text} />
+              </div>
+              <p className="mt-1 whitespace-pre-wrap text-sm leading-relaxed">
+                {draft.message.text}
+              </p>
+              {draft.message.issues.map((issue) => (
+                <p key={issue} className="mt-1 text-xs text-amber-700 dark:text-amber-400">
+                  Check this: {issue}
+                </p>
+              ))}
+              <p className="mt-1 text-xs text-stone-500">
+                For email or LinkedIn after you apply. Fill in the bracketed parts and send it
+                yourself.
+              </p>
             </div>
           )}
 

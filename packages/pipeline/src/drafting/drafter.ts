@@ -4,7 +4,7 @@ import { z } from "zod";
 import type { JobfoxConfig } from "../core/config.ts";
 import { readStructured } from "../lib/structured.ts";
 import type { ScorableJob } from "../scoring/prompt.ts";
-import { bulletIssues, summaryIssues, type Facts } from "./checks.ts";
+import { bulletIssues, messageIssues, summaryIssues, type Facts } from "./checks.ts";
 import { buildDraftMessage, type FitNotes } from "./prompt.ts";
 
 export const draftSchema = z.object({
@@ -12,6 +12,7 @@ export const draftSchema = z.object({
   rewrites: z.array(z.object({ text: z.string(), source: z.string() })),
   additions: z.array(z.object({ text: z.string(), source: z.string(), entry: z.string() })),
   answers: z.array(z.object({ question: z.string(), answer: z.string() })),
+  message: z.string(),
 });
 
 /**
@@ -39,12 +40,18 @@ export const storedSummarySchema = z.object({
 });
 export type DraftSummary = z.output<typeof storedSummarySchema>;
 
+/** How the hiring manager message is stored in ApplicationDraft.message. */
+export const storedMessageSchema = z.object({ text: z.string(), issues: z.array(z.string()) });
+export type DraftMessage = z.output<typeof storedMessageSchema>;
+
 export interface Draft {
   /** Null when the model left it blank. */
   summary: DraftSummary | null;
   bullets: DraftBullet[];
   /** One per question, in the order asked. */
   answers: string[];
+  /** A short note to the hiring manager; null when the model left it blank. */
+  message: DraftMessage | null;
 }
 
 export type DraftOutcome =
@@ -108,6 +115,9 @@ export function createDrafter({ client, facts, systemPrompt, config }: DrafterOp
         ],
         // Keyed to my questions by position, so a reworded echo can't misalign them.
         answers: questions.map((_, i) => result.data.answers[i]?.answer.trim() ?? ""),
+        message: result.data.message.trim()
+          ? { text: result.data.message.trim(), issues: messageIssues(result.data.message, facts) }
+          : null,
       },
       usage: response.usage,
     };

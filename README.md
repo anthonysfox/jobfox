@@ -50,6 +50,7 @@ For a job I'm applying to, I paste the application form's questions into the job
 - 3–6 of my resume bullets, rewritten to lead with what this posting cares about, each paired with the original line it came from.
 - Up to 5 new bullets from profile facts the resume leaves out, most relevant first, each naming its source line and the resume entry it goes under.
 - An answer to each question, with bracketed placeholders such as `[your salary expectations]` where the resume doesn't have the facts.
+- A short message to the hiring manager (under 120 words) for email or LinkedIn after I apply, with the same number check as the bullets. I send it myself.
 
 Code then checks each bullet: a rewrite's original line must exist in my resume, a new bullet's source must exist in my resume or profile and its entry on my resume, and no bullet may contain numbers that appear in neither. Each summary sentence's sources must exist, and its numbers must appear in those sources. Problems show next to the bullet. I edit what I keep and paste it into the real form myself.
 
