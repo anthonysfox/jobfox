@@ -3,8 +3,10 @@ import PDFDocument from "pdfkit";
 /*
  * Renders resume Markdown to a one-column PDF. It understands only what my
  * resume uses: "#" name, the contact line under it, "##" sections, "###"
- * entries, "-" bullets, paragraphs, and **bold**. Built-in Helvetica keeps it
- * dependency-free and ATS-readable (real text, not an image).
+ * entries, "-" bullets, paragraphs, and **bold**. A line ending in a date
+ * range ("**Engineer**, July 2025 – Present") puts the dates at the right
+ * margin, and skills lists have no bullet markers. Built-in Helvetica keeps
+ * it dependency-free and ATS-readable (real text, not an image).
  */
 
 const MARGIN = 36; // 0.5 in
@@ -12,10 +14,20 @@ const REGULAR = "Helvetica";
 const BOLD = "Helvetica-Bold";
 const TEXT = "#1c1917";
 const MUTED = "#57534e";
+const ACCENT = "#2c3e6b";
 const BODY_SIZE = 9.5;
 const LINE_GAP = 1.5;
 
 type Doc = InstanceType<typeof PDFDocument>;
+
+const DATE_RANGE =
+  /^(.*\S),\s+((?:[A-Z][a-z]+ )?\d{4}\s+[–-]\s+(?:Present|(?:[A-Z][a-z]+ )?\d{4}))$/;
+
+/** "**Engineer**, July 2025 – Present" -> ["**Engineer**", "July 2025 – Present"]. */
+export function splitDates(line: string): [string, string] | null {
+  const match = DATE_RANGE.exec(line);
+  return match ? [match[1] ?? "", match[2] ?? ""] : null;
+}
 
 /** Splits "**Bold:** rest" into styled runs; stray single asterisks are dropped. */
 export function inlineRuns(text: string): { text: string; bold: boolean }[] {
@@ -62,6 +74,7 @@ export function renderResumePdf(markdown: string): Promise<RenderedResume> {
   const left = MARGIN;
   const width = doc.page.width - MARGIN * 2;
   let afterName = false;
+  let section = "";
 
   for (const raw of markdown.split("\n")) {
     const line = raw.trim();
@@ -69,7 +82,11 @@ export function renderResumePdf(markdown: string): Promise<RenderedResume> {
     doc.fillColor(TEXT);
 
     if (line.startsWith("# ")) {
-      doc.font(BOLD).fontSize(20).text(line.slice(2), left, doc.y, { width, align: "center" });
+      doc.font(BOLD).fontSize(20).text(line.slice(2).toUpperCase(), left, doc.y, {
+        width,
+        align: "center",
+        characterSpacing: 1.5,
+      });
       afterName = true;
       continue;
     }
@@ -85,8 +102,10 @@ export function renderResumePdf(markdown: string): Promise<RenderedResume> {
     }
 
     if (line.startsWith("## ")) {
+      section = line.toLowerCase();
       doc.moveDown(0.5);
       doc
+        .fillColor(ACCENT)
         .font(BOLD)
         .fontSize(10.5)
         .text(line.slice(3).toUpperCase(), left, doc.y, { width, characterSpacing: 0.6 });
@@ -97,11 +116,15 @@ export function renderResumePdf(markdown: string): Promise<RenderedResume> {
         .lineWidth(0.6)
         .strokeColor(MUTED)
         .stroke();
-      doc.moveDown(0.35);
+      doc.fillColor(TEXT).moveDown(0.35);
     } else if (line.startsWith("### ")) {
       doc.moveDown(0.25);
       doc.fontSize(10);
       writeRuns(doc, `**${line.slice(4).replace(/\*\*/g, "")}**`, left, width, "left");
+    } else if (/^[-*]\s+/.test(line) && section.includes("skill")) {
+      doc.fontSize(BODY_SIZE);
+      writeRuns(doc, line.replace(/^[-*]\s+/, ""), left, width, "left");
+      doc.moveDown(0.15);
     } else if (/^[-*]\s+/.test(line)) {
       doc.fontSize(BODY_SIZE);
       const y = doc.y;
@@ -111,7 +134,17 @@ export function renderResumePdf(markdown: string): Promise<RenderedResume> {
       doc.moveDown(0.15);
     } else {
       doc.fontSize(BODY_SIZE);
-      writeRuns(doc, line, left, width, "left");
+      const dated = splitDates(line);
+      if (dated) {
+        const [text, dates] = dated;
+        const y = doc.y;
+        doc.font(REGULAR).text(dates, left, y, { width, align: "right", lineBreak: false });
+        const dateWidth = doc.widthOfString(dates);
+        doc.y = y;
+        writeRuns(doc, text, left, width - dateWidth - 12, "left");
+      } else {
+        writeRuns(doc, line, left, width, "left");
+      }
       doc.moveDown(0.15);
     }
   }

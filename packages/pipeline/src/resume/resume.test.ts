@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { DraftBullet } from "../drafting/drafter.ts";
 import { buildTailoredResume } from "./build.ts";
-import { inlineRuns, renderResumePdf } from "./render.ts";
+import { inlineRuns, renderResumePdf, splitDates } from "./render.ts";
 import {
   contactFromEnv,
   contactLines,
@@ -262,6 +262,25 @@ describe("buildTailoredResume", () => {
     expect(result.pages).toBe(1);
     expect(result.added).toBeGreaterThan(0);
     expect(result.added).toBeLessThan(5);
+  });
+});
+
+describe("splitDates", () => {
+  it.each([
+    [
+      "**Full-Stack Engineer**, July 2025 – Present",
+      ["**Full-Stack Engineer**", "July 2025 – Present"],
+    ],
+    [
+      "**Software Engineer** (promoted from Associate Software Engineer, 2025), January 2019 – July 2025",
+      [
+        "**Software Engineer** (promoted from Associate Software Engineer, 2025)",
+        "January 2019 – July 2025",
+      ],
+    ],
+    ["Rowan University — BA, December 2018", null],
+  ])("%s", (line, expected) => {
+    expect(splitDates(line)).toEqual(expected);
   });
 });
 
