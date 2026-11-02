@@ -134,9 +134,20 @@ describe("summaryIssues", () => {
 
 describe("messageIssues", () => {
   it("accepts a short note with known numbers and flags a long one", () => {
-    expect(messageIssues("Hi [name], I cut load time by 40%.", facts)).toEqual([]);
-    expect(messageIssues("word ".repeat(151), facts)).toEqual([
+    expect(
+      messageIssues({ subject: "React role", text: "Hi [name], I cut load time by 40%." }, facts),
+    ).toEqual([]);
+    expect(messageIssues({ subject: "", text: "word ".repeat(151) }, facts)).toEqual([
       "It's 151 words; keep it under 150.",
+    ]);
+  });
+
+  it("checks the subject's length and numbers too", () => {
+    expect(
+      messageIssues({ subject: `Served 9,000 users ${"word ".repeat(8)}`, text: "Hi." }, facts),
+    ).toEqual([
+      "The subject is 11 words; keep it under 10.",
+      "Numbers not in your resume or profile: 9000.",
     ]);
   });
 });
@@ -213,7 +224,10 @@ describe("createDrafter", () => {
       },
     ],
     answers: [{ question: "Why do you want this job (reworded)?", answer: " Because… " }],
-    message: " Hi [hiring manager's name], I applied for the role and served 9,000 users. ",
+    message: {
+      subject: " Full Stack Engineer application ",
+      text: " Hi [hiring manager's name], I applied for the role and served 9,000 users. ",
+    },
   };
 
   it("sends a cached system prompt with structured output", async () => {
@@ -259,6 +273,7 @@ describe("createDrafter", () => {
     // The model answered one of two questions; the second stays empty rather than shifting.
     expect(outcome.draft.answers).toEqual(["Because…", ""]);
     expect(outcome.draft.message).toEqual({
+      subject: "Full Stack Engineer application",
       text: "Hi [hiring manager's name], I applied for the role and served 9,000 users.",
       issues: ["Numbers not in your resume or profile: 9000."],
     });

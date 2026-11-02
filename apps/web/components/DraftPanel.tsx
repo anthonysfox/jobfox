@@ -123,7 +123,16 @@ export function DraftPanel({
                 <h3 className={heading}>Message to the hiring manager</h3>
                 <CopyButton text={draft.message.text} />
               </div>
-              <p className="mt-1 whitespace-pre-wrap text-sm leading-relaxed">
+              {draft.message.subject && (
+                <div className="mt-1 flex items-center justify-between gap-3">
+                  <p className="text-sm">
+                    <span className="text-stone-500">Subject: </span>
+                    <span className="font-medium">{draft.message.subject}</span>
+                  </p>
+                  <CopyButton text={draft.message.subject} label="Copy subject" />
+                </div>
+              )}
+              <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed">
                 {draft.message.text}
               </p>
               {draft.message.issues.map((issue) => (
@@ -132,7 +141,8 @@ export function DraftPanel({
                 </p>
               ))}
               <p className="mt-1 text-xs text-stone-500">
-                For email or LinkedIn after you apply. Fill in the bracketed parts and send it
+                For email or LinkedIn after you apply. The subject is for email and InMail; LinkedIn
+                connection requests don't have one. Fill in the bracketed parts and send it
                 yourself.
               </p>
             </div>

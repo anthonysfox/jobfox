@@ -12,7 +12,7 @@ export const draftSchema = z.object({
   rewrites: z.array(z.object({ text: z.string(), source: z.string() })),
   additions: z.array(z.object({ text: z.string(), source: z.string(), entry: z.string() })),
   answers: z.array(z.object({ question: z.string(), answer: z.string() })),
-  message: z.string(),
+  message: z.object({ subject: z.string(), text: z.string() }),
 });
 
 /**
@@ -41,7 +41,12 @@ export const storedSummarySchema = z.object({
 export type DraftSummary = z.output<typeof storedSummarySchema>;
 
 /** How the hiring manager message is stored in ApplicationDraft.message. */
-export const storedMessageSchema = z.object({ text: z.string(), issues: z.array(z.string()) });
+export const storedMessageSchema = z.object({
+  // Drafts from before subject lines have none.
+  subject: z.string().default(""),
+  text: z.string(),
+  issues: z.array(z.string()),
+});
 export type DraftMessage = z.output<typeof storedMessageSchema>;
 
 export interface Draft {
@@ -115,8 +120,12 @@ export function createDrafter({ client, facts, systemPrompt, config }: DrafterOp
         ],
         // Keyed to my questions by position, so a reworded echo can't misalign them.
         answers: questions.map((_, i) => result.data.answers[i]?.answer.trim() ?? ""),
-        message: result.data.message.trim()
-          ? { text: result.data.message.trim(), issues: messageIssues(result.data.message, facts) }
+        message: result.data.message.text.trim()
+          ? {
+              subject: result.data.message.subject.trim(),
+              text: result.data.message.text.trim(),
+              issues: messageIssues(result.data.message, facts),
+            }
           : null,
       },
       usage: response.usage,

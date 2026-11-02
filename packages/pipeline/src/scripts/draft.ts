@@ -57,7 +57,9 @@ async function main(): Promise<void> {
     });
     const message = storedMessageSchema.nullable().parse(result.draft.message);
     if (message) {
-      console.log(`\nMessage to the hiring manager\n${message.text}`);
+      console.log(
+        `\nMessage to the hiring manager\nSubject: ${message.subject}\n\n${message.text}`,
+      );
       for (const issue of message.issues) console.log(`  ! ${issue}`);
     }
     if (result.draft.costUsd !== null) console.log(`\n~$${result.draft.costUsd.toFixed(3)}`);

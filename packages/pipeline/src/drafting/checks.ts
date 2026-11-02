@@ -115,13 +115,23 @@ export function summaryIssues(sentences: SummarySentence[], facts: Facts): strin
 /** A note to a hiring manager gets skimmed; past this it's a cover letter. */
 export const MAX_MESSAGE_WORDS = 150;
 
+/** Subjects get cut off in inbox previews past about this many words. */
+export const MAX_SUBJECT_WORDS = 10;
+
 /** The message makes claims too, so it gets the same number check as the bullets. */
-export function messageIssues(text: string, facts: Facts): string[] {
+export function messageIssues(
+  { subject, text }: { subject: string; text: string },
+  facts: Facts,
+): string[] {
   const words = text.split(/\s+/).filter(Boolean).length;
+  const subjectWords = subject.split(/\s+/).filter(Boolean).length;
   return [
     ...(words > MAX_MESSAGE_WORDS
       ? [`It's ${words} words; keep it under ${MAX_MESSAGE_WORDS}.`]
       : []),
-    ...numberIssues(text, facts),
+    ...(subjectWords > MAX_SUBJECT_WORDS
+      ? [`The subject is ${subjectWords} words; keep it under ${MAX_SUBJECT_WORDS}.`]
+      : []),
+    ...numberIssues(`${subject}\n${text}`, facts),
   ];
 }
