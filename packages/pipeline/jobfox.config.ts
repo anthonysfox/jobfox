@@ -24,6 +24,16 @@ const adjacentRoles = [
   "creative technologist",
 ];
 
+// Creative and 3D web work, where my Blender experience counts. Technical
+// artist is mostly games, so it's the longest shot.
+const creativeRoles = [
+  "creative developer",
+  "webgl developer",
+  "three.js developer",
+  "3d web developer",
+  "technical artist",
+];
+
 // Hands-on work outside software. On-site by nature, so searched near NYC only.
 const nonTechRoles = [
   "av programmer",
@@ -42,8 +52,12 @@ export default defineConfig({
     // daily and monthly caps, so check your usage at developer.adzuna.com.
     searches: [
       // ~40 km around Manhattan covers Jersey City, Hoboken, and Newark.
-      ...[...roles, ...adjacentRoles].map((what) => ({ what, where: "New York", distanceKm: 40 })),
-      ...[...roles, ...adjacentRoles].map((what) => ({ what: `${what} remote` })),
+      ...[...roles, ...adjacentRoles, ...creativeRoles].map((what) => ({
+        what,
+        where: "New York",
+        distanceKm: 40,
+      })),
+      ...[...roles, ...adjacentRoles, ...creativeRoles].map((what) => ({ what: `${what} remote` })),
       ...nonTechRoles.map((what) => ({ what, where: "New York", distanceKm: 40 })),
     ],
     maxDaysOld: 14,
@@ -106,6 +120,17 @@ export default defineConfig({
       "web engineer",
       "creative technologist",
       "design technologist",
+      // Creative and 3D web work.
+      "creative developer",
+      "creative engineer",
+      "interactive developer",
+      "webgl",
+      "three.js",
+      "3d web",
+      "3d developer",
+      "graphics engineer",
+      "technical artist",
+      "tech artist",
       // Client-facing technical roles.
       "solution engineer",
       "solution consultant",
