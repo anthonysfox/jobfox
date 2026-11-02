@@ -23,7 +23,7 @@ export function buildDraftSystemPrompt(resume: string, profile: string, voice = 
 ${resume.trim()}
 </resume>${profileBlock}${voiceBlock}
 
-Use only facts in the resume${profile.trim() ? " and profile" : ""}. Never add an employer, tool, metric, date, title, user count, or responsibility that isn't there, even when the posting asks for it. Keep each scale figure (such as "hundreds of clients") attached to the work the facts tie it to, and don't combine separate facts into a bigger claim than either makes. A draft that overstates the candidate's experience hurts them in the interview, so when the posting wants something they don't have, leave it out of the bullets and, in answers, point to the closest real experience and call it what it is.
+Use only facts in the resume${profile.trim() ? " and profile" : ""}. Never add an employer, tool, metric, date, title, user count, or responsibility that isn't there, even when the posting asks for it. Keep each scale figure (such as "hundreds of clients") attached to the work the facts tie it to, and don't combine separate facts into a bigger claim than either makes. Don't add how often, how long, or how much (such as "daily", "for years", or "extensively") unless the facts say so. A draft that overstates the candidate's experience hurts them in the interview, so when the posting wants something they don't have, leave it out of the bullets and, in answers, point to the closest real experience and call it what it is.
 
 Summary:
 - Rewrite the resume's summary for this posting as 2 or 3 sentences, at most 70 words in all, leading with the experience this posting cares most about. Use the posting's terms where the facts support them, and reword anything that undersells a relevant fact.
@@ -56,6 +56,8 @@ Answers:
 Message to the hiring manager:
 - Write a short note the candidate can send the hiring manager by email or LinkedIn after applying: at most 120 words, first person, in the candidate's voice${voice.trim() ? " as described above" : ""}, greeting them as "[hiring manager's name]".
 - Say which role they applied for, give the one or two facts that best match what this posting needs, and close with a plain, low-pressure ask, such as a short call.
+- Make it specific to this company: if the posting describes something concrete about the company, its product, or the team that connects to the candidate's experience or interests, give it one sentence: what it is, why it caught their eye, and the connection. Use only details from the posting. If the posting has nothing specific, leave this out rather than write generic praise.
+- If a staffing agency or recruiter posted the job, or the employer is confidential, write to the recruiter instead: greet them as "[recruiter's name]" and refer to the employer as "your client".
 - Same honesty and style rules as the answers. Use square-bracket placeholders for anything you don't know.
 - Give it a subject line for email or LinkedIn InMail: under 10 words, naming the role and one specific hook from the message, in the same voice. No clickbait, all caps, or "Quick question".
 
@@ -67,12 +69,30 @@ export interface FitNotes {
   gaps: string[];
 }
 
+const AGENCY_NAME = /\b(agency|staffing|recruit\w*|talent|executive search|placement|headhunt\w*)\b/i;
+const AGENCY_TEXT =
+  /\b(our client|on behalf of (?:our|a) client|confidential client|hiring company:\s*confidential|client company)\b/i;
+
+/**
+ * Whether a recruiter or staffing agency probably posted the job. Code checks
+ * this rather than the model, which missed "Hiring Company: Confidential"
+ * from an agency in testing.
+ */
+export function isLikelyRecruiter(job: Pick<ScorableJob, "companyName" | "description">): boolean {
+  return AGENCY_NAME.test(job.companyName) || AGENCY_TEXT.test(job.description ?? "");
+}
+
 export function buildDraftMessage(
   job: ScorableJob,
   questions: string[],
   fit: FitNotes | undefined,
 ): string {
   const parts = [buildJobMessage(job)];
+  if (isLikelyRecruiter(job)) {
+    parts.push(
+      "<poster>A recruiter or staffing agency likely posted this job, so write the message to the recruiter.</poster>",
+    );
+  }
   if (fit) {
     // The scorer's read of the fit, so the draft leans on the same strengths.
     const list = (items: string[]) => items.map((item) => `- ${item}`).join("\n") || "(none)";

@@ -4,7 +4,7 @@ import type { ScorableJob } from "../scoring/prompt.ts";
 import { clientReturning } from "../test/fake-anthropic.ts";
 import { bulletIssues, messageIssues, numbersIn, summaryIssues } from "./checks.ts";
 import { createDrafter } from "./drafter.ts";
-import { buildDraftMessage, buildDraftSystemPrompt } from "./prompt.ts";
+import { buildDraftMessage, buildDraftSystemPrompt, isLikelyRecruiter } from "./prompt.ts";
 import { parseQuestions } from "./run.ts";
 
 const config = parseConfig({ adzuna: { searches: [{ what: "x" }] }, filters: {} }).drafting;
@@ -193,6 +193,21 @@ describe("prompts", () => {
     expect(message).toContain("Title: Full Stack Engineer");
     expect(message).toContain("Strengths:\n- React rebuild\nGaps:\n(none)");
     expect(message).toContain("<questions>\n1. Why us?\n2. Biggest project?\n</questions>");
+  });
+
+  it("flags jobs a recruiter likely posted", () => {
+    const posted = (companyName: string, description: string) =>
+      isLikelyRecruiter({ companyName, description });
+    expect(posted("Zensho Agency", "Hiring Company: Confidential")).toBe(true);
+    expect(posted("Acme", "We're hiring on behalf of our client, a fintech.")).toBe(true);
+    expect(posted("TTG Talent Solutions", "")).toBe(true);
+    expect(posted("Coast", "Our customers run fleets.")).toBe(false);
+    expect(posted("Search Atlas", "")).toBe(false);
+    expect(posted("Fruition Executive Search", "")).toBe(true);
+    expect(buildDraftMessage({ ...job, companyName: "Zensho Agency" }, [], undefined)).toContain(
+      "<poster>",
+    );
+    expect(buildDraftMessage(job, [], undefined)).not.toContain("<poster>");
   });
 
   it("leaves the fit assessment out for unscored jobs", () => {
