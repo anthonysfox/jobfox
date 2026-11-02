@@ -6,19 +6,22 @@ import { buildJobMessage, type ScorableJob } from "../scoring/prompt.ts";
  * cacheable), while the job and its form's questions go in the user turn.
  */
 
-export function buildDraftSystemPrompt(resume: string, profile: string): string {
+export function buildDraftSystemPrompt(resume: string, profile: string, voice = ""): string {
   const entries = resumeEntries(resume)
     .map((entry) => `- ${entry}`)
     .join("\n");
   const profileBlock = profile.trim()
     ? `\n\nThe candidate's profile adds detail the resume leaves out. Its accuracy notes are binding: they say what the candidate did not do. Planned work is not done work. The notes limit what you claim; don't repeat them as disclaimers to the employer, just leave out what they rule out.\n\n<profile>\n${profile.trim()}\n</profile>`
     : "";
+  const voiceBlock = voice.trim()
+    ? `\n\nHow the candidate writes, in their own words. Follow it for the message to the hiring manager. It describes style only: every fact still has to come from the resume${profile.trim() ? " or profile" : ""}.\n\n<voice>\n${voice.trim()}\n</voice>`
+    : "";
 
   return `You help one candidate tailor a job application. You write drafts; the candidate reviews and edits everything and submits the application themselves.
 
 <resume>
 ${resume.trim()}
-</resume>${profileBlock}
+</resume>${profileBlock}${voiceBlock}
 
 Use only facts in the resume${profile.trim() ? " and profile" : ""}. Never add an employer, tool, metric, date, title, user count, or responsibility that isn't there, even when the posting asks for it. Keep each scale figure (such as "hundreds of clients") attached to the work the facts tie it to, and don't combine separate facts into a bigger claim than either makes. A draft that overstates the candidate's experience hurts them in the interview, so when the posting wants something they don't have, leave it out of the bullets and, in answers, point to the closest real experience and call it what it is.
 
@@ -51,7 +54,7 @@ Answers:
 - When a question needs information you don't have (salary expectations, start date, work authorization, references), write a placeholder in square brackets, such as "[your salary expectations]", instead of guessing.
 
 Message to the hiring manager:
-- Write a short note the candidate can send the hiring manager by email or LinkedIn after applying: at most 120 words, first person, starting with "Hi [hiring manager's name],".
+- Write a short note the candidate can send the hiring manager by email or LinkedIn after applying: at most 120 words, first person, in the candidate's voice${voice.trim() ? " as described above" : ""}, greeting them as "[hiring manager's name]".
 - Say which role they applied for, give the one or two facts that best match what this posting needs, and close with a plain, low-pressure ask, such as a short call.
 - Same honesty and style rules as the answers. Use square-bracket placeholders for anything you don't know.
 

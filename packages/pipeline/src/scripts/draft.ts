@@ -8,7 +8,7 @@ import {
 } from "../drafting/drafter.ts";
 import { draftForJob } from "../drafting/run.ts";
 import { createDb } from "../lib/db.ts";
-import { readProfile, readResume } from "../scoring/context.ts";
+import { readProfile, readResume, readVoice } from "../scoring/context.ts";
 
 /*
  * Draft tailored resume bullets and answers for one job. The dashboard's job
@@ -36,6 +36,7 @@ async function main(): Promise<void> {
       config,
       resume: readResume(),
       profile: readProfile(),
+      voice: readVoice(),
       jobId,
       questions,
     });

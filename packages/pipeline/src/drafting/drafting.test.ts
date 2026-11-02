@@ -164,6 +164,12 @@ describe("prompts", () => {
     expect(prompt).toContain("from this list:\n- Experience\n");
   });
 
+  it("adds the candidate's voice for the message when there is one", () => {
+    const prompt = buildDraftSystemPrompt(resume, profile, "Warm, a little casual.");
+    expect(prompt).toContain("<voice>\nWarm, a little casual.\n</voice>");
+    expect(buildDraftSystemPrompt(resume, profile)).not.toContain("<voice>");
+  });
+
   it("leaves the profile out when there isn't one", () => {
     expect(buildDraftSystemPrompt(resume, "")).not.toContain("<profile>");
   });

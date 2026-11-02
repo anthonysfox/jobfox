@@ -9,7 +9,7 @@ import {
 } from "@jobfox/pipeline/drafting/drafter";
 import { containsPhrase } from "@jobfox/pipeline/lib/normalize";
 import { findCurrentMatches, type MatchedJob } from "@jobfox/pipeline/pipeline/matches";
-import { PROFILE_PATH, RESUME_PATH } from "@jobfox/pipeline/scoring/context";
+import { PROFILE_PATH, RESUME_PATH, VOICE_PATH } from "@jobfox/pipeline/scoring/context";
 import { spreadEvenly } from "@jobfox/pipeline/scoring/metrics";
 import { toVerdict, type Verdict } from "@jobfox/pipeline/scoring/scorer";
 import { db } from "./db";
@@ -19,6 +19,7 @@ export const config = parseConfig(userConfig);
 // Next runs from apps/web; the resume lives with the pipeline.
 export const RESUME_FILE = path.join(process.cwd(), "../../packages/pipeline", RESUME_PATH);
 export const PROFILE_FILE = path.join(process.cwd(), "../../packages/pipeline", PROFILE_PATH);
+export const VOICE_FILE = path.join(process.cwd(), "../../packages/pipeline", VOICE_PATH);
 
 export type Score = MatchedJob["scores"][number] & { verdict: Verdict };
 export interface JobRow {

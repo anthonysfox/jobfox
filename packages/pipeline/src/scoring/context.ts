@@ -6,6 +6,8 @@ import { buildSystemPrompt } from "./prompt.ts";
 export const RESUME_PATH = "data/resume.md";
 /** Optional: more detail than the resume holds, with accuracy notes. Used for drafting only. */
 export const PROFILE_PATH = "data/profile.md";
+/** Optional: how I write, so drafted messages sound like me. Used for drafting only. */
+export const VOICE_PATH = "data/voice.md";
 /** Optional: my real scoring preferences, kept out of the repo because they include pay. */
 export const PREFERENCES_PATH = "data/preferences.md";
 
@@ -26,6 +28,10 @@ export function readResume(path = RESUME_PATH): string {
 }
 
 export function readProfile(path = PROFILE_PATH): string {
+  return existsSync(path) ? readFileSync(path, "utf8") : "";
+}
+
+export function readVoice(path = VOICE_PATH): string {
   return existsSync(path) ? readFileSync(path, "utf8") : "";
 }
 

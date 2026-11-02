@@ -25,6 +25,8 @@ export interface DraftForJobOptions {
   resume: string;
   /** Optional extra detail beyond the resume; see data/profile.md. */
   profile: string;
+  /** Optional: how I write; see data/voice.md. */
+  voice?: string;
   jobId: string;
   questions: string[];
 }
@@ -36,6 +38,7 @@ export async function draftForJob({
   config,
   resume,
   profile,
+  voice = "",
   jobId,
   questions,
 }: DraftForJobOptions) {
@@ -48,7 +51,7 @@ export async function draftForJob({
   });
   if (!job) return { ok: false as const, reason: "job not found" };
 
-  const systemPrompt = buildDraftSystemPrompt(resume, profile);
+  const systemPrompt = buildDraftSystemPrompt(resume, profile, voice);
   const facts = { resume, profile, entries: resumeEntries(resume) };
   const draft = createDrafter({ client, facts, systemPrompt, config: config.drafting });
   const outcome = await draft({ ...job, companyName: job.company.name }, questions, job.scores[0]);
