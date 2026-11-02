@@ -69,7 +69,8 @@ export interface FitNotes {
   gaps: string[];
 }
 
-const AGENCY_NAME = /\b(agency|staffing|recruit\w*|talent|executive search|placement|headhunt\w*)\b/i;
+const AGENCY_NAME =
+  /\b(agency|staffing|recruit\w*|talent|executive search|placement|headhunt\w*)\b/i;
 const AGENCY_TEXT =
   /\b(our client|on behalf of (?:our|a) client|confidential client|hiring company:\s*confidential|client company)\b/i;
 
