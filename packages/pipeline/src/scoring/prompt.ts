@@ -35,6 +35,7 @@ const SOURCE_LABELS: Record<Source, string> = {
   ASHBY: "Ashby (full posting)",
   HN_HIRING: "Hacker News 'Who is hiring?' post",
   ADZUNA: "Adzuna (short snippet; the full posting is longer)",
+  MANUAL: "Pasted by the candidate (full posting)",
 };
 
 /** Postings longer than this are cut, with a marker the model can see. */

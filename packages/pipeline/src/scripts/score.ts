@@ -29,6 +29,8 @@ async function main(): Promise<void> {
       config,
       context,
       jobs,
+      // Jobs I pasted are ones I'm applying to, so they never wait behind the limit.
+      alwaysInclude: new Set(jobs.filter((j) => j.descriptionSource === "MANUAL").map((j) => j.id)),
       onProgress: (done, total) => {
         if (done % 25 === 0 || done === total) console.log(`  scored ${done}/${total}`);
       },

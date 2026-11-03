@@ -100,6 +100,8 @@ export function mergeCanonical(existing: CanonicalJob, incoming: CanonicalJob): 
     ...winner,
     description: description.description,
     descriptionSource: description.descriptionSource,
+    // A pasted job may have no link; keep the one a source found.
+    applyUrl: winner.applyUrl || other.applyUrl,
     workplaceType: winner.workplaceType !== "UNKNOWN" ? winner.workplaceType : other.workplaceType,
     employmentType:
       winner.employmentType !== "UNKNOWN" ? winner.employmentType : other.employmentType,

@@ -16,6 +16,8 @@ enum Source {
   GREENHOUSE
   LEVER
   ASHBY
+  /// Pasted into the dashboard by me.
+  MANUAL
 }
 
 enum Ats {

@@ -40,9 +40,16 @@ export function readPreferences(fallback: string, path = PREFERENCES_PATH): stri
   return existsSync(path) ? readFileSync(path, "utf8") : fallback;
 }
 
-export function loadScoringContext(config: JobfoxConfig): ScoringContext {
-  const resume = readResume();
-  const systemPrompt = buildSystemPrompt(resume, readPreferences(config.scoring.preferences));
+/** Paths default to the pipeline folder; the dashboard runs elsewhere and passes its own. */
+export function loadScoringContext(
+  config: JobfoxConfig,
+  paths: { resume?: string; preferences?: string } = {},
+): ScoringContext {
+  const resume = readResume(paths.resume);
+  const systemPrompt = buildSystemPrompt(
+    resume,
+    readPreferences(config.scoring.preferences, paths.preferences),
+  );
   return {
     resume,
     systemPrompt,

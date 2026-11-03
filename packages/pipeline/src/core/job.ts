@@ -4,7 +4,8 @@
  * string unions stay assignable to the generated enums.
  */
 
-export type Source = "ADZUNA" | "HN_HIRING" | "GREENHOUSE" | "LEVER" | "ASHBY";
+/** MANUAL is a posting I pasted into the dashboard myself. */
+export type Source = "ADZUNA" | "HN_HIRING" | "GREENHOUSE" | "LEVER" | "ASHBY" | "MANUAL";
 
 export type Ats = Extract<Source, "GREENHOUSE" | "LEVER" | "ASHBY">;
 
@@ -46,6 +47,8 @@ export const UNKNOWN_TITLE = "(role not stated)";
 
 /** ATS sources outrank aggregators when choosing which description to keep. */
 export const SOURCE_PRIORITY: Record<Source, number> = {
+  // I pasted the posting I'm applying to, so it beats anything a source returned.
+  MANUAL: 4,
   GREENHOUSE: 3,
   LEVER: 3,
   ASHBY: 3,

@@ -8,7 +8,8 @@ export const STALE_AFTER_DAYS = 3;
 /**
  * Jobs that pass the current filters and were seen recently. Filters are
  * re-applied from config rather than read from rejectedReasons, so config
- * changes take effect without fetching again.
+ * changes take effect without fetching again. Jobs I pasted skip both checks:
+ * no source re-sees them, and I chose them myself.
  */
 export async function findCurrentMatches(
   db: PrismaClient,
@@ -18,12 +19,17 @@ export async function findCurrentMatches(
   const since = new Date(now.getTime() - STALE_AFTER_DAYS * 24 * 60 * 60 * 1000);
   const jobs = await db.job.findMany({
     // Skipped and applied jobs are done with; they don't come back as matches.
-    where: { lastSeenAt: { gte: since }, status: { in: ["NEW", "SAVED"] } },
+    where: {
+      OR: [{ lastSeenAt: { gte: since } }, { descriptionSource: "MANUAL" }],
+      status: { in: ["NEW", "SAVED"] },
+    },
     include: { company: true, scores: true, label: true },
     orderBy: { firstSeenAt: "desc" },
   });
   return jobs.filter(
-    (job) => rejectReasons({ ...job, companyName: job.company.name }, filters).length === 0,
+    (job) =>
+      job.descriptionSource === "MANUAL" ||
+      rejectReasons({ ...job, companyName: job.company.name }, filters).length === 0,
   );
 }
 
