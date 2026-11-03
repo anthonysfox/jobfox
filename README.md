@@ -64,6 +64,7 @@ From a draft, the job page's **Tailored resume (PDF)** button (or `pnpm resume <
 
 - **Jobs:** tabs for strong, possible, and weak fits plus saved and applied, filterable by area, description source, and minimum score. Save, Applied, and Skip update the job's status.
 - **Job detail:** the full description beside the model's strengths and gaps, plus the application draft panel with copy buttons.
+- **Paste a job:** for a posting jobfox didn't find (LinkedIn, a referral, a company site). Paste the description and it's saved, scored, and drafted in one step, then opens on its job page with the tailored resume PDF.
 - **Label:** blind labeling for the eval, one job at a time with keyboard shortcuts.
 - **Eval:** the latest eval run, with a confusion matrix and every disagreement.
 
@@ -170,6 +171,8 @@ Without Adzuna keys, `discover` runs with HN and known boards only. Scoring need
 **One workspace, shared source.** The dashboard imports the pipeline's TypeScript directly (an `exports` map plus `transpilePackages`), so there's one Prisma schema, one client, and one set of types.
 
 **Server components and server actions, no API.** Pages query Prisma on the server. Status and label buttons are plain forms bound to server actions, so they work without client-side JavaScript. Client components are limited to the labeling shortcuts, copy buttons, and the draft form's pending state. Actions validate their input with Zod, because a server action is a public endpoint.
+
+**A pasted job goes through the same pipeline, not a side path.** It's saved by `persistGroup` as a `MANUAL` posting keyed by its dedupe key, so pasting again updates it and a job discovery also found merges with it. `MANUAL` outranks every source, since it's the posting I'm applying to; the merge keeps a discovered link when the paste has none. Pasted jobs skip the filters and the 3-day staleness window, and `pnpm score` always includes them. The dashboard scores with the same `scoreJobs` and local embedding model as the CLI (Next keeps `@huggingface/transformers` external by default). Scoring runs before drafting, because the draft uses the strengths and gaps; if scoring fails, the job still gets drafted.
 
 **Imports name real files.** The pipeline imports `./filters.ts`, not `./filters.js`. Turbopack doesn't map `.js` to `.ts` the way TypeScript's NodeNext resolution does, and Node's built-in TypeScript support expects real extensions anyway.
 

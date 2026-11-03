@@ -6,6 +6,7 @@ export const metadata = { title: "jobfox", description: "Scored jobs to review a
 
 const NAV = [
   { href: "/jobs", label: "Jobs" },
+  { href: "/jobs/new", label: "Paste a job" },
   { href: "/label", label: "Label" },
   { href: "/eval", label: "Eval" },
 ];

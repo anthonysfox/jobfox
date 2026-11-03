@@ -11,6 +11,7 @@ const SOURCE_NAMES: Record<string, string> = {
   ASHBY: "Ashby",
   HN_HIRING: "Hacker News",
   ADZUNA: "Adzuna",
+  MANUAL: "pasted by you",
 };
 
 export default async function JobPage({ params }: { params: Promise<{ id: string }> }) {
@@ -52,14 +53,16 @@ export default async function JobPage({ params }: { params: Promise<{ id: string
             Seen on {sources.join(", ")} · first seen {job.firstSeenAt.toLocaleDateString("en-US")}
           </p>
           <div className="mt-3 flex flex-wrap items-center gap-3">
-            <a
-              href={job.applyUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-md bg-stone-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-stone-700 dark:bg-stone-100 dark:text-stone-900"
-            >
-              Open posting ↗
-            </a>
+            {job.applyUrl && (
+              <a
+                href={job.applyUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-md bg-stone-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-stone-700 dark:bg-stone-100 dark:text-stone-900"
+              >
+                Open posting ↗
+              </a>
+            )}
             <StatusButtons jobId={job.id} current={job.status} />
           </div>
         </div>

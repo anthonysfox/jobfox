@@ -34,14 +34,16 @@ export function JobCard({ row }: { row: JobRow }) {
             </p>
           )}
           <div className="mt-3 flex flex-wrap items-center gap-3">
-            <a
-              href={job.applyUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-md bg-stone-900 px-2.5 py-1 text-xs font-medium text-white hover:bg-stone-700 dark:bg-stone-100 dark:text-stone-900 dark:hover:bg-stone-300"
-            >
-              Open posting ↗
-            </a>
+            {job.applyUrl && (
+              <a
+                href={job.applyUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-md bg-stone-900 px-2.5 py-1 text-xs font-medium text-white hover:bg-stone-700 dark:bg-stone-100 dark:text-stone-900 dark:hover:bg-stone-300"
+              >
+                Open posting ↗
+              </a>
+            )}
             <StatusButtons jobId={job.id} current={job.status} />
             {job.descriptionSource === "ADZUNA" && (
               <span className="text-xs text-stone-500">Jobs by Adzuna</span>
