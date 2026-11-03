@@ -7,7 +7,11 @@ export const leverPostingSchema = z.looseObject({
   id: z.string(),
   /** The job title. */
   text: z.string(),
-  categories: z.looseObject({ location: z.string().optional() }),
+  categories: z.looseObject({
+    location: z.string().optional(),
+    /** Free text set by the employer: "Full-time", "Contract", "Part-time"... */
+    commitment: z.string().optional(),
+  }),
   /** "onsite", "hybrid", "remote", or "unspecified". */
   workplaceType: z.string().optional(),
   /** Epoch milliseconds. */

@@ -97,6 +97,22 @@ describe("createAdzunaSource", () => {
     });
   });
 
+  it("reads contract_type when Adzuna has it", async () => {
+    const body = {
+      ...page1,
+      results: page1.results.map((r, i) => (i === 0 ? { ...r, contract_type: "contract" } : r)),
+    };
+    const http = createFakeHttp([{ match: isAdzuna, body }]);
+    const jobs = await createAdzunaSource({
+      http,
+      credentials,
+      config: adzunaConfig(),
+    }).fetchJobs();
+
+    expect(jobs[0]?.employmentType).toBe("CONTRACT");
+    expect(jobs[1]?.employmentType).toBe("UNKNOWN");
+  });
+
   it("drops Adzuna's predicted salaries", async () => {
     const http = createFakeHttp([{ match: isAdzuna, body: page1 }]);
     const jobs = await createAdzunaSource({

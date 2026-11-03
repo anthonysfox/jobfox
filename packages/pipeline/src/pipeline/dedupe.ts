@@ -2,6 +2,7 @@ import {
   SOURCE_PRIORITY,
   type Job,
   type Salary,
+  type EmploymentType,
   type Source,
   type WorkplaceType,
 } from "../core/job.ts";
@@ -19,6 +20,7 @@ export interface CanonicalJob {
   title: string;
   location: string | null;
   workplaceType: WorkplaceType;
+  employmentType: EmploymentType;
   description: string | null;
   descriptionSource: Source | null;
   applyUrl: string;
@@ -67,6 +69,7 @@ export function canonicalize(postings: Job[]): CanonicalJob {
     title: best.title,
     location: best.location,
     workplaceType: ranked.find((p) => p.workplaceType !== "UNKNOWN")?.workplaceType ?? "UNKNOWN",
+    employmentType: ranked.find((p) => p.employmentType !== "UNKNOWN")?.employmentType ?? "UNKNOWN",
     description: withDescription?.description ?? null,
     descriptionSource: withDescription?.source ?? null,
     applyUrl: ats?.url ?? ranked.find((p) => p.applyUrl)?.applyUrl ?? best.url,
@@ -98,6 +101,8 @@ export function mergeCanonical(existing: CanonicalJob, incoming: CanonicalJob): 
     description: description.description,
     descriptionSource: description.descriptionSource,
     workplaceType: winner.workplaceType !== "UNKNOWN" ? winner.workplaceType : other.workplaceType,
+    employmentType:
+      winner.employmentType !== "UNKNOWN" ? winner.employmentType : other.employmentType,
     salary: winner.salary ?? other.salary,
     postedAt: earliest(winner.postedAt, other.postedAt),
   };

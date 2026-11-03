@@ -28,6 +28,7 @@ describe("listAshbyJobs", () => {
       companyName: "Contoso",
       location: "New York",
       workplaceType: "HYBRID",
+      employmentType: "PERMANENT",
       description: "Contoso builds logistics software.\n\n- TypeScript",
       descriptionTruncated: false,
       // From the "Salary" summary component; equity is ignored.

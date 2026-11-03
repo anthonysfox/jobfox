@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   containsPhrase,
   dedupeKey,
+  inferEmploymentType,
   inferWorkplaceType,
   normalizeCompany,
   normalizeLocation,
@@ -93,6 +94,52 @@ describe("inferWorkplaceType", () => {
     [["New York", null], "UNKNOWN"],
   ] as const)("%j -> %s", (texts, expected) => {
     expect(inferWorkplaceType(...texts)).toBe(expected);
+  });
+});
+
+describe("inferEmploymentType", () => {
+  const title = "Frontend Engineer";
+
+  it.each([
+    ["Contract", "CONTRACT"],
+    ["Contractor", "CONTRACT"],
+    ["Temporary", "CONTRACT"],
+    ["FullTime", "PERMANENT"],
+    ["Full-time", "PERMANENT"],
+    ["part_time", "PERMANENT"],
+    ["permanent", "PERMANENT"],
+    ["Intern", "UNKNOWN"],
+  ] as const)("label %s -> %s", (label, expected) => {
+    expect(inferEmploymentType({ label, title })).toBe(expected);
+  });
+
+  it.each([
+    ["React Developer (Contract)", "CONTRACT"],
+    ["Full Stack Engineer - Contract-to-Hire", "CONTRACT"],
+    ["Freelance Creative Developer", "CONTRACT"],
+    ["Contracts Engineer", "UNKNOWN"],
+    ["Full Stack Engineer", "UNKNOWN"],
+  ] as const)("title %s -> %s", (jobTitle, expected) => {
+    expect(inferEmploymentType({ title: jobTitle })).toBe(expected);
+  });
+
+  it.each([
+    ["This is a 6-month contract with possible extension.", "CONTRACT"],
+    ["This is a contract role based in NYC.", "CONTRACT"],
+    ["You'll join us as a contractor.", "CONTRACT"],
+    ["W2 or C2C accepted.", "CONTRACT"],
+    ["Hired on a contract basis.", "CONTRACT"],
+    ["We build smart contracts for DeFi.", "UNKNOWN"],
+    ["Experience with government contracts is a plus.", "UNKNOWN"],
+    ["This is a full-time role.", "UNKNOWN"],
+  ] as const)("description %j -> %s", (description, expected) => {
+    expect(inferEmploymentType({ title, description })).toBe(expected);
+  });
+
+  it("trusts a permanent label over a contract mention in the text", () => {
+    expect(
+      inferEmploymentType({ label: "Full-time", title, description: "Contract-to-hire." }),
+    ).toBe("PERMANENT");
   });
 });
 

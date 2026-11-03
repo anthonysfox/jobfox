@@ -1,6 +1,6 @@
 import { UNKNOWN_TITLE, type Job } from "../../core/job.ts";
 import { extractUrls, htmlToText } from "../../lib/html.ts";
-import { inferWorkplaceType } from "../../lib/normalize.ts";
+import { inferEmploymentType, inferWorkplaceType } from "../../lib/normalize.ts";
 import type { HnComment } from "./schema.ts";
 
 /*
@@ -108,6 +108,8 @@ export function parseHiringComment(comment: HnComment): Job[] {
     location: header.location,
     // Only the header: bodies often mention "remote" in passing.
     workplaceType: inferWorkplaceType(firstLine),
+    // The header often lists "Full-time" or "Contract" as its own segment.
+    employmentType: inferEmploymentType({ label: firstLine, title, description }),
     description,
     descriptionTruncated: false,
     salary: null,

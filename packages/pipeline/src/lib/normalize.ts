@@ -1,4 +1,4 @@
-import type { WorkplaceType } from "../core/job.ts";
+import type { EmploymentType, WorkplaceType } from "../core/job.ts";
 
 /**
  * Lowercase, strip accents and punctuation, collapse whitespace.
@@ -100,6 +100,54 @@ export function inferWorkplaceType(...texts: (string | null)[]): WorkplaceType {
   if (/\bhybrid\b/.test(text)) return "HYBRID";
   if (/\bremote\b/.test(text)) return "REMOTE";
   if (/\b(on-?site|in[- ]office|in[- ]person)\b/.test(text)) return "ONSITE";
+  return "UNKNOWN";
+}
+
+// A label or title can say "Contract" outright. "Temp" is left out: it's also short for temperature.
+const CONTRACT_WORD =
+  /\b(contract|contractor|contract to hire|c2h|c2c|corp to corp|1099|freelance|freelancer|temporary)\b/;
+const PERMANENT_LABEL = /\b(full ?time|part ?time|permanent|regular|direct hire|fte)\b/;
+// Descriptions need a phrase, since "smart contracts" and "government contracts" come up often.
+const CONTRACT_PHRASE = new RegExp(
+  [
+    "contract to hire",
+    "c2h",
+    "c2c",
+    "corp to corp",
+    "1099",
+    "w ?2 contract",
+    "(?:is|as|on) an? (?:temporary |freelance |short term |long term )?contract(?:or)?",
+    "contract (?:role|position|opportunity|assignment|engagement|basis|length|duration|term)",
+    "\\d+\\+? ?months? (?:contract|engagement|assignment)",
+    "freelance (?:role|position|basis|engagement)",
+    "temporary (?:role|position|assignment)",
+  ]
+    .map((p) => `\\b(?:${p})\\b`)
+    .join("|"),
+);
+
+/** Lowercase with hyphens, underscores, and camel case turned into spaces: "FullTime" -> "full time". */
+function employmentText(text: string): string {
+  return text
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .toLowerCase()
+    .replace(/[-_]/g, " ");
+}
+
+/**
+ * The source's own label ("Contract", "FullTime", "permanent") wins. Then the
+ * title, then specific phrases in the description. Silence means UNKNOWN, not permanent.
+ */
+export function inferEmploymentType(job: {
+  label?: string | null | undefined;
+  title: string;
+  description?: string | null | undefined;
+}): EmploymentType {
+  const label = employmentText(job.label ?? "");
+  if (CONTRACT_WORD.test(label)) return "CONTRACT";
+  if (PERMANENT_LABEL.test(label)) return "PERMANENT";
+  if (CONTRACT_WORD.test(employmentText(job.title))) return "CONTRACT";
+  if (CONTRACT_PHRASE.test(employmentText(job.description ?? ""))) return "CONTRACT";
   return "UNKNOWN";
 }
 

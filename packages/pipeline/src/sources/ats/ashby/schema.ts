@@ -17,6 +17,8 @@ export const ashbyJobSchema = z.looseObject({
   location: z.string().nullish(),
   /** "OnSite", "Hybrid", or "Remote". */
   workplaceType: z.string().nullish(),
+  /** "FullTime", "PartTime", "Intern", "Contract", or "Temporary". */
+  employmentType: z.string().nullish(),
   isListed: z.boolean(),
   publishedAt: z.iso.datetime({ offset: true }),
   jobUrl: z.url(),

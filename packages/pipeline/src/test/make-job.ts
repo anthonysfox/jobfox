@@ -14,6 +14,7 @@ export function makeJob(overrides: Partial<Job> = {}): Job {
     companyName: "Acme",
     location: "New York, NY",
     workplaceType: "UNKNOWN",
+    employmentType: "UNKNOWN",
     description: null,
     descriptionTruncated: false,
     salary: null,

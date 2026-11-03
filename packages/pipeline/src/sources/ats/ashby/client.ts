@@ -1,6 +1,6 @@
 import type { Job, WorkplaceType } from "../../../core/job.ts";
 import type { HttpClient } from "../../../lib/http.ts";
-import { inferWorkplaceType } from "../../../lib/normalize.ts";
+import { inferEmploymentType, inferWorkplaceType } from "../../../lib/normalize.ts";
 import type { AtsBoard, AtsClient } from "../types.ts";
 import { ashbyJobBoardResponseSchema, type AshbyJob } from "./schema.ts";
 
@@ -28,6 +28,11 @@ export function toJob(job: AshbyJob, board: AtsBoard): Job {
     location,
     workplaceType:
       WORKPLACE_TYPES[job.workplaceType ?? ""] ?? inferWorkplaceType(job.title, location),
+    employmentType: inferEmploymentType({
+      label: job.employmentType,
+      title: job.title,
+      description: job.descriptionPlain,
+    }),
     description: job.descriptionPlain ?? null,
     descriptionTruncated: false,
     salary: salary

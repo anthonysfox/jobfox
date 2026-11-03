@@ -1,7 +1,7 @@
 import type { Job, WorkplaceType } from "../../../core/job.ts";
 import { htmlToText } from "../../../lib/html.ts";
 import { HttpError, type HttpClient } from "../../../lib/http.ts";
-import { inferWorkplaceType } from "../../../lib/normalize.ts";
+import { inferEmploymentType, inferWorkplaceType } from "../../../lib/normalize.ts";
 import type { AtsBoard, AtsClient } from "../types.ts";
 import { leverPostingSchema, leverPostingsResponseSchema, type LeverPosting } from "./schema.ts";
 
@@ -39,6 +39,11 @@ export function toJob(posting: LeverPosting, board: AtsBoard): Job {
     location,
     workplaceType:
       WORKPLACE_TYPES[posting.workplaceType ?? ""] ?? inferWorkplaceType(posting.text, location),
+    employmentType: inferEmploymentType({
+      label: posting.categories.commitment,
+      title: posting.text,
+      description,
+    }),
     description: description || null,
     descriptionTruncated: false,
     salary: posting.salaryRange

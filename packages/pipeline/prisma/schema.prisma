@@ -39,6 +39,13 @@ enum WorkplaceType {
   UNKNOWN
 }
 
+/// CONTRACT covers temp, freelance, and contract-to-hire. UNKNOWN means the posting didn't say.
+enum EmploymentType {
+  PERMANENT
+  CONTRACT
+  UNKNOWN
+}
+
 model Company {
   id             String    @id @default(cuid())
   name           String
@@ -66,6 +73,7 @@ model Job {
   title             String
   location          String?
   workplaceType     WorkplaceType               @default(UNKNOWN)
+  employmentType    EmploymentType              @default(UNKNOWN)
   /// Best available description (ATS > HN > Adzuna).
   description       String?
   descriptionSource Source?

@@ -34,6 +34,8 @@ describe("listLeverJobs", () => {
       companyName: "Fabrikam",
       location: "New York, NY",
       workplaceType: "HYBRID",
+      // From categories.commitment: "Full-time".
+      employmentType: "PERMANENT",
       descriptionTruncated: false,
       salary: { min: 150000, max: 190000, currency: "USD" },
       // createdAt is epoch milliseconds.

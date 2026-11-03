@@ -67,18 +67,20 @@ describe("canonicalize", () => {
     expect(job.applyUrl).toBe("https://acme.com/careers");
   });
 
-  it("takes the first known workplace type, salary, and earliest posted date", () => {
+  it("takes the first known workplace and employment type, salary, and earliest posted date", () => {
     const job = canonicalize([
       makeJob({ source: "GREENHOUSE", workplaceType: "UNKNOWN", postedAt: new Date("2026-10-10") }),
       makeJob({
         source: "ADZUNA",
         workplaceType: "HYBRID",
+        employmentType: "CONTRACT",
         salary: { min: 120000, max: 150000, currency: "USD" },
         postedAt: new Date("2026-10-01"),
       }),
     ]);
 
     expect(job.workplaceType).toBe("HYBRID");
+    expect(job.employmentType).toBe("CONTRACT");
     expect(job.salary?.min).toBe(120000);
     expect(job.postedAt?.toISOString()).toBe("2026-10-01T00:00:00.000Z");
   });

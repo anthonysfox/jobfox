@@ -1,7 +1,7 @@
 import type { Job } from "../../../core/job.ts";
 import { decodeEntities, htmlToText } from "../../../lib/html.ts";
 import { HttpError, type HttpClient } from "../../../lib/http.ts";
-import { inferWorkplaceType } from "../../../lib/normalize.ts";
+import { inferEmploymentType, inferWorkplaceType } from "../../../lib/normalize.ts";
 import type { AtsBoard, AtsClient } from "../types.ts";
 import { greenhouseJobSchema, greenhouseJobsResponseSchema, type GreenhouseJob } from "./schema.ts";
 
@@ -23,6 +23,8 @@ export function toJob(job: GreenhouseJob, board: AtsBoard): Job {
     companyName: board.companyName,
     location,
     workplaceType: inferWorkplaceType(job.title, location, description),
+    // The board API has no employment field, so this comes from the text.
+    employmentType: inferEmploymentType({ title: job.title, description }),
     description: description || null,
     descriptionTruncated: false,
     salary: null,

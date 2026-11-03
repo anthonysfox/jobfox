@@ -10,6 +10,9 @@ export type Ats = Extract<Source, "GREENHOUSE" | "LEVER" | "ASHBY">;
 
 export type WorkplaceType = "ONSITE" | "HYBRID" | "REMOTE" | "UNKNOWN";
 
+/** Contract covers temp, freelance, and contract-to-hire. Part-time counts as permanent. */
+export type EmploymentType = "PERMANENT" | "CONTRACT" | "UNKNOWN";
+
 export interface Salary {
   min: number | null;
   max: number | null;
@@ -29,6 +32,7 @@ export interface Job {
   companyName: string;
   location: string | null;
   workplaceType: WorkplaceType;
+  employmentType: EmploymentType;
   description: string | null;
   descriptionTruncated: boolean;
   salary: Salary | null;

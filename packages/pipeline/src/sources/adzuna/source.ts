@@ -3,7 +3,7 @@ import type { Job } from "../../core/job.ts";
 import type { JobSource } from "../../core/source.ts";
 import { htmlToText } from "../../lib/html.ts";
 import type { HttpClient } from "../../lib/http.ts";
-import { containsPhrase, inferWorkplaceType } from "../../lib/normalize.ts";
+import { containsPhrase, inferEmploymentType, inferWorkplaceType } from "../../lib/normalize.ts";
 import { searchAdzuna, type AdzunaCredentials } from "./client.ts";
 import type { AdzunaJob } from "./schema.ts";
 
@@ -46,6 +46,7 @@ export function toJob(result: AdzunaJob, country: string): Job | null {
     companyName,
     location,
     workplaceType: inferWorkplaceType(title, location, description),
+    employmentType: inferEmploymentType({ label: result.contract_type, title, description }),
     description: description || null,
     // The search API only returns a snippet.
     descriptionTruncated: true,

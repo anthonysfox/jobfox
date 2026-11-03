@@ -22,6 +22,8 @@ export const adzunaJobSchema = z.looseObject({
   // "1" means Adzuna estimated the salary; the posting didn't state it.
   salary_is_predicted: z.union([z.string(), z.number()]).transform(String).optional(),
   contract_time: z.string().optional(),
+  /** "permanent" or "contract"; often missing. */
+  contract_type: z.string().optional(),
 });
 
 export const adzunaSearchResponseSchema = z.looseObject({
