@@ -1,5 +1,5 @@
 import userConfig from "../../jobfox.config.ts";
-import { parseConfig, parseEnv } from "../core/config.ts";
+import { applyContractFlag, parseConfig, parseEnv } from "../core/config.ts";
 import type { Ats, Job } from "../core/job.ts";
 import type { JobSource } from "../core/source.ts";
 import { createDb } from "../lib/db.ts";
@@ -22,7 +22,8 @@ import { createHnSource } from "../sources/hn/source.ts";
 async function main(): Promise<number> {
   const startedAt = new Date();
   const env = parseEnv(process.env);
-  const config = parseConfig(userConfig);
+  const config = applyContractFlag(parseConfig(userConfig), process.argv);
+  const contractOnly = config.filters.employment === "contract";
   const db = createDb();
 
   // Per-host spacing. Adzuna's free tier allows roughly 25 requests a minute.
@@ -47,6 +48,7 @@ async function main(): Promise<number> {
           http,
           credentials: { appId: env.ADZUNA_APP_ID, appKey: env.ADZUNA_APP_KEY },
           config: config.adzuna,
+          contractOnly,
         }),
       );
     } else {
@@ -112,10 +114,12 @@ async function main(): Promise<number> {
     };
 
     for (const group of groups) {
-      // Only spend ATS requests on jobs that pass the hard filters.
+      // Only spend ATS requests on jobs that pass the hard filters. The full posting is
+      // often what says "contract", so an unknown type doesn't block enrichment.
       const preview = canonicalize(group.postings);
+      const typeUnknown = preview.employmentType === "UNKNOWN";
       const outcome =
-        filter(preview).length === 0
+        filter(typeUnknown ? { ...preview, employmentType: "CONTRACT" } : preview).length === 0
           ? await enrichGroup(group, preview.companyName, { http, clients: atsClients })
           : null;
 
@@ -144,6 +148,7 @@ async function main(): Promise<number> {
 
     await markPolled(db, polledCompanyIds);
     summary.durationMs = Date.now() - startedAt.getTime();
+    if (contractOnly) console.log("Contract roles only.\n");
     console.log(formatSummary(summary));
 
     return reports.some((r) => r.status === "ok") ? 0 : 1;

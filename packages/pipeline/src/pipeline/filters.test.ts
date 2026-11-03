@@ -11,6 +11,7 @@ const filters: FilterConfig = {
   remoteExcludedRegions: ["europe", "emea", "uk", "canada"],
   seniorityExclude: ["staff", "principal", "director"],
   companyBlocklist: ["Globex Corporation"],
+  employment: "any",
 };
 
 const base = {
@@ -18,11 +19,29 @@ const base = {
   title: "Full Stack Engineer",
   location: "New York, NY",
   workplaceType: "HYBRID" as const,
+  employmentType: "UNKNOWN" as const,
 };
 
 describe("rejectReasons", () => {
   it("passes a matching job", () => {
     expect(rejectReasons(base, filters)).toEqual([]);
+  });
+
+  it("keeps only jobs that say they're contract when contract-only", () => {
+    const contractOnly = { ...filters, employment: "contract" as const };
+    expect(rejectReasons({ ...base, employmentType: "CONTRACT" }, contractOnly)).toEqual([]);
+    expect(rejectReasons({ ...base, employmentType: "PERMANENT" }, contractOnly)).toEqual([
+      "employment:not-contract",
+    ]);
+    expect(rejectReasons(base, contractOnly)).toEqual(["employment:not-contract"]);
+  });
+
+  it("drops only known contract jobs when permanent-only", () => {
+    const permanentOnly = { ...filters, employment: "permanent" as const };
+    expect(rejectReasons({ ...base, employmentType: "CONTRACT" }, permanentOnly)).toEqual([
+      "employment:contract",
+    ]);
+    expect(rejectReasons(base, permanentOnly)).toEqual([]);
   });
 
   it("matches title keywords across spelling variants", () => {
@@ -147,6 +166,7 @@ describe("rejectReasons", () => {
           title: "Principal Engineer",
           location: "Austin, TX",
           workplaceType: "ONSITE",
+          employmentType: "UNKNOWN",
         },
         filters,
       ),

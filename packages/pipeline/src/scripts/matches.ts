@@ -1,5 +1,5 @@
 import userConfig from "../../jobfox.config.ts";
-import { parseConfig } from "../core/config.ts";
+import { applyContractFlag, parseConfig } from "../core/config.ts";
 import { createDb } from "../lib/db.ts";
 import { findCurrentMatches, STALE_AFTER_DAYS, type MatchedJob } from "../pipeline/matches.ts";
 import { currentScore, loadScoringContext } from "../scoring/context.ts";
@@ -17,7 +17,7 @@ function where(job: MatchedJob): string {
 }
 
 async function main(): Promise<void> {
-  const config = parseConfig(userConfig);
+  const config = applyContractFlag(parseConfig(userConfig), process.argv);
   const context = loadScoringContext(config);
   const db = createDb();
 

@@ -66,9 +66,19 @@ export interface AdzunaSourceOptions {
   http: HttpClient;
   credentials: AdzunaCredentials;
   config: JobfoxConfig["adzuna"];
+  /**
+   * Adds "contract" to every search. A keyword rather than Adzuna's contract=1,
+   * which only returns jobs Adzuna has labeled and misses the many it hasn't.
+   */
+  contractOnly?: boolean;
 }
 
-export function createAdzunaSource({ http, credentials, config }: AdzunaSourceOptions): JobSource {
+export function createAdzunaSource({
+  http,
+  credentials,
+  config,
+  contractOnly = false,
+}: AdzunaSourceOptions): JobSource {
   return {
     name: "adzuna",
     async fetchJobs() {
@@ -80,7 +90,7 @@ export function createAdzunaSource({ http, credentials, config }: AdzunaSourceOp
           const response = await searchAdzuna(http, credentials, {
             country: config.country,
             page,
-            what: search.what,
+            what: contractOnly ? `${search.what} contract` : search.what,
             where: search.where,
             distanceKm: search.distanceKm,
             maxDaysOld: config.maxDaysOld,

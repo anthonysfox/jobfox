@@ -90,19 +90,20 @@ pnpm discover
 
 Without Adzuna keys, `discover` runs with HN and known boards only. Scoring needs `ANTHROPIC_API_KEY` in `.env` and a resume at `packages/pipeline/data/resume.md` (gitignored). Put your own scoring preferences in `packages/pipeline/data/preferences.md`, one per line; until then, scoring uses the example in `jobfox.config.ts`. They're kept out of the repo because they include pay.
 
-| Script           | What it does                                |
-| ---------------- | ------------------------------------------- |
-| `pnpm web`       | Dashboard on localhost:3000                 |
-| `pnpm discover`  | Fetch, filter, store, print summary         |
-| `pnpm matches`   | Jobs to apply to, best fit first            |
-| `pnpm score`     | Embed and score new matches (`--limit N`)   |
-| `pnpm draft ID`  | Draft bullets and answers for one job       |
-| `pnpm resume ID` | Tailored resume PDF from the latest draft   |
-| `pnpm label`     | Hand-label jobs for the eval (blind)        |
-| `pnpm eval`      | Measure the scorer (`--model X` to compare) |
-| `pnpm test`      | Vitest (no network, no database)            |
-| `pnpm check`     | Typecheck + lint + test                     |
-| `pnpm db:studio` | Browse the database in Prisma Studio        |
+| Script           | What it does                                        |
+| ---------------- | --------------------------------------------------- |
+| `pnpm web`       | Dashboard on localhost:3000                         |
+| `pnpm discover`  | Fetch, filter, store, print summary                 |
+| `pnpm matches`   | Jobs to apply to, best fit first                    |
+| `pnpm score`     | Embed and score new matches (`--limit N`)           |
+| `--contract`     | On discover, matches, or score: contract roles only |
+| `pnpm draft ID`  | Draft bullets and answers for one job               |
+| `pnpm resume ID` | Tailored resume PDF from the latest draft           |
+| `pnpm label`     | Hand-label jobs for the eval (blind)                |
+| `pnpm eval`      | Measure the scorer (`--model X` to compare)         |
+| `pnpm test`      | Vitest (no network, no database)                    |
+| `pnpm check`     | Typecheck + lint + test                             |
+| `pnpm db:studio` | Browse the database in Prisma Studio                |
 
 ## Design decisions
 
@@ -115,6 +116,8 @@ Without Adzuna keys, `discover` runs with HN and known boards only. Scoring need
 **Rejected jobs are stored with reasons.** Filters can be tuned and re-run without fetching again, the summary shows why jobs were dropped, and the rejects become negative examples for the Phase 3 evaluation set.
 
 **Hard filters reject only on known facts.** A job with no stated location or role goes to review rather than being dropped.
+
+**Contract-only is the one filter that drops unknowns.** Each job is marked contract, permanent, or unknown: the source's own field first (Adzuna `contract_type`, Lever `commitment`, Ashby `employmentType`), then the title, then specific description phrases like "6-month contract" or "C2C". A bare "contract" in a description doesn't count, because "smart contracts" is common. Most postings never say, and nearly all of those are permanent, so `--contract` (or `employment: "contract"` in the config) keeps only jobs that say contract. `"permanent"` drops only the known ones. In contract mode, discover adds "contract" to each Adzuna search instead of using Adzuna's `contract=1`, which only returns jobs Adzuna itself labeled. Jobs whose type is still unknown are still enriched, since the full ATS posting is often where "contract" appears.
 
 **Titles decide what's in scope; scoring decides what's good.** The title filter is a broad allowlist of role phrases, including the titles non-tech employers use ("Application Developer", "Programmer Analyst") and client-facing engineering roles. Things a title can't show, such as a sales quota, the industry, or whether the work is hands-on, go to the model as preferences. Interests like music and media are a plus in scoring rather than a filter, so a strong role elsewhere isn't hidden. The rubric also says outright that an employer's industry isn't a gap unless the posting requires domain knowledge, so a bank's React role isn't marked down for being at a bank. Non-software roles I'd consider (AV programming, show control, project coordination) are scored on transferable experience, but missing licenses or trade experience still count as gaps.
 

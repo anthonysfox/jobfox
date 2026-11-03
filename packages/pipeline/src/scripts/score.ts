@@ -1,6 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import userConfig from "../../jobfox.config.ts";
-import { parseConfig, parseEnv } from "../core/config.ts";
+import { applyContractFlag, parseConfig, parseEnv } from "../core/config.ts";
 import { createDb } from "../lib/db.ts";
 import { findCurrentMatches } from "../pipeline/matches.ts";
 import { currentScore, loadScoringContext } from "../scoring/context.ts";
@@ -10,7 +10,7 @@ import { scoreJobs } from "../scoring/run.ts";
 async function main(): Promise<void> {
   const env = parseEnv(process.env);
   if (!env.ANTHROPIC_API_KEY) throw new Error("Add ANTHROPIC_API_KEY to .env to score jobs.");
-  const config = parseConfig(userConfig);
+  const config = applyContractFlag(parseConfig(userConfig), process.argv);
   // `pnpm score --limit 5` caps this run without editing the config.
   const limitArg = process.argv.indexOf("--limit");
   if (limitArg !== -1) config.scoring.maxJobsPerRun = Number(process.argv[limitArg + 1]) || 1;

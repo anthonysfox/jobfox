@@ -8,7 +8,10 @@ import {
 } from "../lib/normalize.ts";
 import type { CanonicalJob } from "./dedupe.ts";
 
-type FilterableJob = Pick<CanonicalJob, "companyName" | "title" | "location" | "workplaceType">;
+type FilterableJob = Pick<
+  CanonicalJob,
+  "companyName" | "title" | "location" | "workplaceType" | "employmentType"
+>;
 
 /** Title matching goes through the same aliases as dedupe, so "Fullstack" matches "full stack". */
 function titleHas(title: string, phrase: string): boolean {
@@ -74,6 +77,15 @@ export function rejectReasons(job: FilterableJob, filters: FilterConfig): string
 
   const locationReason = checkLocation(job, filters);
   if (locationReason) reasons.push(locationReason);
+
+  // Unlike location, an unknown type isn't kept for contract-only: most postings that
+  // don't say are permanent, so keeping them would bury the contract roles.
+  if (filters.employment === "contract" && job.employmentType !== "CONTRACT") {
+    reasons.push("employment:not-contract");
+  }
+  if (filters.employment === "permanent" && job.employmentType === "CONTRACT") {
+    reasons.push("employment:contract");
+  }
 
   return reasons;
 }

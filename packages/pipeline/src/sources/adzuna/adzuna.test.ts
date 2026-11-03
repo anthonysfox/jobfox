@@ -160,6 +160,18 @@ describe("createAdzunaSource", () => {
     ]);
   });
 
+  it("adds 'contract' to every search when contract-only", async () => {
+    const http = createFakeHttp([{ match: isAdzuna, body: page1 }]);
+    await createAdzunaSource({
+      http,
+      credentials,
+      config: adzunaConfig({ searches: [{ what: "react developer remote" }] }),
+      contractOnly: true,
+    }).fetchJobs();
+
+    expect(http.requests[0]?.searchParams.get("what")).toBe("react developer remote contract");
+  });
+
   it("dedupes the same job across searches", async () => {
     const http = createFakeHttp([{ match: isAdzuna, body: page1 }]);
     const jobs = await createAdzunaSource({

@@ -60,6 +60,11 @@ export const configSchema = z.object({
     /** Titles containing any of these phrases are rejected. */
     seniorityExclude: phrases,
     companyBlocklist: phrases,
+    /**
+     * "contract" keeps only jobs that say they're contract. "permanent" drops
+     * only jobs that say they're contract, so ones that don't say stay.
+     */
+    employment: z.enum(["any", "contract", "permanent"]).default("any"),
   }),
 });
 
@@ -69,6 +74,12 @@ export type FilterConfig = JobfoxConfig["filters"];
 /** Identity function that gives jobfox.config.ts autocomplete and type checking. */
 export function defineConfig(config: z.input<typeof configSchema>): z.input<typeof configSchema> {
   return config;
+}
+
+/** `--contract` narrows one run of discover, matches, or score to contract roles. */
+export function applyContractFlag(config: JobfoxConfig, argv: string[]): JobfoxConfig {
+  if (!argv.includes("--contract")) return config;
+  return { ...config, filters: { ...config.filters, employment: "contract" } };
 }
 
 export function parseConfig(raw: unknown): JobfoxConfig {
