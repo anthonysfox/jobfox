@@ -16,6 +16,7 @@ import { GREENHOUSE_API_HOST } from "../sources/ats/greenhouse/client.ts";
 import { atsClients, createAtsBoardSource } from "../sources/ats/index.ts";
 import { LEVER_API_HOST } from "../sources/ats/lever/client.ts";
 import { NotImplementedError } from "../sources/ats/types.ts";
+import { createHimalayasSource, HIMALAYAS_HOST } from "../sources/himalayas/source.ts";
 import { HN_ALGOLIA_HOST } from "../sources/hn/client.ts";
 import { createHnSource } from "../sources/hn/source.ts";
 
@@ -32,6 +33,8 @@ async function main(): Promise<number> {
     hostIntervalsMs: {
       [ADZUNA_HOST]: 2500,
       [HN_ALGOLIA_HOST]: 250,
+      // Without an API key, every caller shares one allowance, so go gently.
+      [HIMALAYAS_HOST]: 2000,
       [GREENHOUSE_API_HOST]: 1000,
       [LEVER_API_HOST]: 1000,
       [ASHBY_API_HOST]: 1000,
@@ -60,6 +63,9 @@ async function main(): Promise<number> {
       });
     }
     if (config.hn.enabled) sources.push(createHnSource({ http }));
+    if (config.himalayas.searches.length > 0) {
+      sources.push(createHimalayasSource({ http, config: config.himalayas, contractOnly }));
+    }
 
     const companies = await listPollableCompanies(db);
     const boardSources = new Map<JobSource, string>();

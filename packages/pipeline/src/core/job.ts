@@ -5,7 +5,8 @@
  */
 
 /** MANUAL is a posting I pasted into the dashboard myself. */
-export type Source = "ADZUNA" | "HN_HIRING" | "GREENHOUSE" | "LEVER" | "ASHBY" | "MANUAL";
+export type Source =
+  "ADZUNA" | "HN_HIRING" | "HIMALAYAS" | "GREENHOUSE" | "LEVER" | "ASHBY" | "MANUAL";
 
 export type Ats = Extract<Source, "GREENHOUSE" | "LEVER" | "ASHBY">;
 
@@ -53,5 +54,6 @@ export const SOURCE_PRIORITY: Record<Source, number> = {
   LEVER: 3,
   ASHBY: 3,
   HN_HIRING: 2,
+  HIMALAYAS: 2,
   ADZUNA: 1,
 };

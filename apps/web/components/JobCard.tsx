@@ -48,6 +48,12 @@ export function JobCard({ row }: { row: JobRow }) {
             {job.descriptionSource === "ADZUNA" && (
               <span className="text-xs text-stone-500">Jobs by Adzuna</span>
             )}
+            {/* Himalayas' terms ask for a visible credit; the posting link above goes to them. */}
+            {job.descriptionSource === "HIMALAYAS" && (
+              <a href="https://himalayas.app" className="text-xs text-stone-500 hover:underline">
+                via Himalayas
+              </a>
+            )}
           </div>
         </div>
       </div>

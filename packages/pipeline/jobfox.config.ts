@@ -67,6 +67,13 @@ export default defineConfig({
 
   hn: { enabled: true },
 
+  // Remote contract roles. Adzuna's contract listings are thin, and Himalayas labels
+  // employment type on every job. Up to 2 requests per search, once per run.
+  himalayas: {
+    searches: [...roles, ...adjacentRoles, ...creativeRoles],
+    employmentType: "Contractor",
+  },
+
   scoring: {
     model: "claude-haiku-5-5",
     effort: "medium",

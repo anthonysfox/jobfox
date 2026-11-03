@@ -19,6 +19,20 @@ export const configSchema = z.object({
     maxPagesPerSearch: z.number().int().positive().default(2),
   }),
   hn: z.object({ enabled: z.boolean().default(true) }).prefault({}),
+  himalayas: z
+    .object({
+      /** Keywords, one search each. Empty turns the source off. */
+      searches: z.array(z.string().trim().min(1)).default([]),
+      /** Jobs open to candidates in this country, including worldwide ones. */
+      country: z.string().length(2).default("US"),
+      /** One of Himalayas' types, e.g. "Contractor". Omit for every type. */
+      employmentType: z
+        .enum(["Full Time", "Part Time", "Contractor", "Temporary", "Intern", "Volunteer", "Other"])
+        .optional(),
+      /** Search pages hold 20 jobs. */
+      maxPagesPerSearch: z.number().int().positive().default(2),
+    })
+    .prefault({}),
   scoring: z
     .object({
       model: z.string().default("claude-haiku-5-5"),

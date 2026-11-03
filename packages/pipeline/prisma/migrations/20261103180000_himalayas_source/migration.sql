@@ -1,0 +1,3 @@
+-- AlterEnum
+ALTER TYPE "Source" ADD VALUE 'HIMALAYAS';
+

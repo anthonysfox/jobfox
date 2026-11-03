@@ -34,6 +34,7 @@ const SOURCE_LABELS: Record<Source, string> = {
   LEVER: "Lever (full posting)",
   ASHBY: "Ashby (full posting)",
   HN_HIRING: "Hacker News 'Who is hiring?' post",
+  HIMALAYAS: "Himalayas (full posting)",
   ADZUNA: "Adzuna (short snippet; the full posting is longer)",
   MANUAL: "Pasted by the candidate (full posting)",
 };

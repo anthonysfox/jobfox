@@ -67,6 +67,14 @@ describe("canonicalize", () => {
     expect(job.applyUrl).toBe("https://acme.com/careers");
   });
 
+  it("uses Himalayas' link for the apply button, as its terms require", () => {
+    const job = canonicalize([
+      makeJob({ source: "GREENHOUSE", url: "https://boards.greenhouse.io/acme/jobs/1" }),
+      makeJob({ source: "HIMALAYAS", url: "https://himalayas.app/companies/acme/jobs/1" }),
+    ]);
+    expect(job.applyUrl).toBe("https://himalayas.app/companies/acme/jobs/1");
+  });
+
   it("takes the first known workplace and employment type, salary, and earliest posted date", () => {
     const job = canonicalize([
       makeJob({ source: "GREENHOUSE", workplaceType: "UNKNOWN", postedAt: new Date("2026-10-10") }),

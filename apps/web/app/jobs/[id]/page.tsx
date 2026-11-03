@@ -10,6 +10,7 @@ const SOURCE_NAMES: Record<string, string> = {
   LEVER: "Lever",
   ASHBY: "Ashby",
   HN_HIRING: "Hacker News",
+  HIMALAYAS: "Himalayas",
   ADZUNA: "Adzuna",
   MANUAL: "pasted by you",
 };
@@ -51,6 +52,14 @@ export default async function JobPage({ params }: { params: Promise<{ id: string
           </p>
           <p className="mt-1 text-xs text-stone-500">
             Seen on {sources.join(", ")} · first seen {job.firstSeenAt.toLocaleDateString("en-US")}
+            {sources.includes("Himalayas") && (
+              <>
+                {" · "}
+                <a href="https://himalayas.app" className="hover:underline">
+                  via Himalayas
+                </a>
+              </>
+            )}
           </p>
           <div className="mt-3 flex flex-wrap items-center gap-3">
             {job.applyUrl && (

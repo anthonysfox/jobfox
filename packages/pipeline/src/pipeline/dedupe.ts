@@ -72,7 +72,12 @@ export function canonicalize(postings: Job[]): CanonicalJob {
     employmentType: ranked.find((p) => p.employmentType !== "UNKNOWN")?.employmentType ?? "UNKNOWN",
     description: withDescription?.description ?? null,
     descriptionSource: withDescription?.source ?? null,
-    applyUrl: ats?.url ?? ranked.find((p) => p.applyUrl)?.applyUrl ?? best.url,
+    // Himalayas' terms say to use their link for every Apply button, so it goes first.
+    applyUrl:
+      ranked.find((p) => p.source === "HIMALAYAS")?.url ??
+      ats?.url ??
+      ranked.find((p) => p.applyUrl)?.applyUrl ??
+      best.url,
     salary: ranked.find((p) => p.salary)?.salary ?? null,
     postedAt: postedDates.length > 0 ? new Date(Math.min(...postedDates)) : null,
   };

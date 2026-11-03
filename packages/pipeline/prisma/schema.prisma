@@ -13,6 +13,8 @@ datasource db {
 enum Source {
   ADZUNA
   HN_HIRING
+  /// Remote jobs from himalayas.app, searched for contract roles.
+  HIMALAYAS
   GREENHOUSE
   LEVER
   ASHBY

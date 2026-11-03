@@ -12,6 +12,7 @@ _Screenshots use demo data with invented companies._
 
 ```
  Adzuna API ─┐
+ Himalayas ──┤
  HN "Who is  ├─► Job[] ─► dedupe ─► hard filters ─► enrich ─► Postgres
    hiring?"  │     (one type     (company +    (keywords,    (full ATS     (Job, JobPosting,
  Known ATS ──┘      for every     title +       location,     description,   Company)
@@ -22,6 +23,7 @@ _Screenshots use demo data with invented companies._
 1. **Sources** each implement `JobSource` and return the shared `Job` type ([packages/pipeline/src/core](packages/pipeline/src/core)).
    - **Adzuna**: broad discovery. Descriptions are truncated snippets.
    - **Hacker News**: the latest "Ask HN: Who is hiring?" thread via the Algolia API, parsed heuristically.
+   - **Himalayas**: remote contract roles open to US candidates, from its public search API. Every job is labeled with an employment type, which Adzuna's contract listings mostly aren't. (HN's "Freelancer? Seeking freelancer?" thread was considered and skipped: recent months had zero or one company post each.)
    - **Company boards**: any company whose Greenhouse/Lever/Ashby board was discovered earlier is polled directly.
 2. **Dedupe** groups postings by a normalized `company | title | location` key.
 3. **Filters** ([jobfox.config.ts](packages/pipeline/jobfox.config.ts)) return a list of reasons rather than a boolean. Rejected jobs are stored with their reasons.
@@ -178,9 +180,10 @@ Without Adzuna keys, `discover` runs with HN and known boards only. Scoring need
 
 ## Respecting sources
 
-- Only official or public APIs: Adzuna's API, HN's Algolia API, and the public job board APIs of Greenhouse, Lever, and Ashby. No LinkedIn or Indeed scraping, nothing that works around CAPTCHAs or bot detection.
-- Requests are spaced per host (Adzuna at 2.5s, ATS APIs at 1s) and send an identifying User-Agent.
+- Only official or public APIs: Adzuna's API, HN's Algolia API, Himalayas' public jobs API, and the public job board APIs of Greenhouse, Lever, and Ashby. No LinkedIn or Indeed scraping, nothing that works around CAPTCHAs or bot detection.
+- Requests are spaced per host (Adzuna at 2.5s, Himalayas at 2s, ATS APIs at 1s) and send an identifying User-Agent.
 - Adzuna requires attribution where its jobs are displayed; the dashboard shows "Jobs by Adzuna" on those jobs and links through `redirect_url`.
+- Himalayas' terms ask for a visible credit, their `applicationLink` on every Apply button, and expired jobs removed. The dashboard shows "via Himalayas", any job with a Himalayas posting uses its link even when an ATS posting is also known, and jobs past `expiryDate` are skipped. Hourly and monthly rates aren't stored as salary, since `Salary` has no period and they'd mislead the pay check in scoring.
 
 ## Known limitations
 
