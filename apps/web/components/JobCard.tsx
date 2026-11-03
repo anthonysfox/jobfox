@@ -8,6 +8,7 @@ export function JobCard({ row }: { row: JobRow }) {
   const where = [
     job.location,
     job.workplaceType !== "UNKNOWN" ? job.workplaceType.toLowerCase() : null,
+    job.employmentType === "CONTRACT" ? "contract" : null,
   ]
     .filter(Boolean)
     .join(" · ");

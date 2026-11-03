@@ -17,6 +17,7 @@ function href(tab: Tab, filters: JobFilters): string {
   const params = new URLSearchParams({ tab });
   if (filters.area !== "all") params.set("area", filters.area);
   if (filters.source !== "all") params.set("source", filters.source);
+  if (filters.type !== "all") params.set("type", filters.type);
   if (filters.minScore > 0) params.set("min", String(filters.minScore));
   return `/jobs?${params.toString()}`;
 }
@@ -58,6 +59,14 @@ export default async function JobsPage({
             <option value="all">Anywhere</option>
             <option value="local">NYC / NJ</option>
             <option value="remote">Remote</option>
+          </select>
+        </label>
+        <label className="flex items-center gap-1.5">
+          Type
+          <select name="type" defaultValue={filters.type} className={selectClass}>
+            <option value="all">Any type</option>
+            <option value="contract">Contract</option>
+            <option value="permanent">Not contract</option>
           </select>
         </label>
         <label className="flex items-center gap-1.5">

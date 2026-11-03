@@ -45,6 +45,8 @@ export type Tab = (typeof TABS)[number];
 export interface JobFilters {
   area: "all" | "local" | "remote";
   source: "all" | "ats" | "hn" | "adzuna";
+  /** Same meaning as the employment filter in the config: "permanent" hides only known contract jobs. */
+  type: "all" | "contract" | "permanent";
   minScore: number;
 }
 
@@ -56,11 +58,13 @@ export function parseFilters(params: Record<string, string | string[] | undefine
   const tab = TABS.find((t) => t === one("tab")) ?? "strong";
   const area = one("area");
   const source = one("source");
+  const type = one("type");
   return {
     tab,
     filters: {
       area: area === "local" || area === "remote" ? area : "all",
       source: source === "ats" || source === "hn" || source === "adzuna" ? source : "all",
+      type: type === "contract" || type === "permanent" ? type : "all",
       minScore: Math.min(100, Math.max(0, Number(one("min")) || 0)),
     },
   };
@@ -73,6 +77,8 @@ export function isLocal(location: string | null): boolean {
 function matchesFilters({ job, score }: JobRow, filters: JobFilters): boolean {
   if (filters.area === "local" && !isLocal(job.location)) return false;
   if (filters.area === "remote" && job.workplaceType !== "REMOTE") return false;
+  if (filters.type === "contract" && job.employmentType !== "CONTRACT") return false;
+  if (filters.type === "permanent" && job.employmentType === "CONTRACT") return false;
   const source = job.descriptionSource;
   if (filters.source === "hn" && source !== "HN_HIRING") return false;
   if (filters.source === "adzuna" && source !== "ADZUNA") return false;

@@ -42,6 +42,7 @@ export default async function JobPage({ params }: { params: Promise<{ id: string
               job.company.name,
               job.location,
               job.workplaceType !== "UNKNOWN" ? job.workplaceType.toLowerCase() : null,
+              job.employmentType === "CONTRACT" ? "contract" : null,
               salary,
             ]
               .filter(Boolean)
