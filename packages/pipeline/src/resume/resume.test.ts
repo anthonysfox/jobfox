@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { DraftBullet } from "../drafting/drafter.ts";
-import { buildTailoredResume } from "./build.ts";
+import { buildTailoredResume, MAX_SPACING } from "./build.ts";
 import { inlineRuns, renderResumePdf, splitDates } from "./render.ts";
 import {
   contactFromEnv,
@@ -281,6 +281,23 @@ describe("splitDates", () => {
     ["Rowan University — BA, December 2018", null],
   ])("%s", (line, expected) => {
     expect(splitDates(line)).toEqual(expected);
+  });
+});
+
+describe("filling the page", () => {
+  it("grows the spacing when there's room, and never past one page", async () => {
+    const short = await buildTailoredResume({ resume, posting: "", bullets: [] });
+    expect(short.spacing).toBeCloseTo(MAX_SPACING);
+    expect(short.pages).toBe(1);
+
+    const filler = Array.from({ length: 34 }, (_, i) => `- Existing line ${i}.`).join("\n");
+    const full = await buildTailoredResume({
+      resume: `${resume}\n${filler}`,
+      posting: "",
+      bullets: [],
+    });
+    expect(full.pages).toBe(1);
+    expect(full.spacing).toBeLessThan(MAX_SPACING);
   });
 });
 

@@ -49,6 +49,17 @@ describe("bulletIssues", () => {
     expect(bulletIssues(bullet, facts)).toEqual([]);
   });
 
+  it("flags a new bullet that repeats a resume bullet", () => {
+    const bullet = {
+      text: "Rebuilt the React and TypeScript camera dashboard, cutting its load time.",
+      source: "Demoed the features I built to 3 client teams.",
+      entry: "Experience",
+    };
+    expect(bulletIssues(bullet, facts)).toEqual([
+      'It repeats a bullet already on your resume: "Rebuilt the **camera dashboard** in React and TypeScript, cutting load time by 40%."',
+    ]);
+  });
+
   it("requires rewrites to come from the resume, not the profile", () => {
     const bullet = { text: "Ran demos.", source: "Demoed the features I built to 3 client teams." };
     expect(bulletIssues(bullet, facts)).toEqual(["The source line isn't in your resume."]);

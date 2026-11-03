@@ -37,12 +37,19 @@ export function inlineRuns(text: string): { text: string; bold: boolean }[] {
     .filter((run) => run.text.length > 0);
 }
 
-function writeRuns(doc: Doc, text: string, x: number, width: number, align: "left" | "center") {
+function writeRuns(
+  doc: Doc,
+  text: string,
+  x: number,
+  width: number,
+  align: "left" | "center",
+  lineGap = LINE_GAP,
+) {
   const runs = inlineRuns(text);
   const y = doc.y;
   runs.forEach((run, i) => {
     doc.font(run.bold ? BOLD : REGULAR);
-    const options = { width, align, lineGap: LINE_GAP, continued: i < runs.length - 1 };
+    const options = { width, align, lineGap, continued: i < runs.length - 1 };
     if (i === 0) doc.text(run.text, x, y, options);
     else doc.text(run.text, options);
   });
@@ -53,7 +60,18 @@ export interface RenderedResume {
   pages: number;
 }
 
-export function renderResumePdf(markdown: string): Promise<RenderedResume> {
+export interface RenderOptions {
+  /**
+   * Multiplies the space between sections, entries, and bullets, so a resume
+   * with room to spare can fill the page. Text size and line breaks don't change.
+   */
+  spacing?: number;
+}
+
+export function renderResumePdf(
+  markdown: string,
+  { spacing = 1 }: RenderOptions = {},
+): Promise<RenderedResume> {
   const doc = new PDFDocument({
     size: "LETTER",
     // Keeps pages in memory until end(), so the page count is known.
@@ -98,12 +116,12 @@ export function renderResumePdf(markdown: string): Promise<RenderedResume> {
     }
     if (afterName) {
       afterName = false;
-      doc.moveDown(0.4);
+      doc.moveDown(0.4 * spacing);
     }
 
     if (line.startsWith("## ")) {
       section = line.toLowerCase();
-      doc.moveDown(0.5);
+      doc.moveDown(0.5 * spacing);
       doc
         .fillColor(ACCENT)
         .font(BOLD)
@@ -116,22 +134,22 @@ export function renderResumePdf(markdown: string): Promise<RenderedResume> {
         .lineWidth(0.6)
         .strokeColor(MUTED)
         .stroke();
-      doc.fillColor(TEXT).moveDown(0.35);
+      doc.fillColor(TEXT).moveDown(0.35 * spacing);
     } else if (line.startsWith("### ")) {
-      doc.moveDown(0.25);
+      doc.moveDown(0.25 * spacing);
       doc.fontSize(10);
       writeRuns(doc, `**${line.slice(4).replace(/\*\*/g, "")}**`, left, width, "left");
     } else if (/^[-*]\s+/.test(line) && section.includes("skill")) {
       doc.fontSize(BODY_SIZE);
       writeRuns(doc, line.replace(/^[-*]\s+/, ""), left, width, "left");
-      doc.moveDown(0.15);
+      doc.moveDown(0.15 * spacing);
     } else if (/^[-*]\s+/.test(line)) {
       doc.fontSize(BODY_SIZE);
       const y = doc.y;
       doc.font(REGULAR).text("•", left + 4, y, { lineBreak: false });
       doc.y = y;
       writeRuns(doc, line.replace(/^[-*]\s+/, ""), left + 14, width - 14, "left");
-      doc.moveDown(0.15);
+      doc.moveDown(0.15 * spacing);
     } else {
       doc.fontSize(BODY_SIZE);
       const dated = splitDates(line);
@@ -145,7 +163,7 @@ export function renderResumePdf(markdown: string): Promise<RenderedResume> {
       } else {
         writeRuns(doc, line, left, width, "left");
       }
-      doc.moveDown(0.15);
+      doc.moveDown(0.15 * spacing);
     }
   }
 

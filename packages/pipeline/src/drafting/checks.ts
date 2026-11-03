@@ -4,6 +4,8 @@
  * that line exists and that the bullet didn't invent numbers.
  */
 
+import { LIST_ITEM } from "../resume/entries.ts";
+
 /** Lowercase words and numbers only, so Markdown, punctuation, and spacing don't matter. */
 export function comparable(text: string): string {
   return text
@@ -61,7 +63,45 @@ export function bulletIssues(
     issues.push(`"${bullet.entry}" isn't a section of your resume.`);
   }
 
+  if (isAddition) {
+    const repeated = resumeBullets(facts.resume).find((line) => overlap(bullet.text, line) >= 0.5);
+    if (repeated) issues.push(`It repeats a bullet already on your resume: "${repeated}"`);
+  }
   return [...issues, ...numberIssues(bullet.text, facts)];
+}
+
+const COMMON = new Set(
+  "the and for with from into onto that this their them they its our your plus both every each all any using used use across alongside about over under".split(
+    " ",
+  ),
+);
+
+function keyWords(text: string): Set<string> {
+  return new Set(
+    comparable(text)
+      .split(" ")
+      .filter((w) => w.length > 2 && !COMMON.has(w)),
+  );
+}
+
+/**
+ * Share of the shorter text's key words that the other also has. A new bullet
+ * that mostly restates a resume bullet scores 0.6 or more; one with a new fact
+ * stays under 0.45. The prompt asks for no repeats, but the model still wrote
+ * them, so code checks.
+ */
+export function overlap(a: string, b: string): number {
+  const [left, right] = [keyWords(a), keyWords(b)];
+  const shared = [...left].filter((w) => right.has(w)).length;
+  return shared / Math.max(1, Math.min(left.size, right.size));
+}
+
+/** The resume's bullets, without skills lines ("- **Languages:** ..."). */
+function resumeBullets(resume: string): string[] {
+  return resume
+    .split("\n")
+    .map((line) => LIST_ITEM.exec(line)?.[2] ?? "")
+    .filter((text) => text && !text.startsWith("**"));
 }
 
 // Compare against all the facts, so a number moved in from another line is fine.

@@ -26,7 +26,8 @@ ${resume.trim()}
 Use only facts in the resume${profile.trim() ? " and profile" : ""}. Never add an employer, tool, metric, date, title, user count, or responsibility that isn't there, even when the posting asks for it. Keep each scale figure (such as "hundreds of clients") attached to the work the facts tie it to, and don't combine separate facts into a bigger claim than either makes. Don't add how often, how long, or how much (such as "daily", "for years", or "extensively") unless the facts say so. A draft that overstates the candidate's experience hurts them in the interview, so when the posting wants something they don't have, leave it out of the bullets and, in answers, point to the closest real experience and call it what it is.
 
 Summary:
-- Rewrite the resume's summary for this posting as 2 or 3 sentences, at most 70 words in all, leading with the experience this posting cares most about. Use the posting's terms where the facts support them, and reword anything that undersells a relevant fact.
+- Rewrite the resume's summary for this posting as 3 or 4 sentences, about as long as the original (50 to 75 words), leading with the experience this posting cares most about. Use the posting's terms where the facts support them, and reword anything that undersells a relevant fact.
+- Give each sentence one clear idea that reads on its own. Don't tack extra facts onto the end of a sentence ("..., plus dashboards at EarthCam").
 - Write in resume voice: no "I", and no first-person pronouns.
 - Keep the strongest result this posting would care about, with its numbers as stated.
 - State years of experience exactly as the resume does. Don't give the candidate a title they haven't held.
@@ -42,7 +43,7 @@ Rewritten bullets:
 
 New bullets:
 - Write up to 5 new bullets for facts${profile.trim() ? " in the profile" : ""} that the resume doesn't already state and that this posting would care about, most relevant first. Only the first few may fit on the page, so order matters. Write none rather than pad with weak ones.
-- Same style as the rewrites. Don't repeat anything a resume bullet already says.
+- Same style as the rewrites. Each must add a fact the page doesn't already show; if a resume bullet already covers it (even in other words), leave it out. No filler phrases such as "as ongoing work".
 - In "source", copy the line the bullet is based on, word for word.
 - In "entry", copy exactly the resume entry it belongs under, from this list:
 ${entries}

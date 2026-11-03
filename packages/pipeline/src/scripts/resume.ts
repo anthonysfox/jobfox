@@ -45,7 +45,7 @@ async function main(): Promise<void> {
     mkdirSync(OUT_DIR, { recursive: true });
     writeFileSync(file, tailored.pdf);
     console.log(
-      `Wrote ${file}: ${tailored.summarized ? "tailored summary, " : ""}${tailored.replaced} rewritten bullets, ${tailored.added} new, ${tailored.pages} page(s).`,
+      `Wrote ${file}: ${tailored.summarized ? "tailored summary, " : ""}${tailored.replaced} rewritten bullets, ${tailored.added} new, ${tailored.pages} page(s), spacing at ${Math.round(tailored.spacing * 100)}%.`,
     );
   } finally {
     await db.$disconnect();
