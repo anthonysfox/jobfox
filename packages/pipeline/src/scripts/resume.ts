@@ -11,8 +11,10 @@ import { readResume } from "../scoring/context.ts";
 /*
  * Write a tailored resume PDF for one job from its latest draft. No model
  * call: the draft already has the bullets. Run `pnpm draft <job id>` first.
+ * Without a job, write the master resume as it is, for anything not tied to a posting.
  *
  *   pnpm resume <job id>     # writes data/resumes/<Name>_Resume_<Company>.pdf
+ *   pnpm resume              # writes data/resumes/<Name>_Resume.pdf
  */
 
 const OUT_DIR = "data/resumes";
@@ -21,7 +23,7 @@ async function main(): Promise<void> {
   const env = parseEnv(process.env);
   parseConfig(userConfig);
   const [jobId] = process.argv.slice(2);
-  if (!jobId) throw new Error("Usage: pnpm resume <job id>");
+  if (!jobId) return writeMaster(contactFromEnv(env));
   const db = createDb();
 
   try {
@@ -50,6 +52,18 @@ async function main(): Promise<void> {
   } finally {
     await db.$disconnect();
   }
+}
+
+/** The master resume, untailored: same layout and page fit, contact details added. */
+async function writeMaster(contact: ReturnType<typeof contactFromEnv>): Promise<void> {
+  const resume = readResume();
+  const built = await buildTailoredResume({ resume, bullets: [], posting: "", contact });
+  const file = path.join(OUT_DIR, resumeFileName(resume, "", ""));
+  mkdirSync(OUT_DIR, { recursive: true });
+  writeFileSync(file, built.pdf);
+  console.log(
+    `Wrote ${file}: master resume, ${built.pages} page(s), spacing at ${Math.round(built.spacing * 100)}%.`,
+  );
 }
 
 main().catch((error: unknown) => {

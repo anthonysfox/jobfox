@@ -93,20 +93,20 @@ pnpm discover
 
 Without Adzuna keys, `discover` runs with HN and known boards only. Scoring needs `ANTHROPIC_API_KEY` in `.env` and a resume at `packages/pipeline/data/resume.md` (gitignored). Put your own scoring preferences in `packages/pipeline/data/preferences.md`, one per line; until then, scoring uses the example in `jobfox.config.ts`. They're kept out of the repo because they include pay.
 
-| Script           | What it does                                        |
-| ---------------- | --------------------------------------------------- |
-| `pnpm web`       | Dashboard on localhost:3000                         |
-| `pnpm discover`  | Fetch, filter, store, print summary                 |
-| `pnpm matches`   | Jobs to apply to, best fit first                    |
-| `pnpm score`     | Embed and score new matches (`--limit N`)           |
-| `--contract`     | On discover, matches, or score: contract roles only |
-| `pnpm draft ID`  | Draft bullets and answers for one job               |
-| `pnpm resume ID` | Tailored resume PDF from the latest draft           |
-| `pnpm label`     | Hand-label jobs for the eval (blind)                |
-| `pnpm eval`      | Measure the scorer (`--model X` to compare)         |
-| `pnpm test`      | Vitest (no network, no database)                    |
-| `pnpm check`     | Typecheck + lint + test                             |
-| `pnpm db:studio` | Browse the database in Prisma Studio                |
+| Script           | What it does                                                         |
+| ---------------- | -------------------------------------------------------------------- |
+| `pnpm web`       | Dashboard on localhost:3000                                          |
+| `pnpm discover`  | Fetch, filter, store, print summary                                  |
+| `pnpm matches`   | Jobs to apply to, best fit first                                     |
+| `pnpm score`     | Embed and score new matches (`--limit N`)                            |
+| `--contract`     | On discover, matches, or score: contract roles only                  |
+| `pnpm draft ID`  | Draft bullets and answers for one job                                |
+| `pnpm resume ID` | Tailored resume PDF from the latest draft (no ID: the master resume) |
+| `pnpm label`     | Hand-label jobs for the eval (blind)                                 |
+| `pnpm eval`      | Measure the scorer (`--model X` to compare)                          |
+| `pnpm test`      | Vitest (no network, no database)                                     |
+| `pnpm check`     | Typecheck + lint + test                                              |
+| `pnpm db:studio` | Browse the database in Prisma Studio                                 |
 
 ## Design decisions
 
