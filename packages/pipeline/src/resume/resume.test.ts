@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { DraftBullet } from "../drafting/drafter.ts";
-import { buildTailoredResume, MAX_SPACING } from "./build.ts";
+import { buildTailoredResume, MAX_SPACING, MIN_SPACING } from "./build.ts";
 import { inlineRuns, renderResumePdf, splitDates } from "./render.ts";
 import {
   contactFromEnv,
@@ -298,6 +298,17 @@ describe("filling the page", () => {
     });
     expect(full.pages).toBe(1);
     expect(full.spacing).toBeLessThan(MAX_SPACING);
+  });
+
+  it("tightens the spacing when the resume is a little over a page", async () => {
+    const filler = Array.from({ length: 37 }, (_, i) => `- Existing line ${i}.`).join("\n");
+    const over = `${resume}\n${filler}`;
+    expect((await renderResumePdf(over)).pages).toBe(2);
+
+    const result = await buildTailoredResume({ resume: over, posting: "", bullets: [] });
+    expect(result.pages).toBe(1);
+    expect(result.spacing).toBeLessThan(1);
+    expect(result.spacing).toBeGreaterThanOrEqual(MIN_SPACING);
   });
 });
 
