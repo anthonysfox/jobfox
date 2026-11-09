@@ -10,6 +10,7 @@ const filters: FilterConfig = {
   remoteUsOnly: true,
   remoteExcludedRegions: ["europe", "emea", "uk", "canada"],
   seniorityExclude: ["staff", "principal", "director"],
+  titleExclude: [],
   companyBlocklist: ["Globex Corporation"],
   employment: "any",
 };
@@ -53,6 +54,23 @@ describe("rejectReasons", () => {
     expect(rejectReasons({ ...base, title: "Account Executive" }, filters)).toEqual([
       "title:no-keyword-match",
     ]);
+  });
+
+  it("allows every title when there are no keywords", () => {
+    const open = { ...filters, titleKeywords: [] };
+    expect(rejectReasons({ ...base, title: "Operations Coordinator" }, open)).toEqual([]);
+  });
+
+  it("rejects excluded titles as whole phrases only", () => {
+    const excluding = { ...filters, titleKeywords: [], titleExclude: ["cook", "sales rep"] };
+    expect(rejectReasons({ ...base, title: "Line Cook" }, excluding)).toEqual([
+      "title:excluded:cook",
+    ]);
+    expect(rejectReasons({ ...base, title: "Inside Sales Rep" }, excluding)).toEqual([
+      "title:excluded:sales rep",
+    ]);
+    expect(rejectReasons({ ...base, title: "Cookbook Editor" }, excluding)).toEqual([]);
+    expect(rejectReasons({ ...base, title: "Sales Operations Analyst" }, excluding)).toEqual([]);
   });
 
   it("rejects excluded seniority", () => {

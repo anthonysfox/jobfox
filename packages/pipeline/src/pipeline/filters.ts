@@ -66,6 +66,10 @@ export function rejectReasons(job: FilterableJob, filters: FilterConfig): string
     if (titleHas(job.title, phrase)) reasons.push(`seniority:${phrase}`);
   }
 
+  for (const phrase of filters.titleExclude) {
+    if (titleHas(job.title, phrase)) reasons.push(`title:excluded:${phrase}`);
+  }
+
   // Like unknown locations, an unknown title goes to review instead of being rejected.
   if (
     job.title !== UNKNOWN_TITLE &&

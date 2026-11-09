@@ -62,8 +62,10 @@ export const configSchema = z.object({
     })
     .prefault({}),
   filters: z.object({
-    /** The title must contain at least one of these phrases. */
+    /** If any are listed, the title must contain at least one. Empty allows every title. */
     titleKeywords: phrases,
+    /** Titles containing any of these phrases are rejected. */
+    titleExclude: phrases,
     /** On-site and hybrid jobs must be in one of these places. */
     locations: phrases,
     remoteOk: z.boolean().default(true),
