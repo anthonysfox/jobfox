@@ -331,7 +331,6 @@ export default defineConfig({
       "sound engineer",
       "stationary engineer",
       "structural",
-      "tooling",
       "wastewater",
     ],
     // Whole-word matches. Avoid bare "ny": it would also match Albany, NY.
