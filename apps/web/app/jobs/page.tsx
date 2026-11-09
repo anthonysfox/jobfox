@@ -7,7 +7,8 @@ const TAB_LABELS: Record<Tab, string> = {
   possible: "Possible",
   weak: "Weak",
   unscored: "Unscored",
-  other: "Other",
+  other: "Other tech",
+  nontech: "Non-tech",
   saved: "Saved",
   applied: "Applied",
 };

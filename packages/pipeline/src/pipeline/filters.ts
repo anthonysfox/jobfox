@@ -62,6 +62,14 @@ export function isCoreTitle(title: string, filters: FilterConfig): boolean {
   );
 }
 
+/** Whether a title is tech work. Anything that doesn't name it counts as non-tech. */
+export function isTechTitle(title: string, filters: FilterConfig): boolean {
+  return (
+    filters.techTitles.some((phrase) => titleHas(title, phrase)) &&
+    !filters.notTechTitles.some((phrase) => titleHas(title, phrase))
+  );
+}
+
 /** Returns why a job fails the hard filters. An empty array means it passed. */
 export function rejectReasons(job: FilterableJob, filters: FilterConfig): string[] {
   const reasons: string[] = [];

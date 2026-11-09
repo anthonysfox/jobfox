@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { FilterConfig } from "../core/config.ts";
 import { UNKNOWN_TITLE } from "../core/job.ts";
-import { isCoreTitle, rejectReasons } from "./filters.ts";
+import { isCoreTitle, isTechTitle, rejectReasons } from "./filters.ts";
 
 const filters: FilterConfig = {
   titleKeywords: ["full stack", "frontend", "software engineer", "solutions engineer"],
@@ -12,6 +12,8 @@ const filters: FilterConfig = {
   seniorityExclude: ["staff", "principal", "director"],
   titleExclude: [],
   coreTitles: [],
+  techTitles: ["engineer", "data"],
+  notTechTitles: ["civil", "data entry"],
   companyBlocklist: ["Globex Corporation"],
   employment: "any",
 };
@@ -35,6 +37,18 @@ describe("isCoreTitle", () => {
   it("counts an unknown title, and everything when no list is set", () => {
     expect(isCoreTitle(UNKNOWN_TITLE, sorted)).toBe(true);
     expect(isCoreTitle("Operations Coordinator", filters)).toBe(true);
+  });
+});
+
+describe("isTechTitle", () => {
+  it.each([
+    ["Golang Engineer", true],
+    ["Senior Data Analyst", true],
+    ["Civil Engineer", false],
+    ["Data Entry Clerk", false],
+    ["Executive Assistant", false],
+  ])("%s -> %s", (title, expected) => {
+    expect(isTechTitle(title, filters)).toBe(expected);
   });
 });
 

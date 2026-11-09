@@ -64,7 +64,7 @@ From a draft, the job page's **Tailored resume (PDF)** button (or `pnpm resume <
 
 `pnpm web` starts a Next.js app on `localhost:3000` that reads the same database:
 
-- **Jobs:** tabs for strong, possible, and weak fits plus saved and applied, and an Other tab for roles outside my main search (anything not matching `coreTitles`), best score first, filterable by area, description source, and minimum score. Save, Applied, and Skip update the job's status.
+- **Jobs:** tabs for strong, possible, and weak fits plus saved and applied, and two tabs for roles outside my main search (anything not matching `coreTitles`), Other tech and Non-tech, best score first, filterable by area, description source, and minimum score. Save, Applied, and Skip update the job's status.
 - **Job detail:** the full description beside the model's strengths and gaps, plus the application draft panel with copy buttons.
 - **Paste a job:** for a posting jobfox didn't find (LinkedIn, a referral, a company site). Paste the description and it's saved, scored, and drafted in one step, then opens on its job page with the tailored resume PDF.
 - **Label:** blind labeling for the eval, one job at a time with keyboard shortcuts.

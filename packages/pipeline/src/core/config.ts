@@ -68,6 +68,10 @@ export const configSchema = z.object({
     titleExclude: phrases,
     /** What I'm mainly after. Sorts jobs on the dashboard; rejects nothing. Empty means all. */
     coreTitles: phrases,
+    /** Splits the titles outside coreTitles into tech and non-tech tabs. Rejects nothing. */
+    techTitles: phrases,
+    /** Wins over techTitles, for titles like "Civil Engineer". */
+    notTechTitles: phrases,
     /** On-site and hybrid jobs must be in one of these places. */
     locations: phrases,
     remoteOk: z.boolean().default(true),
