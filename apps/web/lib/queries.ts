@@ -8,6 +8,7 @@ import {
   storedSummarySchema,
 } from "@jobfox/pipeline/drafting/drafter";
 import { containsPhrase } from "@jobfox/pipeline/lib/normalize";
+import { isCoreTitle } from "@jobfox/pipeline/pipeline/filters";
 import { findCurrentMatches, type MatchedJob } from "@jobfox/pipeline/pipeline/matches";
 import {
   PREFERENCES_PATH,
@@ -49,7 +50,15 @@ export function latestScore(scores: MatchedJob["scores"]): Score | undefined {
   return latest && { ...latest, verdict: toVerdict(latest.fitScore, config.scoring) };
 }
 
-export const TABS = ["strong", "possible", "weak", "unscored", "saved", "applied"] as const;
+export const TABS = [
+  "strong",
+  "possible",
+  "weak",
+  "unscored",
+  "other",
+  "saved",
+  "applied",
+] as const;
 export type Tab = (typeof TABS)[number];
 
 export interface JobFilters {
@@ -104,6 +113,8 @@ function matchesFilters({ job, score }: JobRow, filters: JobFilters): boolean {
 function tabOf({ job, score }: JobRow): Tab {
   if (job.status === "APPLIED") return "applied";
   if (job.status === "SAVED") return "saved";
+  // Pasted jobs are ones I picked, so they stay with the main search whatever the title.
+  if (job.descriptionSource !== "MANUAL" && !isCoreTitle(job.title, config.filters)) return "other";
   if (!score) return "unscored";
   return score.verdict === "STRONG" ? "strong" : score.verdict === "POSSIBLE" ? "possible" : "weak";
 }

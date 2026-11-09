@@ -66,6 +66,8 @@ export const configSchema = z.object({
     titleKeywords: phrases,
     /** Titles containing any of these phrases are rejected. */
     titleExclude: phrases,
+    /** What I'm mainly after. Sorts jobs on the dashboard; rejects nothing. Empty means all. */
+    coreTitles: phrases,
     /** On-site and hybrid jobs must be in one of these places. */
     locations: phrases,
     remoteOk: z.boolean().default(true),

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { FilterConfig } from "../core/config.ts";
 import { UNKNOWN_TITLE } from "../core/job.ts";
-import { rejectReasons } from "./filters.ts";
+import { isCoreTitle, rejectReasons } from "./filters.ts";
 
 const filters: FilterConfig = {
   titleKeywords: ["full stack", "frontend", "software engineer", "solutions engineer"],
@@ -11,6 +11,7 @@ const filters: FilterConfig = {
   remoteExcludedRegions: ["europe", "emea", "uk", "canada"],
   seniorityExclude: ["staff", "principal", "director"],
   titleExclude: [],
+  coreTitles: [],
   companyBlocklist: ["Globex Corporation"],
   employment: "any",
 };
@@ -22,6 +23,20 @@ const base = {
   workplaceType: "HYBRID" as const,
   employmentType: "UNKNOWN" as const,
 };
+
+describe("isCoreTitle", () => {
+  const sorted = { ...filters, coreTitles: ["full stack", "frontend"] };
+
+  it("matches across spelling variants", () => {
+    expect(isCoreTitle("Front-End Engineer", sorted)).toBe(true);
+    expect(isCoreTitle("Operations Coordinator", sorted)).toBe(false);
+  });
+
+  it("counts an unknown title, and everything when no list is set", () => {
+    expect(isCoreTitle(UNKNOWN_TITLE, sorted)).toBe(true);
+    expect(isCoreTitle("Operations Coordinator", filters)).toBe(true);
+  });
+});
 
 describe("rejectReasons", () => {
   it("passes a matching job", () => {

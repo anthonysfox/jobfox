@@ -53,6 +53,15 @@ function checkLocation(job: FilterableJob, filters: FilterConfig): string | null
   return "location:not-allowed";
 }
 
+/** Whether a title is the work I'm mainly after. An unknown title counts, so it still gets reviewed. */
+export function isCoreTitle(title: string, filters: FilterConfig): boolean {
+  return (
+    title === UNKNOWN_TITLE ||
+    filters.coreTitles.length === 0 ||
+    filters.coreTitles.some((phrase) => titleHas(title, phrase))
+  );
+}
+
 /** Returns why a job fails the hard filters. An empty array means it passed. */
 export function rejectReasons(job: FilterableJob, filters: FilterConfig): string[] {
   const reasons: string[] = [];
