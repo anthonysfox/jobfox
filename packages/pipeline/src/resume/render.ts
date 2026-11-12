@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import PDFDocument from "pdfkit";
 
 /*
@@ -5,20 +6,38 @@ import PDFDocument from "pdfkit";
  * resume uses: "#" name, the contact line under it, "##" sections, "###"
  * entries, "-" bullets, paragraphs, and **bold**. A line ending in a date
  * range ("**Engineer**, July 2025 – Present") puts the dates at the right
- * margin, and skills lists have no bullet markers. Built-in Helvetica keeps
- * it dependency-free and ATS-readable (real text, not an image).
+ * margin, and skills lists have no bullet markers. Text stays real text, not
+ * an image, so ATS parsers can read it.
+ *
+ * Lato, embedded from ./fonts (SIL Open Font License, see OFL.txt), at
+ * 9.25pt with tight section gaps, to match the master resume I send by hand,
+ * so a resume that fits one page there fits here too.
  */
 
 const MARGIN = 36; // 0.5 in
-const REGULAR = "Helvetica";
-const BOLD = "Helvetica-Bold";
+const REGULAR = "Lato";
+const BOLD = "Lato-Bold";
+// Read once per process. new URL(..., import.meta.url) resolves next to this
+// file both under tsx and in the Next.js server bundle.
+const FONTS = {
+  [REGULAR]: readFileSync(new URL("./fonts/Lato-Regular.woff", import.meta.url)),
+  [BOLD]: readFileSync(new URL("./fonts/Lato-Bold.woff", import.meta.url)),
+};
 const TEXT = "#1c1917";
 const MUTED = "#57534e";
 const ACCENT = "#2c3e6b";
-const BODY_SIZE = 9.5;
+const BODY_SIZE = 9.25;
 const LINE_GAP = 1.5;
 
 type Doc = InstanceType<typeof PDFDocument>;
+
+/*
+ * Lato draws "fi" and "fl" as single ligature glyphs, and PDF text extraction
+ * then drops the letters ("Certifed"), so an ATS would misread them. Turning
+ * ligatures off keeps every letter its own glyph. fontkit takes a feature
+ * object here; pdfkit's types only list the array form.
+ */
+const NO_LIGATURES = { liga: false, clig: false } as unknown as PDFKit.Mixins.OpenTypeFeatures[];
 
 const DATE_RANGE =
   /^(.*\S),\s+((?:[A-Z][a-z]+ )?\d{4}\s+[–-]\s+(?:Present|(?:[A-Z][a-z]+ )?\d{4}))$/;
@@ -49,7 +68,13 @@ function writeRuns(
   const y = doc.y;
   runs.forEach((run, i) => {
     doc.font(run.bold ? BOLD : REGULAR);
-    const options = { width, align, lineGap, continued: i < runs.length - 1 };
+    const options = {
+      width,
+      align,
+      lineGap,
+      features: NO_LIGATURES,
+      continued: i < runs.length - 1,
+    };
     if (i === 0) doc.text(run.text, x, y, options);
     else doc.text(run.text, options);
   });
@@ -79,6 +104,7 @@ export function renderResumePdf(
     margins: { top: MARGIN, bottom: MARGIN, left: MARGIN, right: MARGIN },
     info: { Title: /^# (.+)$/m.exec(markdown)?.[1] ?? "Resume" },
   });
+  for (const [name, data] of Object.entries(FONTS)) doc.registerFont(name, data);
   const chunks: Buffer[] = [];
   doc.on("data", (chunk: Buffer) => chunks.push(chunk));
   let pages = 1;
@@ -116,12 +142,12 @@ export function renderResumePdf(
     }
     if (afterName) {
       afterName = false;
-      doc.moveDown(0.4 * spacing);
+      doc.moveDown(0.2 * spacing);
     }
 
     if (line.startsWith("## ")) {
       section = line.toLowerCase();
-      doc.moveDown(0.5 * spacing);
+      doc.moveDown(0.3 * spacing);
       doc
         .fillColor(ACCENT)
         .font(BOLD)
@@ -134,9 +160,9 @@ export function renderResumePdf(
         .lineWidth(0.6)
         .strokeColor(MUTED)
         .stroke();
-      doc.fillColor(TEXT).moveDown(0.35 * spacing);
+      doc.fillColor(TEXT).moveDown(0.3 * spacing);
     } else if (line.startsWith("### ")) {
-      doc.moveDown(0.25 * spacing);
+      doc.moveDown(0.2 * spacing);
       doc.fontSize(10);
       writeRuns(doc, `**${line.slice(4).replace(/\*\*/g, "")}**`, left, width, "left");
     } else if (/^[-*]\s+/.test(line) && section.includes("skill")) {
