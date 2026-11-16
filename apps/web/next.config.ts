@@ -7,6 +7,9 @@ process.loadEnvFile(fileURLToPath(new URL("../../.env", import.meta.url)));
 const config: NextConfig = {
   // The pipeline package ships TypeScript source; Next compiles it.
   transpilePackages: ["@jobfox/pipeline"],
+  experimental: {
+    agentUpgrade: "security",
+  },
 };
 
 export default config;
